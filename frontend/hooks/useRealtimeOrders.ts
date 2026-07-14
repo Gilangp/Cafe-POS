@@ -144,6 +144,38 @@ export function useRealtimeOrders() {
     }
   };
 
+  const triggerLoyaltyReward = async (order: any) => {
+    try {
+      const custName = order?.customer_name;
+      const amount = Number(order?.total || 45000);
+      const earnedPts = Math.round(amount / 1000);
+
+      if (custName && earnedPts > 0) {
+        // Try to update existing cloud member or insert loyalty record
+        const { data: members } = await supabase
+          .from('customers')
+          .select('*')
+          .ilike('name', `%${custName}%`)
+          .limit(1);
+
+        if (members && members.length > 0) {
+          const m = members[0];
+          const newPts = Number(m.points || 0) + earnedPts;
+          await supabase
+            .from('customers')
+            .update({
+              points: newPts,
+              total_spend: Number(m.total_spend || 0) + amount,
+              orders_count: Number(m.orders_count || 0) + 1,
+            })
+            .eq('id', m.id);
+        }
+      }
+    } catch (err) {
+      console.warn('Auto loyalty reward info:', err);
+    }
+  };
+
   const updateOrderStatus = async (id: string | number, newStatus: LiveOrder['status']) => {
     // Optimistic UI update
     setOrders((prev) => prev.map((o) => (o.id === id ? { ...o, status: newStatus } : o)));
@@ -151,6 +183,7 @@ export function useRealtimeOrders() {
     const target = orders.find((o) => o.id === id);
     if (newStatus === 'completed') {
       triggerStockDeduction(target || { items_count: 2 });
+      triggerLoyaltyReward(target || { customer_name: 'Pelanggan Setia', total: 45000 });
     }
 
     // If it's a live record, update in Supabase
