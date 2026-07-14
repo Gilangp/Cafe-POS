@@ -31,6 +31,7 @@ Route::prefix('v1')->group(function () {
     Route::get('/branches/public', [App\Http\Controllers\Api\BranchController::class, 'index']);
     Route::post('/orders/public', [App\Http\Controllers\Api\OrderController::class, 'store']);
     Route::get('/orders/public/{order}', [App\Http\Controllers\Api\OrderController::class, 'show']);
+    Route::post('/promotions/validate', [App\Http\Controllers\Api\PromotionController::class, 'validatePromo']);
 
     // Auth routes
     Route::prefix('auth')->group(function () {
@@ -108,6 +109,13 @@ Route::prefix('v1')->group(function () {
 
         // Analytics dashboard
         Route::get('/analytics/dashboard', [App\Http\Controllers\Api\ReportController::class, 'sales']);
+
+        // Promotions & Discounts
+        Route::apiResource('promotions', App\Http\Controllers\Api\PromotionController::class);
+
+        // Audit & Access Logs
+        Route::get('/audit/logs', [App\Http\Controllers\Api\AuditController::class, 'logs']);
+        Route::get('/audit/access-logs', [App\Http\Controllers\Api\AuditController::class, 'accessLogs']);
 
         // Settings
         Route::get('/settings', [App\Http\Controllers\Api\SettingController::class, 'index']);
