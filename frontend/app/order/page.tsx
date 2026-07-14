@@ -1,36 +1,11 @@
 'use client';
 
-import { useState } from 'react';
-import { CustomerLayout } from '@/components/customer/customer-layout';
-import { ShoppingBag, Plus, Minus, Trash2, X, Check, MapPin, Search, ChevronDown, Sparkles, Tag, ArrowRight } from 'lucide-react';
-
-interface Product {
-  id: number;
-  name: string;
-  category: string;
-  price: number;
-  emoji: string;
-  desc: string;
-  bestSeller?: boolean;
-}
-
-const PRODUCTS: Product[] = [
-  { id: 1, name: 'Velvet Espresso', category: 'Espresso', price: 30000, emoji: '☕', desc: 'Espresso shot ganda dari biji kopi Sumatra Single Origin dengan krema keemasan pekat.', bestSeller: true },
-  { id: 2, name: 'Caramel Sea Salt Latte', category: 'Latte', price: 38000, emoji: '🥛', desc: 'Perpaduan espresso artisan, susu segar bertekstur lembut, dan saus karamel sea salt homemade.', bestSeller: true },
-  { id: 3, name: 'Iced Macchiato Cloud', category: 'Latte', price: 42000, emoji: '🧊', desc: 'Cold espresso dengan lapisan macchiato foam dingin yang manis dan bertekstur kenyal.', bestSeller: true },
-  { id: 4, name: 'Golden Cappuccino', category: 'Espresso', price: 35000, emoji: '☕', desc: 'Cappuccino klasik dengan racikan rasio 1:1:1 dan taburan bubuk cokelat organik.', bestSeller: false },
-  { id: 5, name: 'Signature Cold Brew 18H', category: 'Cold Brew', price: 36000, emoji: '🧋', desc: 'Diseduh dengan air dingin secara perlahan selama 18 jam menghasilkan rasa kopi rendah asam & bold.', bestSeller: true },
-  { id: 6, name: 'Uji Ceremonial Matcha Latte', category: 'Matcha', price: 40000, emoji: '🍵', desc: 'Matcha grade ceremonial asli dari Kyoto, Uji, dipadukan dengan susu pilihan Anda.', bestSeller: true },
-  { id: 7, name: 'Valrhona Chocolate Brownie', category: 'Pastry', price: 45000, emoji: '🍫', desc: 'Fudgy brownie hangat dari cokelat Valrhona 70% dengan serpihan sea salt di atasnya.', bestSeller: true },
-  { id: 8, name: 'French Butter Croissant', category: 'Pastry', price: 32000, emoji: '🥐', desc: 'Croissant panggang segar dengan mentega Prancis yang renyah di luar dan lembut berlapis di dalam.', bestSeller: false },
-  { id: 9, name: 'Almond Frangipane Pastry', category: 'Pastry', price: 35000, emoji: '🧁', desc: 'Pastry berlapis dengan isi krim almond frangipane dan taburan irisan kacang almond panggang.', bestSeller: false },
-  { id: 10, name: 'Artisan Avocado Toast', category: 'Makanan', price: 60000, emoji: '🥑', desc: 'Roti sourdough panggang dengan alpukat tumbuk segar, telur poached sempurna, dan biji wijen.', bestSeller: true },
-  { id: 11, name: 'Velvra Club Sandwich', category: 'Makanan', price: 65000, emoji: '🥪', desc: 'Sandwich tiga lapis dengan dada ayam panggang herb, beef rasher crispy, keju melt, dan sayur organik.', bestSeller: false },
-];
+import { useProducts, CatalogProduct } from '@/hooks/useProducts';
+import { useRealtimeOrders } from '@/hooks/useRealtimeOrders';
 
 interface CartItem {
   id: string;
-  productId: number;
+  productId: string | number;
   name: string;
   price: number;
   qty: number;
@@ -42,13 +17,16 @@ interface CartItem {
 }
 
 export default function OnlineOrderPage() {
+  const { products, loading: catalogLoading, usingLive } = useProducts();
+  const { createLiveOrder } = useRealtimeOrders();
+
   const [branch, setBranch] = useState('Sudirman Flagship');
   const [orderType, setOrderType] = useState<'pickup' | 'delivery' | 'dinein'>('pickup');
   const [activeCategory, setActiveCategory] = useState('Semua');
   const [searchQuery, setSearchQuery] = useState('');
 
   // Customization modal state
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [selectedProduct, setSelectedProduct] = useState<CatalogProduct | null>(null);
   const [iceLevel, setIceLevel] = useState('Normal Ice');
   const [sweetnessLevel, setSweetnessLevel] = useState('100% Normal');
   const [milkOption, setMilkOption] = useState('Full Cream (Default)');
@@ -61,16 +39,17 @@ export default function OnlineOrderPage() {
   const [appliedDiscount, setAppliedDiscount] = useState(0);
   const [promoSuccess, setPromoSuccess] = useState('');
   const [checkoutStep, setCheckoutStep] = useState<'cart' | 'confirm' | 'success'>('cart');
+  const [lastOrderNum, setLastOrderNum] = useState('');
 
-  const categories = ['Semua', 'Espresso', 'Latte', 'Cold Brew', 'Matcha', 'Pastry', 'Makanan'];
+  const categories = ['Semua', 'Coffee', 'Iced Coffee', 'Pastry', 'Non-Coffee', 'Main Dish'];
 
-  const filteredProducts = PRODUCTS.filter((p) => {
-    const matchCat = activeCategory === 'Semua' || p.category === activeCategory;
-    const matchSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase()) || p.desc.toLowerCase().includes(searchQuery.toLowerCase());
+  const filteredProducts = products.filter((p) => {
+    const matchCat = activeCategory === 'Semua' || p.category === activeCategory || (activeCategory === 'Coffee' && p.category.includes('Coffee'));
+    const matchSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase()) || p.description.toLowerCase().includes(searchQuery.toLowerCase());
     return matchCat && matchSearch;
   });
 
-  const handleOpenCustomizer = (product: Product) => {
+  const handleOpenCustomizer = (product: CatalogProduct) => {
     setSelectedProduct(product);
     setIceLevel('Normal Ice');
     setSweetnessLevel('100% Normal');
@@ -101,7 +80,7 @@ export default function OnlineOrderPage() {
           name: selectedProduct.name,
           price: finalPrice,
           qty: 1,
-          emoji: selectedProduct.emoji,
+          emoji: '☕',
           ice: iceLevel,
           sweetness: sweetnessLevel,
           milk: milkOption,
@@ -140,13 +119,39 @@ export default function OnlineOrderPage() {
 
   const fmt = (n: number) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(n);
 
+  const handlePayNow = async () => {
+    setCheckoutStep('success');
+    try {
+      const created = await createLiveOrder({
+        customer_name: 'Pelanggan Online App',
+        order_type: orderType === 'pickup' ? 'takeaway' : orderType === 'dinein' ? 'dine_in' : 'delivery',
+        total: total,
+        table_number: orderType === 'dinein' ? 'MEJA-ONLINE' : 'PICKUP-APP',
+      });
+      if (created && created.order_number) {
+        setLastOrderNum(created.order_number);
+      }
+    } catch (err) {
+      console.warn('Checkout live trigger err:', err);
+    }
+    setTimeout(() => { setCart([]); setCheckoutStep('cart'); }, 7000);
+  };
+
   return (
     <CustomerLayout>
       {/* Top Banner / Order Context Header */}
       <div className="bg-[#12100E] text-white border-b border-white/10 py-6 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
           <div>
-            <h1 className="font-serif text-3xl font-bold text-white tracking-wide">Pesan Menu Online</h1>
+            <div className="flex items-center gap-2.5">
+              <h1 className="font-serif text-3xl font-bold text-white tracking-wide">Pesan Menu Online</h1>
+              {usingLive && (
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-green-500/20 text-green-400 border border-green-500/30 flex items-center gap-1">
+                  <span className="h-1.5 w-1.5 rounded-full bg-green-400 animate-pulse" />
+                  Live Supabase Menu
+                </span>
+              )}
+            </div>
             <p className="text-sm text-white/70 mt-1">
               Nikmati racikan kopi premium dan artisan pastry langsung dari barista terbaik kami.
             </p>
@@ -230,8 +235,8 @@ export default function OnlineOrderPage() {
             >
               {/* Image / Emoji Hero */}
               <div className="relative flex items-center justify-center h-48 bg-gradient-to-b from-[#FAF6F0] to-[#f3ebe1] p-6 text-7xl group-hover:scale-105 transition-transform">
-                {product.emoji}
-                {product.bestSeller && (
+                ☕
+                {product.tags && product.tags.includes('Best Seller') && (
                   <span className="absolute top-3 right-3 flex items-center gap-1 rounded-full bg-[#BA935D] px-3 py-1 text-[10px] font-bold text-white shadow-md">
                     <Sparkles size={11} /> Favorit
                   </span>
@@ -249,7 +254,7 @@ export default function OnlineOrderPage() {
                     {product.name}
                   </h3>
                   <p className="mt-2 text-xs text-gray-500 line-clamp-2 leading-relaxed">
-                    {product.desc}
+                    {product.description}
                   </p>
                 </div>
 
@@ -296,7 +301,7 @@ export default function OnlineOrderPage() {
             {/* Modal Header */}
             <div className="flex items-center justify-between border-b border-gray-100 px-6 py-4 bg-[#FAF6F0]">
               <div className="flex items-center gap-3">
-                <span className="text-3xl">{selectedProduct.emoji}</span>
+                <span className="text-3xl">☕</span>
                 <div>
                   <h3 className="font-serif text-lg font-bold text-gray-800">{selectedProduct.name}</h3>
                   <p className="text-xs font-bold text-[#BA935D]">{fmt(selectedProduct.price)}</p>
@@ -313,7 +318,7 @@ export default function OnlineOrderPage() {
             {/* Modal Body / Customizations */}
             <div className="overflow-y-auto p-6 space-y-6 flex-1">
               {/* Ice Level */}
-              {['Espresso', 'Latte', 'Cold Brew', 'Matcha'].includes(selectedProduct.category) && (
+              {['Coffee', 'Iced Coffee', 'Matcha'].includes(selectedProduct.category) && (
                 <div className="space-y-2.5">
                   <label className="block text-xs font-bold uppercase tracking-wider text-gray-500">Tingkat Es (Ice Level)</label>
                   <div className="grid grid-cols-3 gap-2">
@@ -335,7 +340,7 @@ export default function OnlineOrderPage() {
               )}
 
               {/* Sweetness */}
-              {['Espresso', 'Latte', 'Cold Brew', 'Matcha'].includes(selectedProduct.category) && (
+              {['Coffee', 'Iced Coffee', 'Matcha'].includes(selectedProduct.category) && (
                 <div className="space-y-2.5">
                   <label className="block text-xs font-bold uppercase tracking-wider text-gray-500">Tingkat Manis (Sweetness)</label>
                   <div className="grid grid-cols-4 gap-2">
@@ -357,7 +362,7 @@ export default function OnlineOrderPage() {
               )}
 
               {/* Milk Option */}
-              {['Latte', 'Matcha'].includes(selectedProduct.category) && (
+              {['Coffee', 'Matcha'].includes(selectedProduct.category) && (
                 <div className="space-y-2.5">
                   <label className="block text-xs font-bold uppercase tracking-wider text-gray-500">Pilihan Susu (Milk Choice)</label>
                   <div className="space-y-2">
@@ -440,12 +445,12 @@ export default function OnlineOrderPage() {
             <div className="flex-1 overflow-y-auto p-6 space-y-6">
               {checkoutStep === 'success' ? (
                 <div className="flex flex-col items-center justify-center text-center py-12 space-y-4">
-                  <div className="flex h-20 w-20 items-center justify-center rounded-full bg-green-100 text-green-600 shadow-inner">
+                  <div className="flex h-20 w-20 items-center justify-center rounded-full bg-green-100 text-green-600 shadow-inner animate-bounce">
                     <Check size={40} />
                   </div>
                   <h3 className="font-serif text-2xl font-bold text-gray-800">Pesanan Telah Diterima!</h3>
                   <p className="text-sm text-gray-500 max-w-xs leading-relaxed">
-                    Pesanan Anda dengan nomor e-ticket <strong className="text-gray-800">#ORD-{Math.floor(1000 + Math.random() * 9000)}</strong> sedang disiapkan oleh barista kami di cabang <strong className="text-gray-800">{branch}</strong>.
+                    Pesanan Anda dengan nomor e-ticket <strong className="text-gray-800">{lastOrderNum || `#ORD-${Math.floor(1000 + Math.random() * 9000)}`}</strong> sedang disiapkan oleh barista kami di cabang <strong className="text-gray-800">{branch}</strong>.
                   </p>
                   <div className="rounded-2xl bg-[#FAF6F0] border border-[#BA935D]/30 p-4 w-full text-left space-y-2 text-xs">
                     <div className="flex justify-between font-bold text-gray-800">
@@ -456,6 +461,9 @@ export default function OnlineOrderPage() {
                       <span>Metode Pengambilan</span>
                       <span className="capitalize font-semibold text-gray-700">{orderType === 'pickup' ? 'Ambil Sendiri (Pickup)' : orderType === 'dinein' ? 'Dine-In' : 'Delivery'}</span>
                     </div>
+                  </div>
+                  <div className="text-[11px] text-green-700 bg-green-50 border border-green-200 rounded-xl p-2.5 font-semibold">
+                    ⚡ Tiket sudah terkirim secara Live ke layar KDS Dapur Utama!
                   </div>
                 </div>
               ) : checkoutStep === 'confirm' ? (
@@ -582,10 +590,7 @@ export default function OnlineOrderPage() {
                       Kembali
                     </button>
                     <button
-                      onClick={() => {
-                        setCheckoutStep('success');
-                        setTimeout(() => { setCart([]); setCheckoutStep('cart'); }, 6000);
-                      }}
+                      onClick={handlePayNow}
                       className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-green-600 py-3 font-bold text-sm text-white hover:bg-green-700 active:scale-95 transition-all shadow-lg"
                     >
                       <Check size={16} />

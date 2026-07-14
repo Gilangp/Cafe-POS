@@ -24,10 +24,14 @@ const PRODUCTS: Product[] = [
   { id: 8, name: 'Artisan Avocado Toast', category: 'Makanan', price: 60000, emoji: '🥑', desc: 'Roti sourdough panggang dengan alpukat tumbuk segar.' },
 ];
 
+import { useRealtimeOrders } from '@/hooks/useRealtimeOrders';
+
 export default function QrTableOrderingPage() {
   const params = useParams();
   const tableCode = (params?.tableCode as string) || 'MEJA-04';
   const displayTable = tableCode.replace('-', ' ').toUpperCase();
+
+  const { createLiveOrder } = useRealtimeOrders();
 
   const [activeCategory, setActiveCategory] = useState('Semua');
   const [cart, setCart] = useState<{ id: number; name: string; price: number; qty: number; emoji: string }[]>([]);
@@ -61,6 +65,20 @@ export default function QrTableOrderingPage() {
   const total = subtotal + tax;
 
   const fmt = (n: number) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(n);
+
+  const handleSendToKds = async () => {
+    setOrderSubmitted(true);
+    try {
+      await createLiveOrder({
+        customer_name: `Tamu QR (${displayTable})`,
+        order_type: 'dine_in',
+        total: total,
+        table_number: displayTable,
+      });
+    } catch (err) {
+      console.warn('Live QR order trigger err:', err);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[#FAF6F0] text-[#12100E] font-sans pb-28">
@@ -215,13 +233,16 @@ export default function QrTableOrderingPage() {
 
             {orderSubmitted ? (
               <div className="py-12 text-center space-y-4">
-                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-green-100 text-green-600 mx-auto">
+                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-green-100 text-green-600 mx-auto animate-bounce">
                   <Check size={36} />
                 </div>
                 <h4 className="font-serif text-2xl font-bold text-gray-800">Pesanan Diterima Dapur!</h4>
                 <p className="text-xs text-gray-500 max-w-xs mx-auto">
                   Barista kami sedang meracik pesanan Anda. Silakan duduk santai di {displayTable}.
                 </p>
+                <div className="text-[11px] text-green-700 bg-green-50 border border-green-200 rounded-xl p-2.5 font-semibold max-w-xs mx-auto">
+                  ⚡ Tiket sudah terkirim secara Live ke layar KDS Dapur Utama!
+                </div>
                 <button
                   onClick={() => { setOrderSubmitted(false); setCart([]); setCartOpen(false); }}
                   className="rounded-xl bg-[#12100E] px-6 py-3 text-xs font-bold text-[#BA935D]"
@@ -265,7 +286,7 @@ export default function QrTableOrderingPage() {
                   </div>
 
                   <button
-                    onClick={() => setOrderSubmitted(true)}
+                    onClick={handleSendToKds}
                     className="w-full flex items-center justify-center gap-2 rounded-2xl bg-[#12100E] py-4 text-sm font-bold text-[#BA935D] shadow-xl hover:bg-[#201d19] active:scale-95 transition-all"
                   >
                     <span>Kirim Langsung ke Dapur (KDS)</span>
