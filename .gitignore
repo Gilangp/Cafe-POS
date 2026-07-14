@@ -1,0 +1,17 @@
+﻿# Environment files — JANGAN pernah di-push!
+backend/.env
+frontend/.env.local
+frontend/.env
+# Dependencies
+backend/vendor/
+frontend/node_modules/
+frontend/.next/
+# Build & cache
+backend/bootstrap/cache/*.php
+backend/storage/logs/
+backend/storage/framework/cache/
+backend/storage/framework/sessions/
+backend/storage/framework/views/
+# OS files
+.DS_Store
+Thumbs.db

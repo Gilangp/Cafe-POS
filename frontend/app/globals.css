@@ -1,0 +1,123 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-inter: 'Inter', sans-serif;
+  --font-playfair: 'Playfair Display', serif;
+}
+
+@layer base {
+  :root {
+    --background: 40 43% 96%; /* #FAF6F0 warm cream */
+    --foreground: 22 13% 11%; /* #1E1A17 dark espresso text */
+    --card: 0 0% 100%;
+    --card-foreground: 22 13% 11%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 22 13% 11%;
+    --primary: 36 38% 54%; /* #BA935D exact matte golden-tan from button screenshot */
+    --primary-foreground: 19 8% 6%;
+    --muted: 36 33% 90%;
+    --muted-foreground: 22 10% 45%;
+    --border: 36 25% 85%;
+    --accent: 26 56% 62%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 5rem;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-feature-settings: 'rlig' 1, 'calt' 1;
+  }
+
+  ::selection {
+    background: rgba(186, 147, 93, 0.3);
+  }
+}
+
+@layer components {
+  .container-page {
+    @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
+  }
+
+  /* Exact EXPLORE MENU button styling from reference image */
+  .btn-primary {
+    @apply inline-flex h-12 items-center justify-center rounded-full bg-[#BA935D] px-8 text-[13px] font-bold uppercase tracking-[0.12em] text-[#110E0D] transition-all duration-300 hover:bg-[#A8824C] hover:scale-105 shadow-sm;
+  }
+
+  /* Exact LEARN MORE button styling from reference image */
+  .btn-secondary {
+    @apply inline-flex h-12 items-center justify-center rounded-full border border-white/30 bg-transparent px-8 text-[13px] font-bold uppercase tracking-[0.12em] text-white transition-all duration-300 hover:border-white hover:bg-white/10;
+  }
+
+  .btn-outline-dark {
+    @apply inline-flex h-12 items-center justify-center rounded-full border border-foreground/30 bg-transparent px-8 text-[13px] font-bold uppercase tracking-[0.12em] text-foreground transition-all duration-300 hover:border-[#BA935D] hover:bg-[#BA935D]/10 hover:text-[#BA935D];
+  }
+
+  .section-title {
+    @apply font-serif text-3xl font-bold tracking-tight text-foreground sm:text-4xl md:text-5xl lg:text-6xl;
+  }
+
+  .section-subtitle {
+    @apply mx-auto mt-4 max-w-2xl text-base text-muted-foreground sm:text-lg;
+  }
+}
+
+@layer utilities {
+  .text-gold {
+    color: #BA935D;
+  }
+
+  .bg-dark-hero {
+    background-color: #12100E;
+  }
+
+  /* Dotted leader lines for the bistro menu layout */
+  .menu-dots {
+    flex-grow: 1;
+    border-bottom: 2px dotted #DECBB1;
+    margin: 0 12px;
+    position: relative;
+    top: -6px;
+  }
+
+  /* Postcard tape decoration */
+  .mask-tape {
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90px;
+    height: 24px;
+    background-color: rgba(222, 203, 177, 0.7);
+    backdrop-filter: blur(4px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.06);
+    border-radius: 2px;
+    transform: translateX(-50%) rotate(-1deg);
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #FAF6F0;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #DECBB1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #BA935D;
+}
