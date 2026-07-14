@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Coffee, Lock, Mail, KeyRound, ArrowRight, ShieldCheck, AlertCircle } from 'lucide-react';
+import { useAuthStore } from '@/store/auth-store';
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -36,6 +37,7 @@ export default function AdminLoginPage() {
         // Valid PINs: 8888 (Super Admin), 1234 (Manager), 0000 (Barista KDS)
         if (valueToVerify === '8888' || valueToVerify === '1234' || valueToVerify === '0000') {
           const role = valueToVerify === '8888' ? 'Super Admin' : valueToVerify === '1234' ? 'Store Manager' : 'Barista Lead';
+          const roleCode = valueToVerify === '8888' ? 'super_admin' : valueToVerify === '1234' ? 'store_manager' : 'barista';
           const session = {
             name: valueToVerify === '8888' ? 'Gilang P. (Owner)' : valueToVerify === '1234' ? 'Nadia (Manager)' : 'Budi (Barista Lead)',
             role,
@@ -43,6 +45,15 @@ export default function AdminLoginPage() {
             loggedAt: Date.now(),
           };
           localStorage.setItem('velvra_admin_session', JSON.stringify(session));
+          localStorage.setItem('velvra_access_token', 'demo-token-' + roleCode + '-' + Date.now());
+          useAuthStore.getState().setUser({
+            id: valueToVerify === '8888' ? 1 : valueToVerify === '1234' ? 2 : 3,
+            name: session.name,
+            email: valueToVerify === '8888' ? 'gilang@velvracoffee.com' : 'staff@velvracoffee.com',
+            role: roleCode,
+            permissions: ['all'],
+          });
+          useAuthStore.getState().setToken('demo-token-' + roleCode + '-' + Date.now());
           router.push('/admin/pos');
         } else {
           setError('PIN tidak valid. Gunakan PIN demo: 8888 (Super Admin) atau 1234 (Manager)');
@@ -62,6 +73,15 @@ export default function AdminLoginPage() {
             loggedAt: Date.now(),
           };
           localStorage.setItem('velvra_admin_session', JSON.stringify(session));
+          localStorage.setItem('velvra_access_token', 'demo-token-super_admin-' + Date.now());
+          useAuthStore.getState().setUser({
+            id: 1,
+            name: session.name,
+            email: email,
+            role: 'super_admin',
+            permissions: ['all'],
+          });
+          useAuthStore.getState().setToken('demo-token-super_admin-' + Date.now());
           router.push('/admin/pos');
         } else {
           setError('Kredensial tidak tepat. Gunakan email: admin@velvracoffee.com dan password apa saja minimal 4 karakter');

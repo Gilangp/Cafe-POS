@@ -29,11 +29,27 @@ export function AdminHeader({ onMenuToggle }: AdminHeaderProps) {
   useEffect(() => {
     async function loadBranches() {
       try {
-        const res = await apiClient.get<ApiResponse<BranchInfo[]>>('/branches/public');
-        if (res.data && Array.isArray(res.data.data) && res.data.data.length > 0) {
-          setBranches(res.data.data);
-          if (!currentBranch && res.data.data[0]) {
-            setActiveBranchId(res.data.data[0].id);
+        // First try authenticated branches endpoint for ADM-002
+        const res = await apiClient.get<any>('/branches');
+        const branchData = Array.isArray(res.data?.data) ? res.data.data : Array.isArray(res.data) ? res.data : null;
+        if (branchData && branchData.length > 0) {
+          setBranches(branchData);
+          if (!currentBranch && branchData[0]) {
+            setActiveBranchId(branchData[0].id);
+          }
+          return;
+        }
+      } catch (e) {
+        // Fallback to public branch endpoint if unauthenticated or endpoint returns error
+      }
+
+      try {
+        const resPublic = await apiClient.get<any>('/branches/public');
+        const branchData = Array.isArray(resPublic.data?.data) ? resPublic.data.data : Array.isArray(resPublic.data) ? resPublic.data : null;
+        if (branchData && branchData.length > 0) {
+          setBranches(branchData);
+          if (!currentBranch && branchData[0]) {
+            setActiveBranchId(branchData[0].id);
           }
         } else if (accessibleBranches.length === 0) {
           setBranches(defaultBranches);

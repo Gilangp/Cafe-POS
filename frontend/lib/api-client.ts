@@ -24,6 +24,22 @@ apiClient.interceptors.request.use((config) => {
     config.headers['X-Branch-Id'] = branchId;
   }
 
+  // Idempotency guarantee for critical mutation endpoints (Phase F0 / Section 26.4.2)
+  if (
+    config.method &&
+    ['post', 'put', 'patch'].includes(config.method.toLowerCase()) &&
+    config.url &&
+    (config.url.includes('/orders') || config.url.includes('/pos/orders') || config.url.includes('/reservations'))
+  ) {
+    if (!config.headers['Idempotency-Key'] && !config.headers['idempotency-key']) {
+      const idempotencyKey =
+        typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
+          ? crypto.randomUUID()
+          : 'idemp-' + Math.random().toString(36).substring(2, 15) + '-' + Date.now();
+      config.headers['Idempotency-Key'] = idempotencyKey;
+    }
+  }
+
   return config;
 });
 
@@ -64,7 +80,11 @@ apiClient.interceptors.response.use(
         }
       } catch (refreshError) {
         window.localStorage.removeItem('velvra_access_token');
-        if (window.location.pathname !== '/login') {
+        window.localStorage.removeItem('velvra_admin_session');
+        window.localStorage.removeItem('velvra-auth-storage');
+        if (window.location.pathname.startsWith('/admin') && window.location.pathname !== '/admin/login') {
+          window.location.href = '/admin/login';
+        } else if (!window.location.pathname.startsWith('/admin') && window.location.pathname !== '/login') {
           window.location.href = '/login';
         }
       }
