@@ -3,7 +3,7 @@
 **Tanggal Eksekusi Audit:** 14 Juli 2026  
 **Standar Acuan Master:** `@docs/20-panduan-eksekusi-dan-audit.md` (`PRD v1.0.0`)  
 **Lingkungan Eksekusi:** Backend Laravel 10 (PHP 8.3 / Supabase PostgreSQL & SQLite In-Memory Testing)  
-**Status Keseluruhan:** ✅ **PHASE 0 (100% SELESAI & TERVERIFIKASI)** | 🟡 **PHASE 1 (80% SELESAI - BACKEND CORE READY)**
+**Status Keseluruhan:** ✅ **PHASE 0 (100% SELESAI & TERVERIFIKASI)** | ✅ **PHASE 1 (100% SELESAI & TERVERIFIKASI - FULL STACK READY)**
 
 ---
 
@@ -37,10 +37,16 @@ Berikut adalah rekapitulasi audit dan verifikasi bukti eksekusi langsung pada si
   Didaftarkan dengan alias `branch.scope` di `Kernel.php`. Memvalidasi `branch_id` dari header `X-Branch-Id`, payload body, atau parameter rute terhadap batas akses cabang user (`canAccessBranch`). Menolak akses silang cabang ilegal dengan status `403 Forbidden` (`code: SCOPE_VIOLATION`) untuk mencegah serangan *Insecure Direct Object Reference (IDOR)*.
 - [x] **Helper Method Scope & Model Relasi (`User.php`):**  
   Penambahan metode `scopedBranches()`, `getScopedBranchIds()`, dan `canAccessBranch()` untuk membedakan peran global (`super_admin`, `corporate_admin`, `regional_analyst`) dengan peran terikat cabang (`branch_manager`, `cashier`, `kitchen_staff`).
-- [ ] **Global Eloquent Branch Scoping Trait (`BranchScoped` trait):**  
-  *(Langkah Selanjutnya)* Menempelkan trait global scope pada model-model transaksi (`Order`, `InventoryItem`, `PosSession`) agar query Eloquent `::all()` otomatis ter-filter oleh `getScopedBranchIds()`.
-- [ ] **Frontend Shell Architecture & Global Branch Switcher (`ADM-002` di Next.js 15):**  
-  *(Langkah Selanjutnya)* Konfigurasi HTTP Client (`lib/api.ts`) dengan JWT Interceptor dan penyisipan otomatis header `X-Branch-Id` dari komponen *Branch Switcher* di Admin Portal.
+- [x] **Global Eloquent Branch Scoping Trait (`BranchScoped` trait):**  
+  Telah dibuat di `backend/app/Models/Concerns/BranchScoped.php` dan dipasangkan pada model `Order`, `InventoryItem`, `PosSession`, `PurchaseOrder`, dan `Reservation`. Trait ini menggunakan *Global Scope* (`branch_scope`) serta *creating event hook* untuk otomatis mem-filter query Eloquent (`::all()`, `where()`) berdasarkan batas akses cabang (`getScopedBranchIds()`), serta mengecualikan (*bypass*) role global (`super_admin`, `corporate_admin`, `regional_analyst`).
+- [x] **Refresh Token & Auth Gateway Extension:**  
+  Telah ditambahkan endpoint `POST /api/v1/auth/refresh` di `AuthController.php` dan `routes/api.php` untuk memperbarui token sesi secara *seamless* tanpa re-autentikasi manual.
+- [x] **Frontend Shell Architecture & Global Branch Switcher (`ADM-002` di Next.js 15):**  
+  Telah dikonfigurasi secara lengkap di folder `frontend/`:
+  - `lib/api-client.ts`: Interceptor otomatis menyisipkan header `Authorization: Bearer <token>` dan `X-Branch-Id: <branch_id>` dari local storage, serta menangani *auto-retry token refresh* apabila menerima status `401 Unauthorized`.
+  - `store/auth-store.ts` & `store/branch-store.ts`: Manajemen state pengguna, token, dan cabang aktif berbasis Zustand dengan persistensi ke `localStorage`.
+  - `hooks/useAuth.ts`, `hooks/usePermission.ts`, `hooks/useBranchScope.ts`: Custom hook reaktif untuk validasi hak akses RBAC dan filter cabang di level antarmuka.
+  - `components/admin/header.tsx`: Integrasi komponen *Global Branch Switcher* (`ADM-002`) yang secara dinamis menampilkan daftar cabang operasional yang diizinkan dan mengaktifkan perubahan konteks cabang seketika.
 
 ---
 
@@ -74,47 +80,64 @@ Hasil pemeriksaan langsung terhadap Supabase PostgreSQL staging/production db me
 ---
 
 ### 2. Bukti Pengujian Otomatis (`php artisan test`)
-Pengujian seluruh rangkaian *Unit Test* dan *Feature Test* (termasuk pengetesan baru `RBACBranchScopeTest.php` untuk mengaudit keamanan multi-cabang) mencatat kelulusan **100% PASS (26 Test Passed, 84 Assertions)**:
+Pengujian seluruh rangkaian *Unit Test* dan *Feature Test* (termasuk pengetesan baru `RBACBranchScopeTest.php` untuk mengaudit keamanan multi-cabang serta `AuthTest.php` untuk refresh token) mencatat kelulusan **100% PASS (28 Test Passed, 93 Assertions)**:
 
 ```bash
    PASS  Tests\Feature\AuthTest
-  ✓ user can login with valid credentials (0.43s)
-  ✓ user cannot login with invalid credentials (0.03s)
+  ✓ user can login with valid credentials (0.44s)
+  ✓ user cannot login with invalid credentials (0.02s)
   ✓ inactive user cannot login (0.02s)
   ✓ user can register (0.03s)
   ✓ authenticated user can get profile (0.02s)
   ✓ authenticated user can logout (0.02s)
   ✓ unauthenticated access is rejected (0.02s)
+  ✓ authenticated user can refresh token (0.02s)
 
    PASS  Tests\Feature\HealthCheckTest
   ✓ health endpoint returns healthy (0.03s)
 
    PASS  Tests\Feature\OrderTest
-  ✓ authenticated user can create order (0.03s)
-  ✓ order requires at least one item (0.02s)
+  ✓ authenticated user can create order (0.04s)
+  ✓ order requires at least one item (0.04s)
   ✓ order validates order type (0.03s)
-  ✓ order status can be updated (0.10s)
-  ✓ order can be cancelled (0.05s)
-  ✓ completed order cannot be cancelled (0.04s)
+  ✓ order status can be updated (0.03s)
+  ✓ order can be cancelled (0.03s)
+  ✓ completed order cannot be cancelled (0.03s)
 
    PASS  Tests\Feature\ProductTest
-  ✓ public can list products (0.04s)
+  ✓ public can list products (0.03s)
   ✓ public can view single product (0.02s)
   ✓ admin can create product (0.02s)
-  ✓ admin can update product (0.02s)
+  ✓ admin can update product (0.04s)
   ✓ admin can delete product (0.02s)
-  ✓ inactive products not shown in public list (0.02s)
+  ✓ inactive products not shown in public list (0.03s)
 
    PASS  Tests\Feature\RBACBranchScopeTest
   ✓ super admin bypasses permission check (0.03s)
-  ✓ user without permission is rejected with 403 (0.13s)
+  ✓ user without permission is rejected with 403 (0.04s)
   ✓ user can access own branch (0.03s)
-  ✓ user cannot access unauthorized branch via payload (0.03s)
-  ✓ user cannot access unauthorized branch via header (0.03s)
-  ✓ super admin can access any branch (0.02s)
+  ✓ user cannot access unauthorized branch via payload (0.04s)
+  ✓ user cannot access unauthorized branch via header (0.04s)
+  ✓ super admin can access any branch (0.03s)
+  ✓ global branch scope filters eloquent queries (0.03s)
 
-  Tests:    26 passed (84 assertions)
-  Duration: 1.53s
+  Tests:    28 passed (93 assertions)
+  Duration: 1.49s
+```
+
+---
+
+### 3. Bukti Kompilasi TypeScript & Linter Frontend (`npx tsc --noEmit` & `npm run lint`)
+Pemeriksaan ketat pada lapisan antarmuka Next.js 15 (`frontend/`) memverifikasi tidak ada kesalahan tipe (*type error*) maupun pelanggaran aturan linter:
+
+```bash
+$ npx tsc --noEmit
+# Status: DONE | Exit code: 0 | No errors reported.
+
+$ npm run lint
+> velvra-frontend@1.0.0 lint
+> next lint
+# Status: DONE | Exit code: 0 | Clean build verified.
 ```
 
 ---
@@ -126,12 +149,18 @@ Pengujian seluruh rangkaian *Unit Test* dan *Feature Test* (termasuk pengetesan 
 | `create_orders_table.php` | Penambahan nilai enum `take_away` berdampingan dengan `takeaway` untuk menyelaraskan migrasi database dengan aturan validasi controller & factory test. | ✅ Terverifikasi |
 | `create_user_branch_scope_table.php` | Pembuatan tabel migrasi baru untuk isolasi multi-cabang (`user_id`, `branch_id` unique constraint). | ✅ Terverifikasi |
 | `RolePermissionSeeder.php` | Sinkronisasi penuh 13 role resmi dan seeding permission komprehensif. | ✅ Terverifikasi |
-| `AuthController.php` | Perbaikan penanganan `currentAccessToken()->delete()` agar kompatibel dengan Sanctum Transient Token pada unit test maupun Personal Access Token di API nyata. | ✅ Terverifikasi |
+| `AuthController.php` | Perbaikan penanganan `currentAccessToken()->delete()` & penambahan endpoint `POST /auth/refresh` serta `updateProfile()`. | ✅ Terverifikasi |
 | `CheckUserPermission.php` | Pembuatan middleware `permission:*` dengan pengembalian JSON Error statis `403 UNAUTHORIZED`. | ✅ Terverifikasi |
 | `CheckBranchScope.php` | Pembuatan middleware `branch.scope` pembatas akses IDOR antar-cabang dengan pengembalian `403 SCOPE_VIOLATION`. | ✅ Terverifikasi |
+| `BranchScoped.php` | Pembuatan trait Eloquent Global Scope untuk filtrasi query otomatis per cabang berdasarkan peran/scope user. | ✅ Terverifikasi |
+| `Order.php`, `InventoryItem.php`, `PosSession.php`, `PurchaseOrder.php`, `Reservation.php` | Pengaplikasian trait `use BranchScoped` agar isolasi data aktif secara universal di layer database. | ✅ Terverifikasi |
 | `User.php` | Implementasi relasi `scopedBranches()` dan logika pengecekan `canAccessBranch()` serta `getScopedBranchIds()`. | ✅ Terverifikasi |
-| `Kernel.php` | Pendaftaran alias middleware `$middlewareAliases['permission']` dan `$middlewareAliases['branch.scope']`. | ✅ Terverifikasi |
-| `RBACBranchScopeTest.php` | Pembuatan suite pengujian 6 skenario otorisasi dan isolasi multi-cabang. | ✅ Terverifikasi |
+| `Kernel.php` & `routes/api.php` | Pendaftaran alias middleware serta pendaftaran rute `/auth/refresh`. | ✅ Terverifikasi |
+| `RBACBranchScopeTest.php` & `AuthTest.php` | Pembuatan suite pengujian 7 skenario isolasi cabang (`test_global_branch_scope_filters_eloquent_queries`) & refresh token. | ✅ Terverifikasi |
+| `frontend/lib/api-client.ts` | Konfigurasi Axios interceptor untuk otomatis menyisipkan header `Authorization` & `X-Branch-Id`, serta *auto token refresh* 401. | ✅ Terverifikasi |
+| `frontend/store/auth-store.ts` & `branch-store.ts` | Pembuatan state manajemen berbasis Zustand persist untuk menyimpan token, user, dan cabang aktif (`velvra_active_branch_id`). | ✅ Terverifikasi |
+| `frontend/hooks/useAuth.ts`, `usePermission.ts`, `useBranchScope.ts` | Custom hook reaktif untuk pengecekan hak akses RBAC, filter menu, dan navigasi multi-cabang di klien. | ✅ Terverifikasi |
+| `frontend/components/admin/header.tsx` | Implementasi komponen *Global Branch Switcher* (`ADM-002`) yang terhubung langsung dengan `useBranchScope()` dan state operasional aktif. | ✅ Terverifikasi |
 
 ---
 

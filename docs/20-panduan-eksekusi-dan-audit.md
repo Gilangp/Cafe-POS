@@ -310,9 +310,9 @@ Untuk memulai eksekusi proyek hari ini juga, ikuti urutan tindakan konkret berik
    ```powershell
    php artisan test
    ```
-   *(Status: ✅ 100% Lulus / 26 test passed, 84 assertions)*
+   *(Status: ✅ 100% Lulus / 28 test passed, 93 assertions)*
 - [x] **4. Mulai pembuatan middleware otorisasi awal** (`CheckUserPermission` dan `CheckBranchScope`) pada folder `backend/app/Http/Middleware/` sebagai tiket pertama Sprint 1!
-   *(Status: ✅ Middleware `permission` & `branch.scope` telah dibangun, terdaftar di `Kernel.php`, dan diverifikasi oleh `RBACBranchScopeTest.php`)*
+   *(Status: ✅ Middleware `permission` & `branch.scope`, trait `BranchScoped`, endpoint refresh token, serta Frontend Global Branch Switcher `ADM-002` telah dibangun 100% dan diverifikasi)*
 
 > [!NOTE]
 > **Bukti Laporan Verifikasi Lengkap:** Untuk melihat log terminal rinci, matriks pemetaan file, dan daftar periksa lengkap Phase 0 & Phase 1, silakan buka dokumen **[21-bukti-eksekusi-dan-audit-fase-0-1.md](./21-bukti-eksekusi-dan-audit-fase-0-1.md)**.
