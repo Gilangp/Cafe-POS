@@ -39,7 +39,7 @@ export default function AdminDashboardPage() {
       {/* Page Header */}
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="font-serif text-3xl font-bold text-gray-800">{greeting}, Admin 👋</h1>
+          <h1 className="font-serif text-3xl font-bold text-gray-800">{greeting}, Admin</h1>
           <p className="mt-1 text-sm text-gray-500">
             {now.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
             &nbsp;·&nbsp; Sudirman Flagship

@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useParams } from 'next/navigation';
-import { Coffee, Bell, ShoppingBag, Plus, Minus, Check, Sparkles, AlertCircle, X, ShieldCheck, ArrowRight } from 'lucide-react';
+import { Coffee, Bell, ShoppingBag, Plus, Minus, Check, Sparkles, AlertCircle, X, ShieldCheck, ArrowRight, Zap } from 'lucide-react';
 
 interface Product {
   id: number;
@@ -240,8 +240,9 @@ export default function QrTableOrderingPage() {
                 <p className="text-xs text-gray-500 max-w-xs mx-auto">
                   Barista kami sedang meracik pesanan Anda. Silakan duduk santai di {displayTable}.
                 </p>
-                <div className="text-[11px] text-green-700 bg-green-50 border border-green-200 rounded-xl p-2.5 font-semibold max-w-xs mx-auto">
-                  ⚡ Tiket sudah terkirim secara Live ke layar KDS Dapur Utama!
+                <div className="text-[11px] text-green-700 bg-green-50 border border-green-200 rounded-xl p-2.5 font-semibold max-w-xs mx-auto flex items-center justify-center gap-1.5">
+                  <Zap size={14} className="shrink-0 text-amber-500" />
+                  <span>Tiket sudah terkirim secara Live ke layar KDS Dapur Utama!</span>
                 </div>
                 <button
                   onClick={() => { setOrderSubmitted(false); setCart([]); setCartOpen(false); }}

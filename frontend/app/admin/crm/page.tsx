@@ -274,8 +274,9 @@ export default function CrmPage() {
                 />
               </div>
 
-              <div className="rounded-xl bg-[#FAF6F0] p-3 text-xs text-gray-600 border border-[#E5D7C3]">
-                🎉 Member baru akan otomatis mendapatkan <strong>+100 Poin Welcome Bonus</strong> dan terdaftar di tier <strong>Bronze</strong>.
+              <div className="rounded-xl bg-[#FAF6F0] p-3 text-xs text-gray-600 border border-[#E5D7C3] flex items-center gap-2">
+                <Gift size={16} className="text-[#BA935D] shrink-0" />
+                <span>Member baru akan otomatis mendapatkan <strong>+100 Poin Welcome Bonus</strong> dan terdaftar di tier <strong>Bronze</strong>.</span>
               </div>
 
               <div className="flex items-center justify-end gap-3 pt-3 border-t border-gray-100">

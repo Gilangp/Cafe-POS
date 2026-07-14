@@ -104,7 +104,7 @@ export default function SettingsPage() {
       setSeedResult('✓ Berhasil! Data contoh menu & pesanan live telah disinkronkan ke Supabase Cloud.');
     } catch (err: any) {
       console.error(err);
-      setSeedResult('⚠ Sinkronisasi selesai/lokal mode aktif. Periksa RLS policy tabel di Supabase bila ada duplikasi ID.');
+      setSeedResult('[Info] Sinkronisasi selesai/lokal mode aktif. Periksa RLS policy tabel di Supabase bila ada duplikasi ID.');
     } finally {
       setSeeding(false);
     }
@@ -201,7 +201,7 @@ export default function SettingsPage() {
                     className="w-full flex items-center justify-center gap-2 rounded-xl bg-[#12100E] py-3 text-xs font-bold text-[#BA935D] hover:bg-[#201d19] active:scale-95 transition-all shadow"
                   >
                     {seeding ? <RefreshCw size={14} className="animate-spin" /> : <Sparkles size={14} />}
-                    <span>{seeding ? 'Menyinkronkan ke Cloud...' : '⚡ Sync & Seed Data Sekarang'}</span>
+                    <span>{seeding ? 'Menyinkronkan ke Cloud...' : 'Sync & Seed Data Sekarang'}</span>
                   </button>
                 </div>
 

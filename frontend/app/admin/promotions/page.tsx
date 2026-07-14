@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Plus, Tag, Calendar, Percent, ToggleLeft, ToggleRight } from 'lucide-react';
+import { Plus, Tag, Calendar, Percent, ToggleLeft, ToggleRight, Gift, Smartphone } from 'lucide-react';
 
 const promotions = [
   { id: 1, name: 'Happy Hour Sore', code: 'HAPPY17', type: 'percent', value: 20, minOrder: 30000, channel: 'Semua', startDate: '2026-07-01', endDate: '2026-07-31', usageCount: 148, maxUsage: 500, active: true, description: 'Diskon 20% untuk semua minuman jam 17.00 - 19.00' },
@@ -51,12 +51,12 @@ export default function PromotionsPage() {
                   </span>
                 )}
                 {promo.type === 'bogo' && (
-                  <span className="flex items-center gap-1 rounded-full bg-blue-50 border border-blue-200 px-3 py-1 text-xs font-bold text-blue-700">
-                    🎁 Buy 2 Get 1
+                  <span className="flex items-center gap-1.5 rounded-full bg-blue-50 border border-blue-200 px-3 py-1 text-xs font-bold text-blue-700">
+                    <Gift size={12} /> Buy 2 Get 1
                   </span>
                 )}
-                <span className="flex items-center gap-1 rounded-full bg-gray-50 border border-gray-200 px-3 py-1 text-xs font-semibold text-gray-600">
-                  📱 {promo.channel}
+                <span className="flex items-center gap-1.5 rounded-full bg-gray-50 border border-gray-200 px-3 py-1 text-xs font-semibold text-gray-600">
+                  <Smartphone size={12} /> {promo.channel}
                 </span>
               </div>
 

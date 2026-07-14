@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useProducts, CatalogProduct } from '@/hooks/useProducts';
 import { useRealtimeOrders } from '@/hooks/useRealtimeOrders';
 import { CustomerLayout } from '@/components/customer/customer-layout';
-import { ShoppingBag, Plus, Minus, Trash2, X, Check, MapPin, Search, ChevronDown, Sparkles, Tag, ArrowRight, Coffee } from 'lucide-react';
+import { ShoppingBag, Plus, Minus, Trash2, X, Check, MapPin, Search, ChevronDown, Sparkles, Tag, ArrowRight, Coffee, Zap } from 'lucide-react';
 
 interface CartItem {
   id: string;
@@ -304,7 +304,9 @@ export default function OnlineOrderPage() {
             {/* Modal Header */}
             <div className="flex items-center justify-between border-b border-gray-100 px-6 py-4 bg-[#FAF6F0]">
               <div className="flex items-center gap-3">
-                <span className="text-3xl">☕</span>
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#BA935D]/15 text-[#BA935D]">
+                  <Coffee size={22} />
+                </div>
                 <div>
                   <h3 className="font-serif text-lg font-bold text-gray-800">{selectedProduct.name}</h3>
                   <p className="text-xs font-bold text-[#BA935D]">{fmt(selectedProduct.price)}</p>
@@ -465,8 +467,9 @@ export default function OnlineOrderPage() {
                       <span className="capitalize font-semibold text-gray-700">{orderType === 'pickup' ? 'Ambil Sendiri (Pickup)' : orderType === 'dinein' ? 'Dine-In' : 'Delivery'}</span>
                     </div>
                   </div>
-                  <div className="text-[11px] text-green-700 bg-green-50 border border-green-200 rounded-xl p-2.5 font-semibold">
-                    ⚡ Tiket sudah terkirim secara Live ke layar KDS Dapur Utama!
+                  <div className="text-[11px] text-green-700 bg-green-50 border border-green-200 rounded-xl p-2.5 font-semibold flex items-center gap-1.5">
+                    <Zap size={14} className="shrink-0 text-amber-500" />
+                    <span>Tiket sudah terkirim secara Live ke layar KDS Dapur Utama!</span>
                   </div>
                 </div>
               ) : checkoutStep === 'confirm' ? (

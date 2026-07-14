@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { CustomerLayout } from '@/components/customer/customer-layout';
-import { Calendar, Clock, Users, MapPin, Check, Sparkles, ChevronRight, Phone, Mail, User, ShieldCheck } from 'lucide-react';
+import { Calendar, Clock, Users, MapPin, Check, Sparkles, ChevronRight, Phone, Mail, User, ShieldCheck, Armchair, Trees, Coffee, Crown } from 'lucide-react';
 
 const DATES = [
   { dayName: 'Hari Ini', dateStr: '14 Jul', fullDate: '2026-07-14' },
@@ -21,10 +21,10 @@ const TIME_SLOTS = [
 ];
 
 const SEATING_AREAS = [
-  { id: 'main', label: 'Main Dining Hall', desc: 'Area utama ber-AC dengan pencahayaan hangat & kursi sofa nyaman.', icon: '🛋️' },
-  { id: 'garden', label: 'Outdoor Garden Terrace', desc: 'Area terbuka asri dengan tanaman hijau alami & angin sepoi-sepoi.', icon: '🌿' },
-  { id: 'bar', label: 'Artisan Bar Counter', desc: 'Duduk langsung di depan barista menyaksikan proses brewing & roastery.', icon: '☕' },
-  { id: 'private', label: 'VIP Private Lounge', desc: 'Ruangan kedap suara privat untuk meeting bisnis atau keluarga (Min. 6 tamu).', icon: '👑' },
+  { id: 'main', label: 'Main Dining Hall', desc: 'Area utama ber-AC dengan pencahayaan hangat & kursi sofa nyaman.', Icon: Armchair },
+  { id: 'garden', label: 'Outdoor Garden Terrace', desc: 'Area terbuka asri dengan tanaman hijau alami & angin sepoi-sepoi.', Icon: Trees },
+  { id: 'bar', label: 'Artisan Bar Counter', desc: 'Duduk langsung di depan barista menyaksikan proses brewing & roastery.', Icon: Coffee },
+  { id: 'private', label: 'VIP Private Lounge', desc: 'Ruangan kedap suara privat untuk meeting bisnis atau keluarga (Min. 6 tamu).', Icon: Crown },
 ];
 
 export default function ReservationPage() {
@@ -221,7 +221,9 @@ export default function ReservationPage() {
                           : 'border-gray-100 bg-gray-50 hover:border-gray-300'
                       }`}
                     >
-                      <span className="text-3xl shrink-0">{area.icon}</span>
+                      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#BA935D]/15 text-[#BA935D]">
+                        <area.Icon size={22} />
+                      </div>
                       <div>
                         <p className="font-bold text-gray-800 text-sm">{area.label}</p>
                         <p className="text-xs text-gray-500 mt-0.5 leading-relaxed">{area.desc}</p>
