@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BranchScoped;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class PosSession extends Model
 {
-    use HasFactory;
+    use BranchScoped, HasFactory;
 
     protected $fillable = [
         'branch_id', 'user_id', 'session_number', 'opened_at', 'closed_at',

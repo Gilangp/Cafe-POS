@@ -112,4 +112,18 @@ class AuthTest extends TestCase
 
         $response->assertStatus(401);
     }
+
+    public function test_authenticated_user_can_refresh_token(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)
+            ->postJson('/api/v1/auth/refresh');
+
+        $response->assertStatus(200)
+            ->assertJsonStructure([
+                'user' => ['id', 'name', 'email'],
+                'token',
+            ]);
+    }
 }

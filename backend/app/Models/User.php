@@ -73,12 +73,35 @@ class User extends Authenticatable
             ->exists();
     }
 
+    public function scopedBranches()
+    {
+        return $this->belongsToMany(Branch::class, 'user_branch_scope');
+    }
+
+    public function getScopedBranchIds(): array
+    {
+        if ($this->hasRole('super_admin') || $this->hasRole('corporate_admin') || $this->hasRole('regional_analyst') || $this->hasRole('marketing_manager') || $this->hasRole('crm_officer') || $this->hasRole('hr_manager')) {
+            return Branch::pluck('id')->all();
+        }
+
+        $scopedIds = $this->scopedBranches()->pluck('branches.id')->all();
+        if ($this->branch_id && !in_array($this->branch_id, $scopedIds)) {
+            $scopedIds[] = (int) $this->branch_id;
+        }
+
+        return $scopedIds;
+    }
+
     public function canAccessBranch(?int $branchId): bool
     {
-        if ($this->hasRole('super_admin') || $this->hasRole('corporate_admin')) {
+        if ($branchId === null) {
             return true;
         }
 
-        return $branchId === null || (int) $this->branch_id === (int) $branchId;
+        if ($this->hasRole('super_admin') || $this->hasRole('corporate_admin') || $this->hasRole('regional_analyst') || $this->hasRole('marketing_manager') || $this->hasRole('crm_officer') || $this->hasRole('hr_manager')) {
+            return true;
+        }
+
+        return in_array((int) $branchId, $this->getScopedBranchIds());
     }
 }

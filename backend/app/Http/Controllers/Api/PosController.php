@@ -79,7 +79,7 @@ class PosController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'branch_id' => 'required|exists:branches,id',
-            'order_type' => ['required', Rule::in(['dine_in', 'take_away'])],
+            'order_type' => ['required', Rule::in(['dine_in', 'take_away', 'takeaway'])],
             'payment_method' => ['required', Rule::in(['cash', 'card', 'qris'])],
             'table_number' => 'nullable|string|max:20',
             'customer_name' => 'nullable|string|max:255',

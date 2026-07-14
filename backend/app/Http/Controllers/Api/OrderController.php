@@ -56,7 +56,7 @@ class OrderController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'branch_id' => 'required|exists:branches,id',
-            'order_type' => ['required', Rule::in(['dine_in', 'take_away', 'delivery'])],
+            'order_type' => ['required', Rule::in(['dine_in', 'take_away', 'takeaway', 'delivery'])],
             'payment_method' => ['required', Rule::in(['cash', 'card', 'qris', 'transfer'])],
             'member_id' => 'nullable|exists:members,id',
             'notes' => 'nullable|string|max:500',

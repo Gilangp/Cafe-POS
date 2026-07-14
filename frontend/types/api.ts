@@ -60,6 +60,11 @@ export type User = {
   id: number;
   name: string;
   email: string;
+  role?: string;
+  branch_id?: number | null;
+  branch?: Branch | null;
+  permissions?: string[];
+  scoped_branch_ids?: number[];
 };
 
 export type LoginPayload = {
@@ -68,6 +73,7 @@ export type LoginPayload = {
 };
 
 export type LoginResponse = {
-  access_token: string;
+  access_token?: string;
+  token?: string;
   user: User;
 };

@@ -3,6 +3,11 @@
 import { Menu, Bell, Search, ChevronDown, Building2, LogOut, UserCheck, Shield } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useBranchScope } from '@/hooks/useBranchScope';
+import { useAuth } from '@/hooks/useAuth';
+import { apiClient } from '@/lib/api-client';
+import type { ApiResponse } from '@/types/api';
+import type { BranchInfo } from '@/store/branch-store';
 
 interface AdminHeaderProps {
   onMenuToggle: () => void;
@@ -10,35 +15,56 @@ interface AdminHeaderProps {
 
 export function AdminHeader({ onMenuToggle }: AdminHeaderProps) {
   const router = useRouter();
-  const [branch, setBranch] = useState('Sudirman Flagship');
-  const [sessionName, setSessionName] = useState('Admin Lead');
-  const [sessionRole, setSessionRole] = useState('Super Admin');
+  const { user, logout } = useAuth();
+  const { currentBranch, accessibleBranches, setActiveBranchId, setBranches } = useBranchScope();
   const [showUserMenu, setShowUserMenu] = useState(false);
-  const branches = ['Sudirman Flagship', 'Kemang Artisan Bar', 'Senayan City'];
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  // Fallback branches if API isn't fetched yet
+  const defaultBranches: BranchInfo[] = [
+    { id: 1, name: 'Velvra Central Jakarta (HQ)', code: 'VLV-JKT-01', is_active: true },
+    { id: 2, name: 'Velvra Bandung', code: 'VLV-BDG-01', is_active: true },
+  ];
 
   useEffect(() => {
-    try {
-      const stored = localStorage.getItem('velvra_admin_session');
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        if (parsed.name) setSessionName(parsed.name);
-        if (parsed.role) setSessionRole(parsed.role);
+    async function loadBranches() {
+      try {
+        const res = await apiClient.get<ApiResponse<BranchInfo[]>>('/branches/public');
+        if (res.data && Array.isArray(res.data.data) && res.data.data.length > 0) {
+          setBranches(res.data.data);
+          if (!currentBranch && res.data.data[0]) {
+            setActiveBranchId(res.data.data[0].id);
+          }
+        } else if (accessibleBranches.length === 0) {
+          setBranches(defaultBranches);
+          setActiveBranchId(defaultBranches[0].id);
+        }
+      } catch (e) {
+        if (accessibleBranches.length === 0) {
+          setBranches(defaultBranches);
+          if (!currentBranch) setActiveBranchId(defaultBranches[0].id);
+        }
       }
-    } catch (e) {
-      console.warn('Failed to parse session:', e);
     }
+    loadBranches();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleLogout = () => {
-    localStorage.removeItem('velvra_admin_session');
+  const handleLogout = async () => {
+    await logout();
     router.push('/admin/login');
   };
 
-  const initial = (sessionName[0] || 'A').toUpperCase();
+  const displayName = user?.name || 'Admin Lead';
+  const displayRole = user?.role || 'Super Admin';
+  const initial = (displayName[0] || 'A').toUpperCase();
+  const displayBranchName = currentBranch ? currentBranch.name : 'Pilih Cabang';
+
+  const displayList = accessibleBranches.length > 0 ? accessibleBranches : defaultBranches;
 
   return (
     <header className="flex items-center justify-between gap-4 bg-white border-b border-gray-200 px-6 py-4 shadow-sm shrink-0 relative z-30">
-      {/* Left: Hamburger + Branch Switcher */}
+      {/* Left: Hamburger + Branch Switcher (ADM-002) */}
       <div className="flex items-center gap-4">
         <button
           onClick={onMenuToggle}
@@ -48,26 +74,38 @@ export function AdminHeader({ onMenuToggle }: AdminHeaderProps) {
           <Menu size={20} />
         </button>
 
-        {/* Branch Switcher Dropdown */}
-        <div className="relative group">
-          <button className="flex items-center gap-2 rounded-xl border border-gray-200 bg-[#FAF6F0] px-4 py-2 text-sm font-semibold text-gray-700 hover:border-[#BA935D] hover:text-[#BA935D] transition-all">
+        {/* Global Branch Switcher Dropdown (ADM-002) */}
+        <div className="relative">
+          <button
+            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+            className="flex items-center gap-2 rounded-xl border border-gray-200 bg-[#FAF6F0] px-4 py-2 text-sm font-semibold text-gray-700 hover:border-[#BA935D] hover:text-[#BA935D] transition-all"
+          >
             <Building2 size={15} className="text-[#BA935D]" />
-            <span>{branch}</span>
+            <span>{displayBranchName}</span>
             <ChevronDown size={14} className="text-gray-400" />
           </button>
-          <div className="absolute left-0 top-full mt-2 hidden group-focus-within:block w-52 rounded-xl border border-gray-200 bg-white shadow-lg z-50 py-1 animate-fadeIn">
-            {branches.map((b) => (
-              <button
-                key={b}
-                onClick={() => setBranch(b)}
-                className={`w-full text-left px-4 py-2.5 text-sm transition-colors ${
-                  b === branch ? 'bg-[#BA935D]/10 text-[#BA935D] font-semibold' : 'text-gray-700 hover:bg-gray-50'
-                }`}
-              >
-                {b}
-              </button>
-            ))}
-          </div>
+          {isDropdownOpen && (
+            <div className="absolute left-0 top-full mt-2 w-64 rounded-xl border border-gray-200 bg-white shadow-lg z-50 py-1.5 animate-fadeIn">
+              <div className="px-3 py-1.5 border-b border-gray-100 text-[11px] font-bold text-gray-400 uppercase tracking-wider">
+                Cabang Operasional Aktif
+              </div>
+              {displayList.map((b) => (
+                <button
+                  key={b.id}
+                  onClick={() => {
+                    setActiveBranchId(b.id);
+                    setIsDropdownOpen(false);
+                  }}
+                  className={`w-full text-left px-4 py-2.5 text-sm transition-colors flex items-center justify-between ${
+                    currentBranch?.id === b.id ? 'bg-[#BA935D]/10 text-[#BA935D] font-semibold' : 'text-gray-700 hover:bg-gray-50'
+                  }`}
+                >
+                  <span>{b.name}</span>
+                  {currentBranch?.id === b.id && <span className="text-[10px] bg-[#BA935D] text-white px-1.5 py-0.5 rounded font-bold">AKTIF</span>}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
@@ -101,8 +139,8 @@ export function AdminHeader({ onMenuToggle }: AdminHeaderProps) {
               {initial}
             </div>
             <div className="hidden sm:flex flex-col items-start text-left leading-tight">
-              <span className="text-xs font-bold text-gray-800">{sessionName}</span>
-              <span className="text-[10px] text-[#BA935D] font-semibold uppercase">{sessionRole}</span>
+              <span className="text-xs font-bold text-gray-800">{displayName}</span>
+              <span className="text-[10px] text-[#BA935D] font-semibold uppercase">{displayRole}</span>
             </div>
             <ChevronDown size={13} className="text-gray-400" />
           </button>
@@ -111,9 +149,9 @@ export function AdminHeader({ onMenuToggle }: AdminHeaderProps) {
           {showUserMenu && (
             <div className="absolute right-0 top-full mt-2 w-56 rounded-2xl border border-gray-200 bg-white p-3 shadow-xl z-50 animate-fadeIn">
               <div className="border-b border-gray-100 pb-2 mb-2">
-                <p className="text-xs font-bold text-gray-800">{sessionName}</p>
+                <p className="text-xs font-bold text-gray-800">{displayName}</p>
                 <p className="text-[11px] text-gray-400 flex items-center gap-1 mt-0.5">
-                  <Shield size={12} className="text-[#BA935D]" /> {sessionRole}
+                  <Shield size={12} className="text-[#BA935D]" /> {displayRole}
                 </p>
               </div>
               <button

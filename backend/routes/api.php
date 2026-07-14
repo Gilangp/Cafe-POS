@@ -40,6 +40,7 @@ Route::prefix('v1')->group(function () {
     // ─── Protected Routes ────────────────────────────────────────────
     Route::middleware(['auth:sanctum'])->group(function () {
         Route::post('/auth/logout', [App\Http\Controllers\Api\AuthController::class, 'logout']);
+        Route::post('/auth/refresh', [App\Http\Controllers\Api\AuthController::class, 'refresh']);
         Route::get('/auth/me', [App\Http\Controllers\Api\AuthController::class, 'me']);
         Route::patch('/auth/me', [App\Http\Controllers\Api\AuthController::class, 'updateProfile']);
 

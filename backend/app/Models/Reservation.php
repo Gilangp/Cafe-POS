@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BranchScoped;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Reservation extends Model
 {
-    use HasFactory, SoftDeletes;
+    use BranchScoped, HasFactory, SoftDeletes;
 
     protected $fillable = [
         'branch_id', 'member_id', 'reservation_code', 'customer_name', 'customer_phone',

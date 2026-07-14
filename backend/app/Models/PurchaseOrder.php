@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BranchScoped;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class PurchaseOrder extends Model
 {
-    use HasFactory, SoftDeletes;
+    use BranchScoped, HasFactory, SoftDeletes;
 
     protected $fillable = [
         'branch_id', 'supplier_id', 'po_number', 'order_date', 'expected_delivery_date',

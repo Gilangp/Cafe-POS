@@ -67,7 +67,12 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
-        $request->user()->currentAccessToken()->delete();
+        $token = $request->user()->currentAccessToken();
+        if ($token && method_exists($token, 'delete')) {
+            $token->delete();
+        } elseif (method_exists($request->user(), 'tokens')) {
+            $request->user()->tokens()->delete();
+        }
 
         return response()->json([
             'message' => 'Logged out successfully',
@@ -78,6 +83,55 @@ class AuthController extends Controller
     {
         return response()->json([
             'user' => $request->user()->load('branch'),
+        ]);
+    }
+
+    public function refresh(Request $request)
+    {
+        $user = $request->user();
+        $token = $user->currentAccessToken();
+        if ($token && method_exists($token, 'delete')) {
+            $token->delete();
+        }
+
+        if (!$user->is_active) {
+            return response()->json([
+                'message' => 'Your account has been deactivated.',
+            ], 403);
+        }
+
+        $newToken = $user->createToken('api-token')->plainTextToken;
+
+        return response()->json([
+            'user' => $user->load('branch'),
+            'token' => $newToken,
+        ]);
+    }
+
+    public function updateProfile(Request $request)
+    {
+        $user = $request->user();
+        $validated = $request->validate([
+            'name' => 'sometimes|required|string|max:255',
+            'phone' => 'nullable|string|max:20',
+            'password' => 'nullable|string|min:8|confirmed',
+        ]);
+
+        if (isset($validated['name'])) {
+            $user->name = $validated['name'];
+        }
+        if (array_key_exists('phone', $validated)) {
+            $user->phone = $validated['phone'];
+        }
+        if (!empty($validated['password'])) {
+            $user->password = Hash::make($validated['password']);
+        }
+
+        $user->save();
+
+        return response()->json([
+            'message' => 'Profile updated successfully',
+            'user' => $user->load('branch'),
         ]);
     }
 

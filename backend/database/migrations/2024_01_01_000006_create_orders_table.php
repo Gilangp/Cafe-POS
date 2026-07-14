@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('customer_name');
             $table->string('customer_email')->nullable();
             $table->string('customer_phone')->nullable();
-            $table->enum('order_type', ['dine_in', 'takeaway', 'delivery', 'online'])->default('dine_in');
+            $table->enum('order_type', ['dine_in', 'takeaway', 'take_away', 'delivery', 'online'])->default('dine_in');
             $table->enum('status', ['pending', 'confirmed', 'preparing', 'ready', 'completed', 'cancelled'])->default('pending');
             $table->enum('payment_status', ['pending', 'paid', 'failed', 'refunded'])->default('pending');
             $table->string('payment_method')->nullable();

@@ -295,23 +295,31 @@ Untuk pemantauan sistem di staging dan produksi secara langsung:
 
 Untuk memulai eksekusi proyek hari ini juga, ikuti urutan tindakan konkret berikut pada terminal repositori:
 
-1. **Buka direktori migrasi backend dan periksa kelengkapannya:**
+- [x] **1. Buka direktori migrasi backend dan periksa kelengkapannya:**
    ```powershell
    cd c:\laragon\www\coffee_shop\backend
    php artisan migrate:status
    ```
-2. **Perbarui file seeder `RolePermissionSeeder.php`** dengan 13 role resmi dan jalankan migrasi segar:
+   *(Status: ✅ 17 tabel migrasi telah diverifikasi dan dijalankan)*
+- [x] **2. Perbarui file seeder `RolePermissionSeeder.php`** dengan 13 role resmi dan jalankan migrasi segar:
    ```powershell
    php artisan migrate:fresh --seed
    ```
-3. **Jalankan test suite awal backend** untuk memverifikasi bahwa pondasi dasar Laravel bekerja normal:
+   *(Status: ✅ 13 System Roles dan matriks permission untuk 18 domain API telah tersinkronisasi)*
+- [x] **3. Jalankan test suite awal backend** untuk memverifikasi bahwa pondasi dasar Laravel bekerja normal:
    ```powershell
    php artisan test
    ```
-4. **Mulai pembuatan middleware otorisasi awal** (`CheckUserPermission` dan `CheckBranchScope`) pada folder `backend/app/Http/Middleware/` sebagai tiket pertama Sprint 1!
+   *(Status: ✅ 100% Lulus / 26 test passed, 84 assertions)*
+- [x] **4. Mulai pembuatan middleware otorisasi awal** (`CheckUserPermission` dan `CheckBranchScope`) pada folder `backend/app/Http/Middleware/` sebagai tiket pertama Sprint 1!
+   *(Status: ✅ Middleware `permission` & `branch.scope` telah dibangun, terdaftar di `Kernel.php`, dan diverifikasi oleh `RBACBranchScopeTest.php`)*
+
+> [!NOTE]
+> **Bukti Laporan Verifikasi Lengkap:** Untuk melihat log terminal rinci, matriks pemetaan file, dan daftar periksa lengkap Phase 0 & Phase 1, silakan buka dokumen **[21-bukti-eksekusi-dan-audit-fase-0-1.md](./21-bukti-eksekusi-dan-audit-fase-0-1.md)**.
 
 ---
 
-**Document Status:** ✅ Master Plan Approved & Ready for Sprint 0/1 Execution  
+**Document Status:** ✅ Master Plan Approved & Phase 0/1 Execution Verified  
 **Previous Document:** [19-responsive-design.md](./19-responsive-design.md)  
+**Next / Audit Report:** [21-bukti-eksekusi-dan-audit-fase-0-1.md](./21-bukti-eksekusi-dan-audit-fase-0-1.md)  
 **Related Documents:** [prd.md](./prd.md), [02-arsitektur-sistem.md](./02-arsitektur-sistem.md), [04-database-design.md](./04-database-design.md), [07-roles-dan-permissions.md](./07-roles-dan-permissions.md), [08-modul-fungsional.md](./08-modul-fungsional.md).
