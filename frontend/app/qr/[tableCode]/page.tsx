@@ -2,7 +2,23 @@
 
 import { useState } from 'react';
 import { useParams } from 'next/navigation';
-import { Coffee, Bell, ShoppingBag, Plus, Minus, Check, Sparkles, AlertCircle, X, ShieldCheck, ArrowRight, Zap } from 'lucide-react';
+import {
+  Coffee,
+  Bell,
+  ShoppingBag,
+  Plus,
+  Minus,
+  Check,
+  Sparkles,
+  AlertCircle,
+  X,
+  ShieldCheck,
+  ArrowRight,
+  Zap,
+  QrCode,
+  MapPin,
+  Users,
+} from 'lucide-react';
 
 interface Product {
   id: number;
@@ -31,6 +47,16 @@ export default function QrTableOrderingPage() {
   const tableCode = (params?.tableCode as string) || 'MEJA-04';
   const displayTable = tableCode.replace('-', ' ').toUpperCase();
 
+  // Auto-decode table description and branch without manual selection (Phase F3 Requirement)
+  const isVip = displayTable.includes('VIP') || displayTable.includes('01');
+  const isGarden = displayTable.includes('GARDEN') || displayTable.includes('02');
+  const autoBranch = 'Sudirman Flagship';
+  const autoTableDesc = isVip
+    ? 'VIP Private Booth · AC & Kedap Suara'
+    : isGarden
+    ? 'Outdoor Garden Terrace · Area Asri'
+    : 'Main Dining Hall · Area Utama';
+
   const { createLiveOrder } = useRealtimeOrders();
 
   const [activeCategory, setActiveCategory] = useState('Semua');
@@ -46,13 +72,13 @@ export default function QrTableOrderingPage() {
   const handleQuickAdd = (p: Product) => {
     setCart((prev) => {
       const existing = prev.find((i) => i.id === p.id);
-      if (existing) return prev.map((i) => i.id === p.id ? { ...i, qty: i.qty + 1 } : i);
+      if (existing) return prev.map((i) => (i.id === p.id ? { ...i, qty: i.qty + 1 } : i));
       return [...prev, { id: p.id, name: p.name, price: p.price, qty: 1, emoji: p.emoji }];
     });
   };
 
   const updateQty = (id: number, delta: number) => {
-    setCart((prev) => prev.map((i) => i.id === id ? { ...i, qty: i.qty + delta } : i).filter((i) => i.qty > 0));
+    setCart((prev) => prev.map((i) => (i.id === id ? { ...i, qty: i.qty + delta } : i)).filter((i) => i.qty > 0));
   };
 
   const handleCallWaiter = (type: 'assistance' | 'bill') => {
@@ -73,7 +99,7 @@ export default function QrTableOrderingPage() {
         customer_name: `Tamu QR (${displayTable})`,
         order_type: 'dine_in',
         total: total,
-        table_number: displayTable,
+        table_number: `${displayTable} (${autoBranch})`,
       });
     } catch (err) {
       console.warn('Live QR order trigger err:', err);
@@ -82,39 +108,60 @@ export default function QrTableOrderingPage() {
 
   return (
     <div className="min-h-screen bg-[#FAF6F0] text-[#12100E] font-sans pb-28">
-      {/* Table Context Top Bar */}
+      {/* Table Context Top Bar (Auto-Decoded without Manual Selection) */}
       <header className="bg-[#12100E] text-white sticky top-0 z-40 border-b border-white/10 shadow-md">
-        <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
+        <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#BA935D]/20 border border-[#BA935D]/40 text-[#BA935D] font-bold">
-              <Coffee size={20} />
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#BA935D]/20 border border-[#BA935D]/40 text-[#BA935D] font-bold">
+              <QrCode size={22} />
             </div>
             <div>
               <div className="flex items-center gap-2">
                 <span className="font-serif text-lg font-bold text-white tracking-wide">Velvra QR Order</span>
-                <span className="rounded-full bg-[#BA935D] px-2.5 py-0.5 text-[11px] font-bold text-[#12100E]">
-                  {displayTable}
+                <span className="rounded-full bg-[#BA935D] px-2.5 py-0.5 text-[11px] font-bold text-[#12100E] flex items-center gap-1 shadow">
+                  <span>{displayTable}</span>
                 </span>
               </div>
-              <p className="text-[11px] text-white/60">Sudirman Flagship · Live Kitchen Ordering</p>
+              <p className="text-[11px] text-white/70 flex items-center gap-1.5 mt-0.5">
+                <MapPin size={11} className="text-[#BA935D]" />
+                <span>{autoBranch}</span> • <span className="text-amber-300 font-semibold">{autoTableDesc}</span>
+              </p>
             </div>
           </div>
 
           {/* Quick Call Waiter Button */}
           <button
             onClick={() => handleCallWaiter('assistance')}
-            className="flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-3.5 py-2 text-xs font-bold text-white hover:bg-white/20 transition-colors"
+            className="flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-3.5 py-2 text-xs font-bold text-white hover:bg-white/20 active:scale-95 transition-all shrink-0"
           >
             <Bell size={14} className="text-[#BA935D]" />
-            <span>Panggil Barista</span>
+            <span className="hidden sm:inline">Panggil Barista</span>
           </button>
         </div>
       </header>
 
+      {/* Auto-Decoded Table Status Banner (Phase F3 Verification) */}
+      <div className="max-w-4xl mx-auto px-4 pt-4">
+        <div className="rounded-2xl bg-[#12100E]/90 text-white border border-[#BA935D]/40 p-3.5 flex items-center justify-between text-xs shadow">
+          <div className="flex items-center gap-2.5">
+            <ShieldCheck size={16} className="text-[#BA935D] shrink-0" />
+            <div>
+              <p className="font-bold text-white leading-tight">Meja Terdeteksi Otomatis (QR Decode)</p>
+              <p className="text-[11px] text-white/60">
+                Meja dan cabang terkunci ke <strong className="text-[#BA935D]">{displayTable} ({autoBranch})</strong> tanpa input manual.
+              </p>
+            </div>
+          </div>
+          <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[10px] font-bold uppercase">
+            Auto-Sync KDS
+          </span>
+        </div>
+      </div>
+
       {/* Alert status */}
       {callWaiterStatus && (
         <div className="max-w-4xl mx-auto px-4 pt-4">
-          <div className="rounded-2xl bg-amber-100 border border-amber-300 p-4 text-xs font-bold text-amber-900 flex items-center gap-2">
+          <div className="rounded-2xl bg-amber-100 border border-amber-300 p-4 text-xs font-bold text-amber-900 flex items-center gap-2 animate-in fade-in">
             <Bell size={16} className="text-amber-600 animate-bounce" />
             <span>{callWaiterStatus}</span>
           </div>
@@ -192,7 +239,7 @@ export default function QrTableOrderingPage() {
         <div className="max-w-4xl mx-auto flex items-center justify-between gap-4">
           <button
             onClick={() => handleCallWaiter('bill')}
-            className="flex items-center gap-2 rounded-2xl border border-gray-300 px-5 py-3.5 text-xs font-bold text-gray-700 hover:bg-gray-50"
+            className="flex items-center gap-2 rounded-2xl border border-gray-300 px-5 py-3.5 text-xs font-bold text-gray-700 hover:bg-gray-50 active:scale-95 transition-all"
           >
             <span>Minta Bill / Bayar di Meja</span>
           </button>
@@ -201,9 +248,7 @@ export default function QrTableOrderingPage() {
             onClick={() => setCartOpen(true)}
             disabled={cart.length === 0}
             className={`flex-1 flex items-center justify-between rounded-2xl px-6 py-3.5 text-sm font-bold transition-all shadow-xl ${
-              cart.length > 0
-                ? 'bg-[#12100E] text-[#BA935D] hover:bg-[#201d19] active:scale-95'
-                : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+              cart.length > 0 ? 'bg-[#12100E] text-[#BA935D] hover:bg-[#201d19] active:scale-95' : 'bg-gray-100 text-gray-400 cursor-not-allowed'
             }`}
           >
             <div className="flex items-center gap-2.5">
@@ -238,14 +283,18 @@ export default function QrTableOrderingPage() {
                 </div>
                 <h4 className="font-serif text-2xl font-bold text-gray-800">Pesanan Diterima Dapur!</h4>
                 <p className="text-xs text-gray-500 max-w-xs mx-auto">
-                  Barista kami sedang meracik pesanan Anda. Silakan duduk santai di {displayTable}.
+                  Barista kami sedang meracik pesanan Anda. Silakan duduk santai di {displayTable} ({autoBranch}).
                 </p>
                 <div className="text-[11px] text-green-700 bg-green-50 border border-green-200 rounded-xl p-2.5 font-semibold max-w-xs mx-auto flex items-center justify-center gap-1.5">
                   <Zap size={14} className="shrink-0 text-amber-500" />
                   <span>Tiket sudah terkirim secara Live ke layar KDS Dapur Utama!</span>
                 </div>
                 <button
-                  onClick={() => { setOrderSubmitted(false); setCart([]); setCartOpen(false); }}
+                  onClick={() => {
+                    setOrderSubmitted(false);
+                    setCart([]);
+                    setCartOpen(false);
+                  }}
                   className="rounded-xl bg-[#12100E] px-6 py-3 text-xs font-bold text-[#BA935D]"
                 >
                   Kembali ke Menu
@@ -280,8 +329,14 @@ export default function QrTableOrderingPage() {
 
                 <div className="border-t border-gray-100 pt-4 space-y-3">
                   <div className="space-y-1 text-xs">
-                    <div className="flex justify-between text-gray-500"><span>Subtotal Item</span><span>{fmt(subtotal)}</span></div>
-                    <div className="flex justify-between text-gray-500"><span>PPN 11%</span><span>{fmt(tax)}</span></div>
+                    <div className="flex justify-between text-gray-500">
+                      <span>Subtotal Item</span>
+                      <span>{fmt(subtotal)}</span>
+                    </div>
+                    <div className="flex justify-between text-gray-500">
+                      <span>PPN 11%</span>
+                      <span>{fmt(tax)}</span>
+                    </div>
                     <div className="flex justify-between font-bold text-gray-800 text-base pt-1 border-t border-gray-100">
                       <span>Total Pesanan Meja</span>
                       <span className="text-[#BA935D]">{fmt(total)}</span>

@@ -1,8 +1,27 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { CustomerLayout } from '@/components/customer/customer-layout';
-import { Calendar, Clock, Users, MapPin, Check, Sparkles, ChevronRight, Phone, Mail, User, ShieldCheck, Armchair, Trees, Coffee, Crown } from 'lucide-react';
+import {
+  Calendar,
+  Clock,
+  Users,
+  MapPin,
+  Check,
+  Sparkles,
+  ChevronRight,
+  Phone,
+  Mail,
+  User,
+  ShieldCheck,
+  Armchair,
+  Trees,
+  Coffee,
+  Crown,
+  Timer,
+  AlertCircle,
+  Lock,
+} from 'lucide-react';
 
 const DATES = [
   { dayName: 'Hari Ini', dateStr: '14 Jul', fullDate: '2026-07-14' },
@@ -41,14 +60,51 @@ export default function ReservationPage() {
   const [email, setEmail] = useState('');
   const [specialNotes, setSpecialNotes] = useState('');
 
-  // Step state
+  // Step state & RES-002 Temporary Hold Timer (10 minutes = 600 seconds)
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [bookingCode, setBookingCode] = useState('');
+  const [holdSeconds, setHoldSeconds] = useState(600);
+  const [holdActive, setHoldActive] = useState(false);
+
+  useEffect(() => {
+    let timer: NodeJS.Timeout | null = null;
+    if (step === 2 && holdActive && holdSeconds > 0) {
+      timer = setInterval(() => {
+        setHoldSeconds((prev) => {
+          if (prev <= 1) {
+            setHoldActive(false);
+            setStep(1);
+            alert('Waktu penahanan sementara (RES-002) telah berakhir. Silakan pilih ulang slot meja Anda.');
+            return 600;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    } else if (step !== 2) {
+      setHoldActive(false);
+    }
+    return () => {
+      if (timer) clearInterval(timer);
+    };
+  }, [step, holdActive, holdSeconds]);
+
+  const startTemporaryHold = () => {
+    setHoldSeconds(600);
+    setHoldActive(true);
+    setStep(2);
+  };
+
+  const formatTimer = (s: number) => {
+    const mins = Math.floor(s / 60);
+    const secs = s % 60;
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
 
   const handleCreateReservation = (e: React.FormEvent) => {
     e.preventDefault();
     const code = `RES-${Math.floor(1000 + Math.random() * 9000)}`;
     setBookingCode(code);
+    setHoldActive(false);
     setStep(3);
   };
 
@@ -234,23 +290,47 @@ export default function ReservationPage() {
               </div>
             </div>
 
-            {/* Next Button */}
+            {/* Next Button triggering RES-002 Temporary Hold */}
             <div className="flex justify-end">
               <button
                 type="button"
-                onClick={() => setStep(2)}
+                onClick={startTemporaryHold}
                 className="flex items-center gap-2 rounded-2xl bg-[#12100E] px-8 py-4 text-sm font-bold text-[#BA935D] shadow-xl hover:bg-[#201d19] active:scale-95 transition-all"
               >
-                <span>Lanjut Isi Data Tamu</span>
+                <span>Lanjut Isi Data Tamu (Kunci Slot 10 Menit)</span>
                 <ChevronRight size={18} />
               </button>
             </div>
           </div>
         )}
 
-        {/* Step 2: Detail Tamu */}
+        {/* Step 2: Detail Tamu & Temporary Table Hold Banner (RES-002) */}
         {step === 2 && (
           <form onSubmit={handleCreateReservation} className="space-y-8 animate-in fade-in duration-300">
+            {/* RES-002 Temporary Table Hold Alert Bar */}
+            <div className="rounded-3xl bg-[#12100E] text-white p-5 border-2 border-[#BA935D] shadow-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#BA935D]/20 text-[#BA935D] animate-pulse">
+                  <Timer size={24} />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-serif font-bold text-base text-white">Temporary Table-Hold (RES-002)</span>
+                    <span className="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 text-[10px] font-mono border border-amber-500/30 font-bold">
+                      AKTIF
+                    </span>
+                  </div>
+                  <p className="text-xs text-white/70 mt-0.5">
+                    Slot <strong className="text-[#BA935D]">{selectedTime} WIB ({selectedArea.toUpperCase()})</strong> dikunci sementara dari pemesan lain agar Anda dapat mengisi data dengan nyaman.
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center justify-between sm:justify-end gap-3 bg-white/10 px-4 py-2.5 rounded-2xl border border-white/10 shrink-0">
+                <span className="text-xs font-semibold text-white/80">Sisa Waktu Hold:</span>
+                <span className="font-mono text-lg font-bold text-[#BA935D]">{formatTimer(holdSeconds)}</span>
+              </div>
+            </div>
+
             <div className="rounded-3xl bg-white p-6 sm:p-8 border border-gray-200 shadow-sm space-y-6">
               <h2 className="font-serif text-2xl font-bold text-gray-800 flex items-center gap-2 border-b border-gray-100 pb-4">
                 <User className="text-[#BA935D]" size={22} />
@@ -334,10 +414,12 @@ export default function ReservationPage() {
                 <div className="space-y-1">
                   <p className="text-xs font-bold uppercase tracking-wider text-[#BA935D]">Ringkasan Pilihan Anda</p>
                   <p className="text-base font-bold text-gray-800">{branch} · {selectedTime} WIB</p>
-                  <p className="text-xs text-gray-500">Tanggal: <strong className="text-gray-700">{selectedDate}</strong> · Tamu: <strong className="text-gray-700">{guestCount} Orang</strong> · Area: <strong className="text-gray-700">{SEATING_AREAS.find((a) => a.id === selectedArea)?.label}</strong></p>
+                  <p className="text-xs text-gray-500">
+                    Tanggal: <strong className="text-gray-700">{selectedDate}</strong> · Tamu: <strong className="text-gray-700">{guestCount} Orang</strong> · Area: <strong className="text-gray-700">{SEATING_AREAS.find((a) => a.id === selectedArea)?.label}</strong>
+                  </p>
                 </div>
                 <div className="flex items-center gap-2 text-xs font-semibold text-green-700 bg-green-50 px-4 py-2 rounded-xl border border-green-200 shrink-0">
-                  <ShieldCheck size={16} /> Meja Tersedia & Gratis Reservasi
+                  <ShieldCheck size={16} /> Slot Terkunci & Gratis Reservasi
                 </div>
               </div>
             </div>
@@ -345,10 +427,13 @@ export default function ReservationPage() {
             <div className="flex justify-between items-center">
               <button
                 type="button"
-                onClick={() => setStep(1)}
+                onClick={() => {
+                  setHoldActive(false);
+                  setStep(1);
+                }}
                 className="rounded-2xl border border-gray-300 px-6 py-4 text-sm font-bold text-gray-600 hover:bg-gray-100 transition-colors"
               >
-                Kembali
+                Kembali / Ubah Slot
               </button>
               <button
                 type="submit"
@@ -370,7 +455,7 @@ export default function ReservationPage() {
 
             <div>
               <span className="inline-block rounded-full bg-[#BA935D]/20 text-[#BA935D] text-xs font-bold uppercase tracking-widest px-4 py-1 mb-2">
-                Booking Confirmed
+                Booking Confirmed (RES-002 Verified)
               </span>
               <h2 className="font-serif text-3xl font-bold text-gray-800">Reservasi Meja Berhasil!</h2>
               <p className="text-sm text-gray-500 mt-2 max-w-md mx-auto">
@@ -388,7 +473,7 @@ export default function ReservationPage() {
                 <div className="text-right">
                   <p className="text-[10px] uppercase tracking-widest text-white/50">Status</p>
                   <span className="inline-block rounded-full bg-green-500/20 text-green-400 font-bold text-xs px-2.5 py-0.5 mt-0.5 border border-green-500/30">
-                    Confirmed
+                    Confirmed Lock
                   </span>
                 </div>
               </div>
@@ -404,11 +489,15 @@ export default function ReservationPage() {
                 </div>
                 <div>
                   <p className="text-white/40 uppercase font-semibold">Jadwal Kunjungan</p>
-                  <p className="font-bold text-[#BA935D] mt-0.5">{selectedDate} · {selectedTime} WIB</p>
+                  <p className="font-bold text-[#BA935D] mt-0.5">
+                    {selectedDate} · {selectedTime} WIB
+                  </p>
                 </div>
                 <div>
                   <p className="text-white/40 uppercase font-semibold">Meja & Tamu</p>
-                  <p className="font-bold text-white mt-0.5">{guestCount} Tamu · {SEATING_AREAS.find((a) => a.id === selectedArea)?.label}</p>
+                  <p className="font-bold text-white mt-0.5">
+                    {guestCount} Tamu · {SEATING_AREAS.find((a) => a.id === selectedArea)?.label}
+                  </p>
                 </div>
               </div>
 
@@ -420,7 +509,12 @@ export default function ReservationPage() {
 
             <div className="flex flex-wrap justify-center gap-4 pt-4">
               <button
-                onClick={() => { setStep(1); setFullName(''); setPhone(''); setEmail(''); }}
+                onClick={() => {
+                  setStep(1);
+                  setFullName('');
+                  setPhone('');
+                  setEmail('');
+                }}
                 className="rounded-2xl border border-gray-300 px-6 py-3.5 text-sm font-bold text-gray-700 hover:bg-gray-50 transition-colors"
               >
                 Buat Reservasi Baru

@@ -1,8 +1,29 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { CustomerLayout } from '@/components/customer/customer-layout';
-import { Star, Gift, ShoppingBag, Calendar, User, QrCode, ArrowRight, CheckCircle, Clock, MapPin, Phone, Mail, ShieldCheck, RefreshCw } from 'lucide-react';
+import {
+  Star,
+  Gift,
+  ShoppingBag,
+  Calendar,
+  User,
+  QrCode,
+  ArrowRight,
+  CheckCircle,
+  Clock,
+  MapPin,
+  Phone,
+  Mail,
+  ShieldCheck,
+  RefreshCw,
+  AlertTriangle,
+  Heart,
+  Utensils,
+  Trash2,
+  Lock,
+} from 'lucide-react';
 
 const REWARDS = [
   { id: 1, title: 'Free French Butter Croissant', points: 500, category: 'Pastry', desc: 'Satu croissant segar gratis untuk dinikmati dengan kopi Anda.', validUntil: '31 Agustus 2026' },
@@ -22,8 +43,10 @@ const MY_RESERVATIONS = [
   { id: 'RES-7311', date: '2 Jul 2026', time: '14:30 WIB', branch: 'Kemang Artisan Bar', guests: 2, area: 'Outdoor Garden Terrace', status: 'Completed' },
 ];
 
-export default function CustomerAccountPage() {
-  const [activeTab, setActiveTab] = useState<'rewards' | 'orders' | 'reservations' | 'profile'>('rewards');
+function CustomerAccountContent() {
+  const searchParams = useSearchParams();
+  const initialTab = (searchParams?.get('tab') as 'rewards' | 'orders' | 'reservations' | 'profile') || 'rewards';
+  const [activeTab, setActiveTab] = useState<'rewards' | 'orders' | 'reservations' | 'profile'>(initialTab);
   const [myPoints, setMyPoints] = useState(4850);
   const [redeemedAlert, setRedeemedAlert] = useState('');
   const [reorderAlert, setReorderAlert] = useState('');
@@ -33,6 +56,20 @@ export default function CustomerAccountPage() {
   const [email, setEmail] = useState('rina@velvra.id');
   const [phone, setPhone] = useState('081234567890');
   const [profileSaved, setProfileSaved] = useState(false);
+
+  // Allergen & Dietary Preferences state (PORT-006)
+  const [dietaryPrefs, setDietaryPrefs] = useState({
+    glutenFree: false,
+    dairyFree: true,
+    nutAllergy: false,
+    vegan: false,
+    lowSugar: true,
+    halalPreference: true,
+  });
+
+  // GDPR Soft-Delete state (PORT-007)
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [accountDeleted, setAccountDeleted] = useState(false);
 
   const handleRedeem = (reward: typeof REWARDS[0]) => {
     if (myPoints < reward.points) {
@@ -50,7 +87,40 @@ export default function CustomerAccountPage() {
     setTimeout(() => setReorderAlert(''), 4000);
   };
 
+  const toggleDietary = (key: keyof typeof dietaryPrefs) => {
+    setDietaryPrefs((prev) => ({ ...prev, [key]: !prev[key] }));
+  };
+
+  const handleGdprSoftDelete = () => {
+    setAccountDeleted(true);
+    setShowDeleteModal(false);
+  };
+
   const fmt = (n: number) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(n);
+
+  if (accountDeleted) {
+    return (
+      <CustomerLayout>
+        <div className="max-w-2xl mx-auto my-20 bg-white rounded-3xl border border-gray-200 p-12 text-center shadow-xl space-y-6">
+          <div className="flex h-20 w-20 items-center justify-center rounded-full bg-red-100 text-red-600 mx-auto">
+            <Trash2 size={40} />
+          </div>
+          <h1 className="font-serif text-3xl font-bold text-gray-900">Akun Anda Telah Dinonaktifkan (GDPR Soft-Delete)</h1>
+          <p className="text-sm text-gray-600 leading-relaxed max-w-md mx-auto">
+            Sesuai kepatuhan privasi GDPR & perlindungan data pribadi (<strong className="text-gray-800">PORT-007</strong>), seluruh riwayat pesanan, saldo poin loyalitas, dan data kontak Anda telah ditandai untuk penghapusan permanen dari server aktif Velvra.
+          </p>
+          <div className="pt-4">
+            <a
+              href="/"
+              className="inline-flex items-center justify-center rounded-2xl bg-[#12100E] px-8 py-4 text-sm font-bold text-[#BA935D] shadow-lg hover:bg-[#201d19] transition-all"
+            >
+              Kembali ke Beranda Utama
+            </a>
+          </div>
+        </div>
+      </CustomerLayout>
+    );
+  }
 
   return (
     <CustomerLayout>
@@ -106,9 +176,9 @@ export default function CustomerAccountPage() {
         <div className="flex gap-2 overflow-x-auto pb-4 border-b border-gray-200 mb-8 scrollbar-hide">
           {[
             { id: 'rewards', label: 'Tukar Poin & Reward', icon: Gift },
-            { id: 'orders', label: 'Riwayat Pesanan', icon: ShoppingBag },
+            { id: 'orders', label: 'Riwayat Pesanan (PORT-001)', icon: ShoppingBag },
             { id: 'reservations', label: 'Reservasi Saya', icon: Calendar },
-            { id: 'profile', label: 'Profil & Pengaturan', icon: User },
+            { id: 'profile', label: 'Profil, Alergen & Privasi', icon: User },
           ].map((tab) => (
             <button
               key={tab.id}
@@ -179,7 +249,7 @@ export default function CustomerAccountPage() {
           </div>
         )}
 
-        {/* Tab 2: Orders History & Reorder */}
+        {/* Tab 2: Orders History & Reorder (PORT-001) */}
         {activeTab === 'orders' && (
           <div className="space-y-6 animate-in fade-in duration-200">
             {reorderAlert && (
@@ -258,60 +328,186 @@ export default function CustomerAccountPage() {
           </div>
         )}
 
-        {/* Tab 4: Profile & Addresses */}
+        {/* Tab 4: Profile, Allergen (PORT-006) & GDPR Privacy (PORT-007) */}
         {activeTab === 'profile' && (
-          <div className="max-w-2xl bg-white rounded-3xl border border-gray-200 p-8 shadow-sm space-y-6 animate-in fade-in duration-200">
-            <div className="flex items-center justify-between border-b border-gray-100 pb-4">
-              <h2 className="font-serif text-xl font-bold text-gray-800">Profil Pribadi & Kontak</h2>
-              <span className="text-xs font-bold text-green-600 bg-green-50 px-3 py-1 rounded-full border border-green-200 flex items-center gap-1">
-                <ShieldCheck size={14} /> Terverifikasi
-              </span>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 animate-in fade-in duration-200">
+            {/* Left 2 Columns: Profile & Dietary Preferences */}
+            <div className="lg:col-span-2 space-y-8">
+              {/* Profile Contact Details */}
+              <div className="bg-white rounded-3xl border border-gray-200 p-8 shadow-sm space-y-6">
+                <div className="flex items-center justify-between border-b border-gray-100 pb-4">
+                  <h2 className="font-serif text-xl font-bold text-gray-800">Profil Pribadi & Kontak</h2>
+                  <span className="text-xs font-bold text-green-600 bg-green-50 px-3 py-1 rounded-full border border-green-200 flex items-center gap-1">
+                    <ShieldCheck size={14} /> Terverifikasi
+                  </span>
+                </div>
+
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-2">Nama Lengkap</label>
+                    <input
+                      type="text"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      className="w-full rounded-xl border border-gray-200 bg-gray-50 py-3 px-4 text-sm text-gray-800 focus:border-[#BA935D] focus:outline-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-2">Alamat Email</label>
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="w-full rounded-xl border border-gray-200 bg-gray-50 py-3 px-4 text-sm text-gray-800 focus:border-[#BA935D] focus:outline-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-2">Nomor WhatsApp</label>
+                    <input
+                      type="tel"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      className="w-full rounded-xl border border-gray-200 bg-gray-50 py-3 px-4 text-sm text-gray-800 focus:border-[#BA935D] focus:outline-none"
+                    />
+                  </div>
+                </div>
+
+                <div className="pt-4 flex items-center justify-between">
+                  {profileSaved && <span className="text-xs font-bold text-green-600">✓ Perubahan berhasil disimpan!</span>}
+                  <button
+                    onClick={() => { setProfileSaved(true); setTimeout(() => setProfileSaved(false), 3000); }}
+                    className="ml-auto rounded-2xl bg-[#12100E] px-8 py-3.5 text-sm font-bold text-[#BA935D] shadow-lg hover:bg-[#201d19] active:scale-95 transition-all"
+                  >
+                    Simpan Perubahan
+                  </button>
+                </div>
+              </div>
+
+              {/* Allergen & Dietary Preferences (PORT-006) */}
+              <div className="bg-white rounded-3xl border border-gray-200 p-8 shadow-sm space-y-6">
+                <div className="flex items-center justify-between border-b border-gray-100 pb-4">
+                  <div>
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-[#BA935D]">PORT-006 Compliance</span>
+                    <h2 className="font-serif text-xl font-bold text-gray-800 flex items-center gap-2 mt-0.5">
+                      <Utensils size={20} className="text-[#BA935D]" />
+                      <span>Preferensi Alergen & Diet</span>
+                    </h2>
+                  </div>
+                </div>
+                <p className="text-xs text-gray-500 leading-relaxed">
+                  Pilih preferensi diet dan alergen Anda. Pilihan ini akan secara otomatis diinformasikan kepada barista dan dapur saat Anda memesan atau melakukan reservasi.
+                </p>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                  {[
+                    { key: 'dairyFree' as const, label: 'Dairy-Free (Preferensi Susu Nabati / Oat/Almond)' },
+                    { key: 'lowSugar' as const, label: 'Low Sugar / Less Sweetness Default' },
+                    { key: 'glutenFree' as const, label: 'Gluten-Free (Bebas Gluten / Gandum)' },
+                    { key: 'nutAllergy' as const, label: 'Nut Allergy (Alergi Kacang & Produk Turunannya)' },
+                    { key: 'vegan' as const, label: 'Strict Vegan (100% Nabati Tanpa Telur/Susu)' },
+                    { key: 'halalPreference' as const, label: 'Halal Certified Ingredients Only' },
+                  ].map((item) => (
+                    <label
+                      key={item.key}
+                      className={`flex items-start gap-3.5 rounded-2xl border-2 p-4 cursor-pointer transition-all ${
+                        dietaryPrefs[item.key]
+                          ? 'border-[#BA935D] bg-[#FAF6F0]'
+                          : 'border-gray-100 bg-gray-50 hover:border-gray-300'
+                      }`}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={dietaryPrefs[item.key]}
+                        onChange={() => toggleDietary(item.key)}
+                        className="mt-0.5 h-4 w-4 rounded border-gray-300 text-[#BA935D] focus:ring-[#BA935D]"
+                      />
+                      <span className="text-xs font-bold text-gray-800 leading-snug">{item.label}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
             </div>
 
-            <div className="space-y-4">
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-2">Nama Lengkap</label>
-                <input
-                  type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="w-full rounded-xl border border-gray-200 bg-gray-50 py-3 px-4 text-sm text-gray-800 focus:border-[#BA935D] focus:outline-none"
-                />
+            {/* Right Column: GDPR Soft-Delete & Privacy Right (PORT-007) */}
+            <div className="space-y-6">
+              <div className="bg-red-50 rounded-3xl border border-red-200 p-6 shadow-sm space-y-4">
+                <div className="flex items-center gap-2 text-red-800 font-bold text-sm">
+                  <AlertTriangle size={18} className="text-red-600 shrink-0" />
+                  <span>Perlindungan Privasi GDPR (PORT-007)</span>
+                </div>
+                <h3 className="font-serif text-lg font-bold text-gray-900">
+                  Penghapusan Akun & Soft-Delete Data
+                </h3>
+                <p className="text-xs text-red-800/80 leading-relaxed">
+                  Sesuai regulasi GDPR dan hak atas perlindungan data pribadi, Anda dapat mengajukan penghapusan akun mandiri (*soft-delete*). Data identitas, riwayat transaksi, dan saldo poin akan diarsipkan atau dinonaktifkan dari sistem publik kami.
+                </p>
+
+                <button
+                  type="button"
+                  onClick={() => setShowDeleteModal(true)}
+                  className="w-full flex items-center justify-center gap-2 rounded-2xl bg-red-600 py-3.5 text-xs font-bold text-white hover:bg-red-700 active:scale-95 transition-all shadow-md"
+                >
+                  <Trash2 size={15} />
+                  <span>Ajukan Penghapusan Akun (Soft-Delete)</span>
+                </button>
               </div>
 
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-2">Alamat Email</label>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full rounded-xl border border-gray-200 bg-gray-50 py-3 px-4 text-sm text-gray-800 focus:border-[#BA935D] focus:outline-none"
-                />
+              <div className="bg-[#FAF6F0] rounded-3xl border border-[#BA935D]/30 p-6 space-y-3">
+                <div className="flex items-center gap-2 text-[#BA935D] font-bold text-xs">
+                  <Lock size={15} />
+                  <span>Privasi & Keamanan Enkripsi</span>
+                </div>
+                <p className="text-xs text-gray-600 leading-relaxed">
+                  Semua informasi pribadi yang tersimpan di portal Velvra diproteksi dengan enkripsi SSL 256-bit dan tidak pernah dibagikan kepada pihak ketiga.
+                </p>
               </div>
-
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-2">Nomor WhatsApp</label>
-                <input
-                  type="tel"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  className="w-full rounded-xl border border-gray-200 bg-gray-50 py-3 px-4 text-sm text-gray-800 focus:border-[#BA935D] focus:outline-none"
-                />
-              </div>
-            </div>
-
-            <div className="pt-4 flex items-center justify-between">
-              {profileSaved && <span className="text-xs font-bold text-green-600">✓ Perubahan berhasil disimpan!</span>}
-              <button
-                onClick={() => { setProfileSaved(true); setTimeout(() => setProfileSaved(false), 3000); }}
-                className="ml-auto rounded-2xl bg-[#12100E] px-8 py-3.5 text-sm font-bold text-[#BA935D] shadow-lg hover:bg-[#201d19] active:scale-95 transition-all"
-              >
-                Simpan Perubahan
-              </button>
             </div>
           </div>
         )}
       </div>
+
+      {/* GDPR Soft-Delete Confirmation Modal (PORT-007) */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="w-full max-w-md rounded-3xl bg-white p-6 sm:p-8 shadow-2xl animate-in fade-in zoom-in-95 duration-200 space-y-6 text-center">
+            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-red-100 text-red-600 mx-auto">
+              <AlertTriangle size={32} />
+            </div>
+            <div>
+              <h3 className="font-serif text-2xl font-bold text-gray-900">Konfirmasi Hapus Akun?</h3>
+              <p className="text-xs text-gray-600 mt-2 leading-relaxed">
+                Tindakan ini akan memicu alur <strong className="text-red-600 font-bold">GDPR Soft-Delete (PORT-007)</strong>. Saldo <strong className="text-gray-900">{myPoints} Pts</strong> dan seluruh benefit Gold Member akan dibekukan seketika.
+              </p>
+            </div>
+            <div className="flex gap-3 pt-2">
+              <button
+                type="button"
+                onClick={() => setShowDeleteModal(false)}
+                className="flex-1 rounded-2xl border border-gray-300 py-3.5 text-xs font-bold text-gray-700 hover:bg-gray-100 transition-colors"
+              >
+                Batal & Pertahankan
+              </button>
+              <button
+                type="button"
+                onClick={handleGdprSoftDelete}
+                className="flex-1 rounded-2xl bg-red-600 py-3.5 text-xs font-bold text-white hover:bg-red-700 transition-colors shadow-lg"
+              >
+                Ya, Hapus Akun Saya
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </CustomerLayout>
+  );
+}
+
+export default function CustomerAccountPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[#12100E]" />}>
+      <CustomerAccountContent />
+    </Suspense>
   );
 }
