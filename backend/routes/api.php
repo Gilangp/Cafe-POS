@@ -29,6 +29,8 @@ Route::prefix('v1')->group(function () {
     Route::get('/menu/items', [App\Http\Controllers\Api\ProductController::class, 'index']);
     Route::get('/menu/items/{product}', [App\Http\Controllers\Api\ProductController::class, 'show']);
     Route::get('/branches/public', [App\Http\Controllers\Api\BranchController::class, 'index']);
+    Route::post('/orders/public', [App\Http\Controllers\Api\OrderController::class, 'store']);
+    Route::get('/orders/public/{order}', [App\Http\Controllers\Api\OrderController::class, 'show']);
 
     // Auth routes
     Route::prefix('auth')->group(function () {
@@ -71,6 +73,11 @@ Route::prefix('v1')->group(function () {
         // Users & Employees
         Route::apiResource('users', App\Http\Controllers\Api\UserController::class);
         Route::apiResource('employees', App\Http\Controllers\Api\EmployeeController::class);
+
+        // Members & CRM
+        Route::get('members/lookup', [App\Http\Controllers\Api\MemberController::class, 'lookup']);
+        Route::apiResource('members', App\Http\Controllers\Api\MemberController::class);
+        Route::post('members/{member}/adjust-points', [App\Http\Controllers\Api\MemberController::class, 'adjustPoints']);
 
         // CMS
         Route::apiResource('pages', App\Http\Controllers\Api\PageController::class);

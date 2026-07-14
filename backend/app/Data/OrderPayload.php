@@ -16,7 +16,8 @@ final class OrderPayload
         public readonly ?string $notes = null,
         public readonly ?string $idempotencyKey = null,
         public readonly ?string $tableNumber = null,
-        public readonly ?string $kitchenStatus = 'PENDING'
+        public readonly ?string $kitchenStatus = 'PENDING',
+        public readonly int $pointsToRedeem = 0
     ) {
     }
 }

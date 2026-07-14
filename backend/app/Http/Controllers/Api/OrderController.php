@@ -54,12 +54,22 @@ class OrderController extends Controller
 
     public function store(Request $request)
     {
+        if ($request->has('idempotency_key') && $request->input('idempotency_key')) {
+            $existing = Order::withoutGlobalScopes()->where('idempotency_key', $request->input('idempotency_key'))->first();
+            if ($existing) {
+                return response()->json($existing->load('items.product'), 200);
+            }
+        }
+
         $validator = Validator::make($request->all(), [
             'branch_id' => 'required|exists:branches,id',
-            'order_type' => ['required', Rule::in(['dine_in', 'take_away', 'takeaway', 'delivery'])],
+            'order_type' => ['required', Rule::in(['dine_in', 'take_away', 'takeaway', 'delivery', 'online'])],
             'payment_method' => ['required', Rule::in(['cash', 'card', 'qris', 'transfer'])],
             'member_id' => 'nullable|exists:members,id',
             'notes' => 'nullable|string|max:500',
+            'table_number' => 'nullable|string|max:20',
+            'idempotency_key' => 'nullable|string|max:120',
+            'points_to_redeem' => 'nullable|integer|min:0',
             'items' => 'required|array|min:1',
             'items.*.product_id' => 'required|exists:products,id',
             'items.*.quantity' => 'required|integer|min:1',
@@ -86,7 +96,11 @@ class OrderController extends Controller
             orderType: $validated['order_type'],
             paymentMethod: $validated['payment_method'],
             memberId: $validated['member_id'] ?? null,
-            notes: $validated['notes'] ?? null
+            notes: $validated['notes'] ?? null,
+            idempotencyKey: $validated['idempotency_key'] ?? null,
+            tableNumber: $validated['table_number'] ?? null,
+            kitchenStatus: 'PENDING',
+            pointsToRedeem: (int) ($validated['points_to_redeem'] ?? 0)
         );
 
         $order = $this->orderService->createOrder($payload);
@@ -130,6 +144,10 @@ class OrderController extends Controller
             'kitchen_status' => $kitchenMap[$validated['status']] ?? $order->kitchen_status,
             'completed_at' => $validated['status'] === 'completed' ? now() : $order->completed_at,
         ]);
+
+        if ($validated['status'] === 'completed') {
+            $this->orderService->awardLoyaltyPoints($order);
+        }
 
         try {
             event(new \App\Events\KdsOrderStatusUpdated($order));
@@ -179,6 +197,7 @@ class OrderController extends Controller
             'orders.*.payment_method' => ['required', Rule::in(['cash', 'card', 'qris', 'transfer'])],
             'orders.*.table_number' => 'nullable|string|max:20',
             'orders.*.notes' => 'nullable|string|max:500',
+            'orders.*.points_to_redeem' => 'nullable|integer|min:0',
             'orders.*.items' => 'required|array|min:1',
             'orders.*.items.*.product_id' => 'required|exists:products,id',
             'orders.*.items.*.quantity' => 'required|integer|min:1',
@@ -212,7 +231,8 @@ class OrderController extends Controller
                 notes: $orderData['notes'] ?? null,
                 idempotencyKey: $orderData['idempotency_key'],
                 tableNumber: $orderData['table_number'] ?? null,
-                kitchenStatus: 'PENDING'
+                kitchenStatus: 'PENDING',
+                pointsToRedeem: (int) ($orderData['points_to_redeem'] ?? 0)
             );
 
             $order = $this->orderService->createOrder($payload);

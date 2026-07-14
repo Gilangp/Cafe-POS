@@ -31,6 +31,9 @@ class Order extends Model
         'completed_at',
         'idempotency_key',
         'kitchen_status',
+        'member_id',
+        'points_earned',
+        'points_redeemed',
     ];
 
     protected $casts = [
@@ -49,6 +52,11 @@ class Order extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function member()
+    {
+        return $this->belongsTo(Member::class);
     }
 
     public function items()

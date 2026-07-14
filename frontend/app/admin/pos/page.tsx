@@ -1,10 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import { Search, Plus, Minus, Trash2, ChevronRight, CreditCard, Banknote, Smartphone, Coffee, ShoppingBag, Check, Wifi, WifiOff, RefreshCw, Database } from 'lucide-react';
+import { Search, Plus, Minus, Trash2, ChevronRight, CreditCard, Banknote, Smartphone, Coffee, ShoppingBag, Check, Wifi, WifiOff, RefreshCw, Database, UserCheck, Star, Gift, X } from 'lucide-react';
 import { useProducts } from '@/hooks/useProducts';
 import { useRealtimeOrders } from '@/hooks/useRealtimeOrders';
 import { useOfflinePOS } from '@/hooks/useOfflinePOS';
+import { useCustomers, CustomerMember } from '@/hooks/useCustomers';
 
 const categories = ['Semua', 'Espresso', 'Latte', 'Cold Brew', 'Matcha', 'Pastry', 'Makanan'];
 
@@ -41,6 +42,7 @@ export default function PosPage() {
   const { products: catalogProducts, usingLive } = useProducts();
   const { createLiveOrder } = useRealtimeOrders();
   const { isOnline, queueCount, isSyncing, queueOfflineOrder, syncQueue } = useOfflinePOS();
+  const { customers, addPointsFromTransaction } = useCustomers();
 
   const [activeCategory, setActiveCategory] = useState('Semua');
   const [search, setSearch] = useState('');
@@ -48,6 +50,12 @@ export default function PosPage() {
   const [payment, setPayment] = useState('cash');
   const [orderDone, setOrderDone] = useState(false);
   const [offlineNotice, setOfflineNotice] = useState<string | null>(null);
+
+  // Loyalty & CRM state
+  const [selectedMember, setSelectedMember] = useState<CustomerMember | null>(null);
+  const [pointsToRedeem, setPointsToRedeem] = useState<number>(0);
+  const [isMemberModalOpen, setIsMemberModalOpen] = useState(false);
+  const [memberQuery, setMemberQuery] = useState('');
 
   // Use dynamic products from Supabase when connected, fallback to default POS items
   const displayProducts = (usingLive && catalogProducts && catalogProducts.length > 0)
@@ -82,24 +90,36 @@ export default function PosPage() {
     );
   };
 
+  const discountFromPoints = pointsToRedeem * 100; // Rp 100 per loyalty point
   const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
-  const tax = Math.round(subtotal * 0.11);
-  const total = subtotal + tax;
+  const tax = Math.round(Math.max(0, subtotal - discountFromPoints) * 0.11);
+  const total = Math.max(0, subtotal - discountFromPoints + tax);
+
+  const handleSelectMember = (member: CustomerMember) => {
+    setSelectedMember(member);
+    setPointsToRedeem(0);
+    setIsMemberModalOpen(false);
+  };
 
   const handleOrder = async () => {
     if (cart.length === 0) return;
     setOrderDone(true);
     setOfflineNotice(null);
 
+    const customerName = selectedMember ? `${selectedMember.name} [${selectedMember.tier}]` : `Kasir Walk-in (${payment.toUpperCase()})`;
+
+    if (selectedMember) {
+      await addPointsFromTransaction(selectedMember.id, total);
+    }
+
     if (!isOnline) {
-      // Queue offline immediately when network is offline
       queueOfflineOrder({
         branch_id: 1,
         order_type: 'takeaway',
         payment_method: payment as any,
         table_number: 'BAR-POS',
         total: total,
-        customer_name: `Kasir Walk-in (${payment.toUpperCase()})`,
+        customer_name: customerName,
         items: cart.map((i) => ({
           product_id: i.id,
           quantity: i.qty,
@@ -107,11 +127,11 @@ export default function PosPage() {
           price: i.price,
         })),
       });
-      setOfflineNotice('Order disimpan dalam antrean Offline (Idempotency Dijamin)');
+      setOfflineNotice('Order disimpan dalam antrean Offline (Idempotency Dijamin & Poin Dicatat)');
     } else {
       try {
         await createLiveOrder({
-          customer_name: `Kasir Walk-in (${payment.toUpperCase()})`,
+          customer_name: customerName,
           order_type: 'takeaway',
           total: total,
           table_number: 'BAR-POS',
@@ -124,7 +144,7 @@ export default function PosPage() {
           payment_method: payment as any,
           table_number: 'BAR-POS',
           total: total,
-          customer_name: `Kasir Walk-in (${payment.toUpperCase()})`,
+          customer_name: customerName,
           items: cart.map((i) => ({
             product_id: i.id,
             quantity: i.qty,
@@ -138,6 +158,8 @@ export default function PosPage() {
 
     setTimeout(() => {
       setCart([]);
+      setSelectedMember(null);
+      setPointsToRedeem(0);
       setOrderDone(false);
       setOfflineNotice(null);
     }, 2500);
@@ -244,10 +266,62 @@ export default function PosPage() {
 
       {/* Right Panel: Cart + Checkout */}
       <div className="w-80 xl:w-96 flex flex-col bg-white border-l border-gray-200 shadow-lg shrink-0">
-        {/* Cart Header */}
-        <div className="px-6 py-5 border-b border-gray-100">
-          <h2 className="font-serif text-xl font-bold text-gray-800">Pesanan</h2>
-          <p className="text-xs text-gray-400 mt-0.5">{cart.length} item · Meja Walk-in</p>
+        {/* Cart Header + CRM Member Bar */}
+        <div className="px-6 py-4 border-b border-gray-100 space-y-3">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="font-serif text-xl font-bold text-gray-800">Pesanan</h2>
+              <p className="text-xs text-gray-400 mt-0.5">{cart.length} item · Meja Walk-in</p>
+            </div>
+            {selectedMember ? (
+              <button
+                onClick={() => setSelectedMember(null)}
+                className="text-[11px] font-bold text-red-500 hover:underline flex items-center gap-1"
+              >
+                <X size={13} /> Lepas Member
+              </button>
+            ) : null}
+          </div>
+
+          {/* CRM Loyalty Box */}
+          {selectedMember ? (
+            <div className="rounded-xl bg-[#FAF6F0] border border-[#BA935D]/50 p-3 space-y-2">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <UserCheck size={16} className="text-[#BA935D]" />
+                  <span className="text-xs font-bold text-gray-900 truncate max-w-[130px]">{selectedMember.name}</span>
+                </div>
+                <span className="rounded-full bg-amber-100 text-amber-800 px-2 py-0.5 text-[10px] font-bold flex items-center gap-0.5">
+                  <Star size={10} className="fill-current" /> {selectedMember.tier}
+                </span>
+              </div>
+              <div className="flex items-center justify-between text-[11px] text-gray-600 border-t border-gray-200/60 pt-2">
+                <span>Saldo Poin: <strong className="text-[#BA935D]">{selectedMember.points.toLocaleString()} pts</strong></span>
+                {selectedMember.points >= 100 && (
+                  <button
+                    onClick={() => setPointsToRedeem(pointsToRedeem === 0 ? Math.min(selectedMember.points, Math.floor(subtotal / 100)) : 0)}
+                    className="text-[11px] font-bold text-[#BA935D] underline"
+                  >
+                    {pointsToRedeem > 0 ? 'Batal Tukar' : 'Tukar Poin'}
+                  </button>
+                )}
+              </div>
+              {pointsToRedeem > 0 && (
+                <div className="flex items-center justify-between bg-white rounded-lg p-2 text-xs border border-[#BA935D]/30">
+                  <span className="text-gray-500 text-[11px]">Potongan {pointsToRedeem} pts</span>
+                  <span className="font-bold text-green-600">-{fmt(discountFromPoints)}</span>
+                </div>
+              )}
+            </div>
+          ) : (
+            <button
+              onClick={() => setIsMemberModalOpen(true)}
+              className="w-full flex items-center justify-center gap-2 rounded-xl border border-dashed border-[#BA935D] bg-[#FAF6F0]/60 py-2.5 text-xs font-bold text-[#BA935D] hover:bg-[#FAF6F0] transition-colors"
+            >
+              <Gift size={14} />
+              <span>+ Pilih / Cari Member CRM Loyalty</span>
+            </button>
+          )}
         </div>
 
         {/* Cart Items */}
@@ -289,6 +363,12 @@ export default function PosPage() {
               <span>Subtotal</span>
               <span>{fmt(subtotal)}</span>
             </div>
+            {discountFromPoints > 0 && (
+              <div className="flex justify-between text-green-600 font-bold text-xs">
+                <span>Diskon Poin Loyalty ({pointsToRedeem} pts)</span>
+                <span>-{fmt(discountFromPoints)}</span>
+              </div>
+            )}
             <div className="flex justify-between text-gray-500">
               <span>PPN 11%</span>
               <span>{fmt(tax)}</span>
@@ -341,6 +421,53 @@ export default function PosPage() {
           </button>
         </div>
       </div>
+
+      {/* CRM Member Lookup Modal */}
+      {isMemberModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fadeIn">
+          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl border border-gray-100 max-h-[80vh] flex flex-col">
+            <div className="flex items-center justify-between border-b border-gray-100 pb-4 mb-4">
+              <div className="flex items-center gap-2">
+                <Gift size={20} className="text-[#BA935D]" />
+                <h3 className="font-serif text-lg font-bold text-gray-800">Pilih Member CRM / Loyalty</h3>
+              </div>
+              <button onClick={() => setIsMemberModalOpen(false)} className="rounded-lg p-1 text-gray-400 hover:bg-gray-100">
+                <X size={18} />
+              </button>
+            </div>
+
+            <div className="relative mb-4">
+              <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
+              <input
+                value={memberQuery}
+                onChange={(e) => setMemberQuery(e.target.value)}
+                placeholder="Cari nama atau no. telepon member..."
+                className="w-full rounded-xl border border-gray-200 py-2.5 pl-10 pr-4 text-xs focus:border-[#BA935D] focus:outline-none"
+              />
+            </div>
+
+            <div className="flex-1 overflow-y-auto space-y-2">
+              {customers
+                .filter((c) => c.name.toLowerCase().includes(memberQuery.toLowerCase()) || c.phone.includes(memberQuery))
+                .map((c) => (
+                  <button
+                    key={c.id}
+                    onClick={() => handleSelectMember(c)}
+                    className="w-full flex items-center justify-between rounded-xl border border-gray-100 p-3 hover:border-[#BA935D] hover:bg-[#FAF6F0] transition-all text-left"
+                  >
+                    <div>
+                      <p className="text-xs font-bold text-gray-900">{c.name}</p>
+                      <p className="text-[11px] text-gray-500">{c.phone} · <strong className="text-[#BA935D]">{c.points.toLocaleString()} pts</strong></p>
+                    </div>
+                    <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-bold text-amber-800">
+                      {c.tier}
+                    </span>
+                  </button>
+                ))}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
