@@ -115,6 +115,7 @@ class PosController extends Controller
         );
 
         $order = $this->orderService->createOrder($payload);
+        $order->update(['status' => 'confirmed', 'kitchen_status' => 'PENDING']);
 
         if (isset($validated['table_number'])) {
             $order->update(['table_number' => $validated['table_number']]);

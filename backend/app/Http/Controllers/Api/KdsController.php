@@ -47,7 +47,16 @@ class KdsController extends Controller
             ], 400);
         }
 
-        $order->update(['status' => 'preparing']);
+        $order->update([
+            'status' => 'preparing',
+            'kitchen_status' => 'IN_PROGRESS',
+        ]);
+
+        try {
+            event(new \App\Events\KdsOrderStatusUpdated($order));
+        } catch (\Exception $e) {
+            // Ignore broadcasting errors during offline/testing
+        }
 
         return response()->json($order->load('items.product'));
     }
@@ -67,7 +76,16 @@ class KdsController extends Controller
             ], 400);
         }
 
-        $order->update(['status' => 'ready']);
+        $order->update([
+            'status' => 'ready',
+            'kitchen_status' => 'READY',
+        ]);
+
+        try {
+            event(new \App\Events\KdsOrderStatusUpdated($order));
+        } catch (\Exception $e) {
+            // Ignore broadcasting errors during offline/testing
+        }
 
         return response()->json($order->load('items.product'));
     }

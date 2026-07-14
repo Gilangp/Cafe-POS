@@ -13,7 +13,10 @@ final class OrderPayload
         public readonly string $orderType,
         public readonly string $paymentMethod,
         public readonly ?int $memberId = null,
-        public readonly ?string $notes = null
+        public readonly ?string $notes = null,
+        public readonly ?string $idempotencyKey = null,
+        public readonly ?string $tableNumber = null,
+        public readonly ?string $kitchenStatus = 'PENDING'
     ) {
     }
 }

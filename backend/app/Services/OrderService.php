@@ -36,6 +36,9 @@ class OrderService
                 'discount' => 0,
                 'total' => $total,
                 'notes' => $payload->notes,
+                'table_number' => $payload->tableNumber,
+                'idempotency_key' => $payload->idempotencyKey,
+                'kitchen_status' => $payload->kitchenStatus ?? 'PENDING',
                 'completed_at' => null,
             ]);
 
@@ -51,6 +54,13 @@ class OrderService
                 ]);
 
                 $this->inventoryService->deductStockForOrderItem($orderItem, $payload->userId);
+            }
+
+            // KDS-005: Trigger real-time broadcasting event for KDS displays
+            try {
+                event(new \App\Events\KdsOrderCreated($order->load('items.product')));
+            } catch (\Exception $e) {
+                // Ignore broadcasting exceptions during offline/unit testing
             }
 
             return $order;

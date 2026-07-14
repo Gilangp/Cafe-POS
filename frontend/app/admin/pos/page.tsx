@@ -1,9 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { Search, Plus, Minus, Trash2, ChevronRight, CreditCard, Banknote, Smartphone, Coffee, ShoppingBag, Check } from 'lucide-react';
+import { Search, Plus, Minus, Trash2, ChevronRight, CreditCard, Banknote, Smartphone, Coffee, ShoppingBag, Check, Wifi, WifiOff, RefreshCw, Database } from 'lucide-react';
 import { useProducts } from '@/hooks/useProducts';
 import { useRealtimeOrders } from '@/hooks/useRealtimeOrders';
+import { useOfflinePOS } from '@/hooks/useOfflinePOS';
 
 const categories = ['Semua', 'Espresso', 'Latte', 'Cold Brew', 'Matcha', 'Pastry', 'Makanan'];
 
@@ -39,12 +40,14 @@ const paymentMethods = [
 export default function PosPage() {
   const { products: catalogProducts, usingLive } = useProducts();
   const { createLiveOrder } = useRealtimeOrders();
+  const { isOnline, queueCount, isSyncing, queueOfflineOrder, syncQueue } = useOfflinePOS();
 
   const [activeCategory, setActiveCategory] = useState('Semua');
   const [search, setSearch] = useState('');
   const [cart, setCart] = useState<CartItem[]>([]);
   const [payment, setPayment] = useState('cash');
   const [orderDone, setOrderDone] = useState(false);
+  const [offlineNotice, setOfflineNotice] = useState<string | null>(null);
 
   // Use dynamic products from Supabase when connected, fallback to default POS items
   const displayProducts = (usingLive && catalogProducts && catalogProducts.length > 0)
@@ -86,19 +89,57 @@ export default function PosPage() {
   const handleOrder = async () => {
     if (cart.length === 0) return;
     setOrderDone(true);
-    try {
-      await createLiveOrder({
-        customer_name: `Kasir Walk-in (${payment.toUpperCase()})`,
+    setOfflineNotice(null);
+
+    if (!isOnline) {
+      // Queue offline immediately when network is offline
+      queueOfflineOrder({
+        branch_id: 1,
         order_type: 'takeaway',
-        total: total,
+        payment_method: payment as any,
         table_number: 'BAR-POS',
+        total: total,
+        customer_name: `Kasir Walk-in (${payment.toUpperCase()})`,
+        items: cart.map((i) => ({
+          product_id: i.id,
+          quantity: i.qty,
+          name: i.name,
+          price: i.price,
+        })),
       });
-    } catch (err) {
-      console.warn('POS live order trigger err:', err);
+      setOfflineNotice('Order disimpan dalam antrean Offline (Idempotency Dijamin)');
+    } else {
+      try {
+        await createLiveOrder({
+          customer_name: `Kasir Walk-in (${payment.toUpperCase()})`,
+          order_type: 'takeaway',
+          total: total,
+          table_number: 'BAR-POS',
+        });
+      } catch (err) {
+        console.warn('POS live order trigger err, falling back to offline queue:', err);
+        queueOfflineOrder({
+          branch_id: 1,
+          order_type: 'takeaway',
+          payment_method: payment as any,
+          table_number: 'BAR-POS',
+          total: total,
+          customer_name: `Kasir Walk-in (${payment.toUpperCase()})`,
+          items: cart.map((i) => ({
+            product_id: i.id,
+            quantity: i.qty,
+            name: i.name,
+            price: i.price,
+          })),
+        });
+        setOfflineNotice('Order masuk antrean Offline karena gangguan server sementara');
+      }
     }
+
     setTimeout(() => {
       setCart([]);
       setOrderDone(false);
+      setOfflineNotice(null);
     }, 2500);
   };
 
@@ -108,6 +149,41 @@ export default function PosPage() {
     <div className="flex gap-6 h-full -m-6 lg:-m-8">
       {/* Left Panel: Product Grid */}
       <div className="flex flex-col flex-1 overflow-hidden bg-[#F5F3F0] p-6 lg:p-8">
+        {/* Offline & Queue Status Banner */}
+        <div className={`mb-4 flex items-center justify-between rounded-xl px-4 py-3 text-xs font-bold transition-all shadow-sm ${
+          isOnline ? 'bg-green-500/10 border border-green-500/30 text-green-700' : 'bg-amber-500/15 border border-amber-500/40 text-amber-800'
+        }`}>
+          <div className="flex items-center gap-2">
+            {isOnline ? <Wifi size={16} className="text-green-600 animate-pulse" /> : <WifiOff size={16} className="text-amber-600" />}
+            <span>{isOnline ? 'Status: Online — Real-Time POS Sync Aktif' : 'Status: Offline — Mode Antrean Lokal Aktif (Idempotency Enabled)'}</span>
+          </div>
+          {queueCount > 0 && (
+            <div className="flex items-center gap-3">
+              <span className="flex items-center gap-1.5 rounded-full bg-amber-600 text-white px-2.5 py-1 text-[11px]">
+                <Database size={13} />
+                Antrean Offline: {queueCount} order
+              </span>
+              {isOnline && (
+                <button
+                  onClick={() => syncQueue()}
+                  disabled={isSyncing}
+                  className="flex items-center gap-1.5 rounded-lg bg-[#12100E] px-3 py-1 text-white hover:bg-[#1e1a17] transition-colors"
+                >
+                  <RefreshCw size={13} className={isSyncing ? 'animate-spin' : ''} />
+                  {isSyncing ? 'Menyinkronkan...' : 'Sinkronkan Sekarang'}
+                </button>
+              )}
+            </div>
+          )}
+        </div>
+
+        {offlineNotice && (
+          <div className="mb-4 rounded-xl bg-blue-600/10 border border-blue-500/30 px-4 py-2.5 text-xs font-bold text-blue-700 flex items-center gap-2">
+            <Check size={16} className="text-blue-600" />
+            <span>{offlineNotice}</span>
+          </div>
+        )}
+
         {/* Search */}
         <div className="relative mb-5">
           <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />

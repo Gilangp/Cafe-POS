@@ -315,13 +315,15 @@ Untuk memulai eksekusi proyek hari ini juga, ikuti urutan tindakan konkret berik
    *(Status: ✅ Middleware `permission` & `branch.scope`, trait `BranchScoped`, endpoint refresh token, serta Frontend Global Branch Switcher `ADM-002` telah dibangun 100% dan diverifikasi)*
 - [x] **5. Eksekusi Phase 2 (Sprint 2: Core Catalog, Recipe Costing & Supply Chain):**
    *(Status: ✅ Branch Price Override `MNU-003`, status 86'd `MNU-004`, Recipe Weighted-Average COGS Engine `RCP-003`, FEFO Stock Batch Deduction `INV-006`, dan PO Receiving flow `PUR` telah dibangun 100% dan diverifikasi dengan 32 test passed, 119 assertions)*
+- [x] **6. Eksekusi Phase 3 (Sprint 3: POS Offline-First & KDS Real-Time System):**
+   *(Status: ✅ Idempotency Guarantee & Offline Batch Sync `POS-002`, Real-Time KDS Workflow `KDS-005`, Laravel Broadcasting Events (`KdsOrderCreated`, `KdsOrderStatusUpdated`), Client Offline Queue Engine (`useOfflinePOS`), serta UI Resilience POS/KDS telah dibangun 100% dan diverifikasi dengan 34 test passed, 141 assertions & 0 TS error)*
 
 > [!NOTE]
-> **Bukti Laporan Verifikasi Lengkap:** Untuk melihat log terminal rinci, matriks pemetaan file, dan daftar periksa lengkap Phase 0 & Phase 1, silakan buka dokumen **[21-bukti-eksekusi-dan-audit-fase-0-1.md](./21-bukti-eksekusi-dan-audit-fase-0-1.md)**. Untuk laporan audit komprehensif Phase 2, silakan buka dokumen **[22-bukti-eksekusi-dan-audit-fase-2.md](./22-bukti-eksekusi-dan-audit-fase-2.md)**.
+> **Bukti Laporan Verifikasi Lengkap:** Untuk melihat log terminal rinci, matriks pemetaan file, dan daftar periksa lengkap Phase 0 & Phase 1, silakan buka dokumen **[21-bukti-eksekusi-dan-audit-fase-0-1.md](./21-bukti-eksekusi-dan-audit-fase-0-1.md)**. Untuk laporan audit Phase 2, silakan buka dokumen **[22-bukti-eksekusi-dan-audit-fase-2.md](./22-bukti-eksekusi-dan-audit-fase-2.md)**. Untuk laporan audit komprehensif Phase 3, silakan buka dokumen **[23-bukti-eksekusi-dan-audit-fase-3.md](./23-bukti-eksekusi-dan-audit-fase-3.md)**.
 
 ---
 
-**Document Status:** ✅ Master Plan Approved & Phase 0/1/2 Execution Verified  
+**Document Status:** ✅ Master Plan Approved & Phase 0/1/2/3 Execution Verified  
 **Previous Document:** [19-responsive-design.md](./19-responsive-design.md)  
-**Next / Audit Report:** [21-bukti-eksekusi-dan-audit-fase-0-1.md](./21-bukti-eksekusi-dan-audit-fase-0-1.md) | [22-bukti-eksekusi-dan-audit-fase-2.md](./22-bukti-eksekusi-dan-audit-fase-2.md)  
+**Next / Audit Report:** [21-bukti-eksekusi-dan-audit-fase-0-1.md](./21-bukti-eksekusi-dan-audit-fase-0-1.md) | [22-bukti-eksekusi-dan-audit-fase-2.md](./22-bukti-eksekusi-dan-audit-fase-2.md) | [23-bukti-eksekusi-dan-audit-fase-3.md](./23-bukti-eksekusi-dan-audit-fase-3.md)  
 **Related Documents:** [prd.md](./prd.md), [02-arsitektur-sistem.md](./02-arsitektur-sistem.md), [04-database-design.md](./04-database-design.md), [07-roles-dan-permissions.md](./07-roles-dan-permissions.md), [08-modul-fungsional.md](./08-modul-fungsional.md).

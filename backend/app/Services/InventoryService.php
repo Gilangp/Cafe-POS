@@ -43,6 +43,27 @@ class InventoryService
                     );
                 }
 
+                // INV-006: First-Expired-First-Out (FEFO) Batch Deduction
+                $needed = $deductQuantity;
+                $batches = \App\Models\StockBatch::withoutBranchScope()
+                    ->where('inventory_item_id', $item->id)
+                    ->where('branch_id', $orderItem->order->branch_id)
+                    ->where('quantity_remaining', '>', 0)
+                    ->where('status', 'ACTIVE')
+                    ->orderByRaw('expiration_date ASC NULLS LAST, id ASC')
+                    ->get();
+
+                foreach ($batches as $batch) {
+                    if ($needed <= 0) break;
+                    $deduct = min($batch->quantity_remaining, $needed);
+                    $batch->quantity_remaining -= $deduct;
+                    if ($batch->quantity_remaining <= 0) {
+                        $batch->status = 'DEPLETED';
+                    }
+                    $batch->save();
+                    $needed -= $deduct;
+                }
+
                 $item->decrement('quantity', $deductQuantity);
 
                 InventoryTransaction::create([

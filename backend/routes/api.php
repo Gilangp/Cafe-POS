@@ -55,6 +55,7 @@ Route::prefix('v1')->group(function () {
         Route::post('recipes/{recipe}/calculate-cogs', [App\Http\Controllers\Api\RecipeController::class, 'calculateCosting']);
 
         // Orders
+        Route::post('orders/batch-sync', [App\Http\Controllers\Api\OrderController::class, 'batchSync']);
         Route::apiResource('orders', App\Http\Controllers\Api\OrderController::class);
         Route::post('orders/{order}/status', [App\Http\Controllers\Api\OrderController::class, 'updateStatus']);
         Route::post('orders/{order}/cancel', [App\Http\Controllers\Api\OrderController::class, 'cancel']);

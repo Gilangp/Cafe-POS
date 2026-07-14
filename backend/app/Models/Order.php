@@ -29,6 +29,8 @@ class Order extends Model
         'notes',
         'table_number',
         'completed_at',
+        'idempotency_key',
+        'kitchen_status',
     ];
 
     protected $casts = [
