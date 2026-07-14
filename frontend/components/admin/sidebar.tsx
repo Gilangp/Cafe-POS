@@ -26,11 +26,12 @@ const navGroups = [
     ],
   },
   {
-    label: 'Katalog & Stok',
+    label: 'Katalog & Pengadaan',
     items: [
       { href: '/admin/menu', label: 'Menu & Produk', icon: Coffee },
-      { href: '/admin/inventory', label: 'Inventori', icon: Package },
-      { href: '/admin/suppliers', label: 'Supplier', icon: Truck },
+      { href: '/admin/inventory', label: 'Inventori & Opname', icon: Package },
+      { href: '/admin/procurement/suppliers', label: 'Supplier Vendor', icon: Truck },
+      { href: '/admin/procurement/purchase-orders', label: 'Purchase Orders', icon: FileText },
     ],
   },
   {
