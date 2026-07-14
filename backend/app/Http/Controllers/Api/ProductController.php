@@ -45,6 +45,43 @@ class ProductController extends Controller
 
         $products = $query->paginate($request->input('per_page', 12));
 
+        // MNU-003 & MNU-004: Apply Branch Price Override and 86'd Availability Status
+        $branchId = $request->header('X-Branch-Id') ?? ($request->user() ? $request->user()->branch_id : null);
+        if ($branchId) {
+            $branchProducts = \App\Models\BranchProduct::withoutBranchScope()
+                ->where('branch_id', $branchId)
+                ->get()
+                ->keyBy('product_id');
+
+            $products->getCollection()->transform(function ($product) use ($branchProducts) {
+                $bp = $branchProducts->get($product->id);
+                if ($bp) {
+                    $product->effective_price = $bp->price;
+                    $product->is_available = $bp->is_available;
+                    $product->branch_stock_quantity = $bp->stock_quantity;
+                } else {
+                    $product->effective_price = $product->base_price;
+                    $product->is_available = true;
+                    $product->branch_stock_quantity = null;
+                }
+                return $product;
+            });
+
+            if ($request->boolean('available_only')) {
+                $filtered = $products->getCollection()->filter(function ($p) {
+                    return $p->is_available;
+                })->values();
+                $products->setCollection($filtered);
+            }
+        } else {
+            $products->getCollection()->transform(function ($product) {
+                $product->effective_price = $product->base_price;
+                $product->is_available = true;
+                $product->branch_stock_quantity = null;
+                return $product;
+            });
+        }
+
         return response()->json($products);
     }
 
@@ -71,9 +108,31 @@ class ProductController extends Controller
         return response()->json($product->load('category'), 201);
     }
 
-    public function show(Product $product)
+    public function show(Request $request, Product $product)
     {
-        return response()->json($product->load('category'));
+        $product->load('category');
+        $branchId = $request->header('X-Branch-Id') ?? ($request->user() ? $request->user()->branch_id : null);
+        if ($branchId) {
+            $bp = \App\Models\BranchProduct::withoutBranchScope()
+                ->where('branch_id', $branchId)
+                ->where('product_id', $product->id)
+                ->first();
+            if ($bp) {
+                $product->effective_price = $bp->price;
+                $product->is_available = $bp->is_available;
+                $product->branch_stock_quantity = $bp->stock_quantity;
+            } else {
+                $product->effective_price = $product->base_price;
+                $product->is_available = true;
+                $product->branch_stock_quantity = null;
+            }
+        } else {
+            $product->effective_price = $product->base_price;
+            $product->is_available = true;
+            $product->branch_stock_quantity = null;
+        }
+
+        return response()->json($product);
     }
 
     public function update(Request $request, Product $product)
@@ -108,5 +167,29 @@ class ProductController extends Controller
         return response()->json([
             'message' => 'Product deleted successfully',
         ]);
+    }
+
+    /**
+     * MNU-003 & MNU-004: Override Branch Price and Availability Status (86'd status)
+     */
+    public function overrideBranch(Request $request, Product $product)
+    {
+        $validated = $request->validate([
+            'branch_id' => 'required|exists:branches,id',
+            'price' => 'nullable|numeric|min:0',
+            'is_available' => 'boolean',
+            'stock_quantity' => 'nullable|integer',
+        ]);
+
+        $branchProduct = \App\Models\BranchProduct::withoutBranchScope()->updateOrCreate(
+            ['branch_id' => $validated['branch_id'], 'product_id' => $product->id],
+            [
+                'price' => $validated['price'] ?? $product->base_price,
+                'is_available' => $validated['is_available'] ?? true,
+                'stock_quantity' => $validated['stock_quantity'] ?? 0,
+            ]
+        );
+
+        return response()->json($branchProduct);
     }
 }

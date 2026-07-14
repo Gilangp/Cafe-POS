@@ -12,7 +12,7 @@ class Product extends Model
 
     protected $fillable = [
         'category_id', 'name', 'slug', 'description', 'base_price', 'sku', 'image',
-        'is_active', 'is_featured', 'preparation_time', 'tags', 'recipe_id'
+        'is_active', 'is_featured', 'preparation_time', 'tags', 'recipe_id', 'cost_cents'
     ];
 
     protected $casts = [
@@ -20,6 +20,7 @@ class Product extends Model
         'is_featured' => 'boolean',
         'tags' => 'json',
         'base_price' => 'decimal:2',
+        'cost_cents' => 'integer',
     ];
 
     public function category()

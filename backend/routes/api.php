@@ -50,6 +50,9 @@ Route::prefix('v1')->group(function () {
         // Menu Management (admin CRUD)
         Route::apiResource('categories', App\Http\Controllers\Api\CategoryController::class);
         Route::apiResource('products', App\Http\Controllers\Api\ProductController::class);
+        Route::patch('products/{product}/branch-override', [App\Http\Controllers\Api\ProductController::class, 'overrideBranch']);
+        Route::apiResource('recipes', App\Http\Controllers\Api\RecipeController::class);
+        Route::post('recipes/{recipe}/calculate-cogs', [App\Http\Controllers\Api\RecipeController::class, 'calculateCosting']);
 
         // Orders
         Route::apiResource('orders', App\Http\Controllers\Api\OrderController::class);
@@ -59,7 +62,10 @@ Route::prefix('v1')->group(function () {
         // Inventory
         Route::apiResource('inventory', App\Http\Controllers\Api\InventoryController::class);
         Route::post('inventory/adjust', [App\Http\Controllers\Api\InventoryController::class, 'adjust']);
+        Route::post('inventory/fefo-deduct', [App\Http\Controllers\Api\InventoryController::class, 'fefoDeduct']);
         Route::apiResource('suppliers', App\Http\Controllers\Api\SupplierController::class);
+        Route::apiResource('purchase-orders', App\Http\Controllers\Api\PurchaseOrderController::class);
+        Route::post('purchase-orders/{purchase_order}/receive', [App\Http\Controllers\Api\PurchaseOrderController::class, 'receive']);
 
         // Users & Employees
         Route::apiResource('users', App\Http\Controllers\Api\UserController::class);
