@@ -84,51 +84,58 @@ export const MOCK_CATALOG_PRODUCTS: CatalogProduct[] = [
   },
 ];
 
-export function useProducts() {
+export function useProducts(options?: { includeInactive?: boolean }) {
   const [products, setProducts] = useState<CatalogProduct[]>(MOCK_CATALOG_PRODUCTS);
   const [loading, setLoading] = useState(true);
   const [usingLive, setUsingLive] = useState(false);
 
+  const fetchSupabaseProducts = async (isMounted = true) => {
+    setLoading(true);
+    try {
+      let query = supabase
+        .from('products')
+        .select('id, name, base_price, description, image, is_active, tags, categories(name)');
+
+      if (!options?.includeInactive) {
+        query = query.eq('is_active', true);
+      }
+
+      const { data, error } = await query;
+
+      if (isMounted && !error && data && data.length > 0) {
+        const mapped: CatalogProduct[] = data.map((p: any) => ({
+          id: p.id,
+          name: p.name,
+          category: p.categories?.name || 'Artisan Choice',
+          price: Number(p.base_price) || 45000,
+          image: p.image || 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=600&q=80',
+          description: p.description || 'Sajian istimewa dari dapur Velvra.',
+          tags: Array.isArray(p.tags) ? p.tags : ['Special'],
+          is_available: p.is_active !== false,
+          source: 'live',
+        }));
+        setProducts(mapped);
+        setUsingLive(true);
+      } else if (isMounted && options?.includeInactive && !error && data && data.length === 0) {
+        setProducts([]);
+        setUsingLive(true);
+      } else if (isMounted) {
+        setUsingLive(true);
+      }
+    } catch (err) {
+      console.warn('Fallback to mock catalog:', err);
+    } finally {
+      if (isMounted) setLoading(false);
+    }
+  };
+
   useEffect(() => {
     let isMounted = true;
-
-    async function fetchSupabaseProducts() {
-      try {
-        const { data, error } = await supabase
-          .from('products')
-          .select('id, name, base_price, description, image, is_active, tags, categories(name)')
-          .eq('is_active', true);
-
-        if (isMounted && !error && data && data.length > 0) {
-          const mapped: CatalogProduct[] = data.map((p: any) => ({
-            id: p.id,
-            name: p.name,
-            category: p.categories?.name || 'Artisan Choice',
-            price: Number(p.base_price) || 45000,
-            image: p.image || 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=600&q=80',
-            description: p.description || 'Sajian istimewa dari dapur Velvra.',
-            tags: Array.isArray(p.tags) ? p.tags : ['Special'],
-            is_available: p.is_active,
-            source: 'live',
-          }));
-          setProducts(mapped);
-          setUsingLive(true);
-        } else {
-          setUsingLive(true);
-        }
-      } catch (err) {
-        console.warn('Fallback to mock catalog:', err);
-      } finally {
-        if (isMounted) setLoading(false);
-      }
-    }
-
-    fetchSupabaseProducts();
-
+    fetchSupabaseProducts(isMounted);
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [options?.includeInactive]);
 
-  return { products, loading, usingLive };
+  return { products, loading, usingLive, refetch: () => fetchSupabaseProducts(true) };
 }
