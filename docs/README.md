@@ -44,6 +44,7 @@ Dokumen PRD Velvra telah dipecah menjadi beberapa file terpisah untuk memudahkan
 - **23-bukti-eksekusi-dan-audit-fase-3.md** - Bukti eksekusi & audit Fase 3 (POS Checkout & KDS Real-Time Synchronization)
 - **24-bukti-eksekusi-dan-audit-fase-4.md** - Bukti eksekusi & audit Fase 4 (CRM & Loyalty Engine Integration)
 - **25-bukti-eksekusi-dan-audit-fase-5-6.md** - Bukti eksekusi & audit Fase 5 & 6 (CMS, Analytics, Promotions, Audit Logs & Go-Live)
+- **26-panduan-eksekusi-dan-audit-frontend-uiux.md** - Master frontend UI/UX integration roadmap, mock purge checklist & system verification guide
 
 ## 🗂️ Cara Menggunakan
 
