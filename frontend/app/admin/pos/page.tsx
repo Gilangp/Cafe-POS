@@ -1,7 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { Search, Plus, Minus, Trash2, ChevronRight, CreditCard, Banknote, Smartphone, Coffee, ShoppingBag } from 'lucide-react';
+import { Search, Plus, Minus, Trash2, ChevronRight, CreditCard, Banknote, Smartphone, Coffee, ShoppingBag, Check } from 'lucide-react';
+import { useProducts } from '@/hooks/useProducts';
+import { useRealtimeOrders } from '@/hooks/useRealtimeOrders';
 
 const categories = ['Semua', 'Espresso', 'Latte', 'Cold Brew', 'Matcha', 'Pastry', 'Makanan'];
 
@@ -35,14 +37,28 @@ const paymentMethods = [
 ];
 
 export default function PosPage() {
+  const { products: catalogProducts, usingLive } = useProducts();
+  const { createLiveOrder } = useRealtimeOrders();
+
   const [activeCategory, setActiveCategory] = useState('Semua');
   const [search, setSearch] = useState('');
   const [cart, setCart] = useState<CartItem[]>([]);
   const [payment, setPayment] = useState('cash');
   const [orderDone, setOrderDone] = useState(false);
 
-  const filtered = products.filter((p) => {
-    const matchCat = activeCategory === 'Semua' || p.category === activeCategory;
+  // Use dynamic products from Supabase when connected, fallback to default POS items
+  const displayProducts = (usingLive && catalogProducts && catalogProducts.length > 0)
+    ? catalogProducts.map((p, idx) => ({
+        id: typeof p.id === 'number' ? p.id : idx + 100,
+        name: p.name,
+        price: p.price,
+        category: p.category || 'Espresso',
+        emoji: p.category?.toLowerCase().includes('pastry') ? 'PASTRY' : p.category?.toLowerCase().includes('makanan') ? 'FOOD' : 'COFFEE',
+      }))
+    : products;
+
+  const filtered = displayProducts.filter((p) => {
+    const matchCat = activeCategory === 'Semua' || p.category === activeCategory || (activeCategory === 'Espresso' && p.category.toLowerCase().includes('coffee'));
     const matchSearch = p.name.toLowerCase().includes(search.toLowerCase());
     return matchCat && matchSearch;
   });
@@ -67,9 +83,19 @@ export default function PosPage() {
   const tax = Math.round(subtotal * 0.11);
   const total = subtotal + tax;
 
-  const handleOrder = () => {
+  const handleOrder = async () => {
     if (cart.length === 0) return;
     setOrderDone(true);
+    try {
+      await createLiveOrder({
+        customer_name: `Kasir Walk-in (${payment.toUpperCase()})`,
+        order_type: 'takeaway',
+        total: total,
+        table_number: 'BAR-POS',
+      });
+    } catch (err) {
+      console.warn('POS live order trigger err:', err);
+    }
     setTimeout(() => {
       setCart([]);
       setOrderDone(false);
@@ -226,7 +252,10 @@ export default function PosPage() {
             }`}
           >
             {orderDone ? (
-              <span>✅ Order Berhasil Dikirim!</span>
+              <span className="flex items-center gap-2 text-green-400">
+                <Check size={18} />
+                <span>Order Berhasil Dikirim ke KDS!</span>
+              </span>
             ) : (
               <>
                 <span>Proses Pembayaran</span>
