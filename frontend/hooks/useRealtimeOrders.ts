@@ -120,12 +120,40 @@ export function useRealtimeOrders() {
     };
   }, []);
 
+  const triggerStockDeduction = async (order: any) => {
+    try {
+      const multiplier = Number(order?.items_count || 2);
+      // Reduce key ingredients in cloud inventory if table exists
+      const { data: invItems } = await supabase.from('inventory').select('id, item_name, current_stock');
+      if (invItems && invItems.length > 0) {
+        for (const item of invItems) {
+          const name = (item.item_name || '').toLowerCase();
+          let deduct = 0;
+          if (name.includes('kopi')) deduct = 18 * multiplier;
+          else if (name.includes('susu')) deduct = 150 * multiplier;
+          else if (name.includes('cup') || name.includes('gelas')) deduct = 1 * multiplier;
+
+          if (deduct > 0 && typeof item.current_stock === 'number') {
+            const newStock = Math.max(0, item.current_stock - deduct);
+            await supabase.from('inventory').update({ current_stock: newStock, updated_at: new Date().toISOString() }).eq('id', item.id);
+          }
+        }
+      }
+    } catch (err) {
+      console.warn('Auto stock deduction info:', err);
+    }
+  };
+
   const updateOrderStatus = async (id: string | number, newStatus: LiveOrder['status']) => {
     // Optimistic UI update
     setOrders((prev) => prev.map((o) => (o.id === id ? { ...o, status: newStatus } : o)));
 
-    // If it's a live record, update in Supabase
     const target = orders.find((o) => o.id === id);
+    if (newStatus === 'completed') {
+      triggerStockDeduction(target || { items_count: 2 });
+    }
+
+    // If it's a live record, update in Supabase
     if (target && target.source === 'live') {
       await supabase.from('orders').update({ status: newStatus }).eq('id', id);
     }
