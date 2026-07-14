@@ -42,7 +42,8 @@ export function AdminHeader({ onMenuToggle }: AdminHeaderProps) {
       <div className="flex items-center gap-4">
         <button
           onClick={onMenuToggle}
-          className="flex h-9 w-9 items-center justify-center rounded-lg text-gray-500 hover:bg-gray-100 transition-colors"
+          title="Toggle Sidebar Menu"
+          className="flex h-9 w-9 items-center justify-center rounded-lg text-gray-500 hover:bg-gray-100 transition-colors active:scale-95"
         >
           <Menu size={20} />
         </button>

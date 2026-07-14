@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 import {
   LayoutDashboard, ShoppingCart, Monitor, Package,
   UtensilsCrossed, Users, BarChart3, Settings,
-  Coffee, ChevronLeft, ChevronRight, CalendarCheck,
+  Coffee, CalendarCheck,
   Megaphone, Star, Truck, FileText, MapPin, Building2,
 } from 'lucide-react';
 
@@ -138,14 +138,6 @@ export function AdminSidebar({ open, onToggle }: AdminSidebarProps) {
           ))}
         </nav>
 
-        {/* Toggle Button */}
-        <button
-          onClick={onToggle}
-          className="hidden lg:flex items-center justify-center h-10 w-10 mx-auto mb-4 rounded-full border border-white/10 text-white/50 hover:border-primary/50 hover:text-primary transition-all"
-          title={open ? 'Collapse sidebar' : 'Expand sidebar'}
-        >
-          {open ? <ChevronLeft size={16} /> : <ChevronRight size={16} />}
-        </button>
       </aside>
     </>
   );
