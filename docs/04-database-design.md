@@ -1,4 +1,4 @@
-﻿# 4. Database Design
+# 4. Database Design
 
 **Dokumen:** Database Design Specification
 **Versi:** 1.0.0
@@ -362,7 +362,185 @@ CREATE TABLE cms_blocks (
 
 ---
 
-## 4.10 Audit & Logs
+## 4.10 Warehouses, Procurement & Batch Tracking
+
+```sql
+CREATE TABLE warehouses (
+    id BIGSERIAL PRIMARY KEY,
+    organization_id BIGINT NOT NULL REFERENCES organizations(id),
+    name VARCHAR(120) NOT NULL,
+    region_id VARCHAR(80),
+    type VARCHAR(40) NOT NULL DEFAULT 'REGIONAL',
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE stock_batches (
+    id BIGSERIAL PRIMARY KEY,
+    inventory_item_id BIGINT NOT NULL REFERENCES inventory_items(id),
+    location_id BIGINT NOT NULL,
+    location_type VARCHAR(40) NOT NULL,
+    quantity_received DECIMAL(14,3) NOT NULL,
+    quantity_remaining DECIMAL(14,3) NOT NULL,
+    received_date DATE NOT NULL,
+    expiration_date DATE NULL,
+    unit_cost_cents BIGINT NOT NULL,
+    purchase_order_id BIGINT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE suppliers (
+    id BIGSERIAL PRIMARY KEY,
+    organization_id BIGINT NOT NULL REFERENCES organizations(id),
+    name VARCHAR(160) NOT NULL,
+    contact_info JSONB,
+    payment_terms VARCHAR(80),
+    lead_time_days INTEGER DEFAULT 3,
+    status VARCHAR(40) NOT NULL DEFAULT 'ACTIVE',
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE supplier_items (
+    id BIGSERIAL PRIMARY KEY,
+    supplier_id BIGINT NOT NULL REFERENCES suppliers(id) ON DELETE CASCADE,
+    inventory_item_id BIGINT NOT NULL REFERENCES inventory_items(id),
+    unit_cost_cents BIGINT NOT NULL,
+    rank INTEGER NOT NULL DEFAULT 1,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE purchase_orders (
+    id BIGSERIAL PRIMARY KEY,
+    supplier_id BIGINT NOT NULL REFERENCES suppliers(id),
+    branch_id BIGINT NULL REFERENCES branches(id),
+    warehouse_id BIGINT NULL REFERENCES warehouses(id),
+    po_number VARCHAR(80) NOT NULL UNIQUE,
+    status VARCHAR(40) NOT NULL DEFAULT 'DRAFT',
+    total_cents BIGINT NOT NULL DEFAULT 0,
+    approved_by BIGINT NULL REFERENCES users(id),
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE purchase_order_items (
+    id BIGSERIAL PRIMARY KEY,
+    purchase_order_id BIGINT NOT NULL REFERENCES purchase_orders(id) ON DELETE CASCADE,
+    inventory_item_id BIGINT NOT NULL REFERENCES inventory_items(id),
+    quantity_ordered DECIMAL(14,3) NOT NULL,
+    quantity_received DECIMAL(14,3) NOT NULL DEFAULT 0,
+    unit_cost_cents BIGINT NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+```
+
+---
+
+## 4.11 Modifiers, Tables, Reservations, KDS & HR
+
+```sql
+CREATE TABLE modifier_groups (
+    id BIGSERIAL PRIMARY KEY,
+    menu_item_id BIGINT NOT NULL REFERENCES menu_items(id) ON DELETE CASCADE,
+    name VARCHAR(120) NOT NULL,
+    is_required BOOLEAN NOT NULL DEFAULT FALSE,
+    min_select INTEGER NOT NULL DEFAULT 0,
+    max_select INTEGER NOT NULL DEFAULT 1,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE modifiers (
+    id BIGSERIAL PRIMARY KEY,
+    modifier_group_id BIGINT NOT NULL REFERENCES modifier_groups(id) ON DELETE CASCADE,
+    name VARCHAR(120) NOT NULL,
+    price_delta_cents BIGINT NOT NULL DEFAULT 0,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE order_item_modifiers (
+    id BIGSERIAL PRIMARY KEY,
+    order_item_id BIGINT NOT NULL REFERENCES order_items(id) ON DELETE CASCADE,
+    modifier_id BIGINT NOT NULL REFERENCES modifiers(id),
+    price_delta_cents BIGINT NOT NULL DEFAULT 0
+);
+
+CREATE TABLE promotions (
+    id BIGSERIAL PRIMARY KEY,
+    branch_id BIGINT NULL REFERENCES branches(id),
+    code VARCHAR(80) UNIQUE,
+    name VARCHAR(160) NOT NULL,
+    type VARCHAR(40) NOT NULL,
+    rules JSONB NOT NULL,
+    starts_at TIMESTAMPTZ NOT NULL,
+    ends_at TIMESTAMPTZ NOT NULL,
+    status VARCHAR(40) NOT NULL DEFAULT 'ACTIVE',
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE tables (
+    id BIGSERIAL PRIMARY KEY,
+    branch_id BIGINT NOT NULL REFERENCES branches(id),
+    label VARCHAR(60) NOT NULL,
+    capacity INTEGER NOT NULL DEFAULT 2,
+    status VARCHAR(40) NOT NULL DEFAULT 'AVAILABLE',
+    qr_code_token VARCHAR(255) UNIQUE,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE reservations (
+    id BIGSERIAL PRIMARY KEY,
+    branch_id BIGINT NOT NULL REFERENCES branches(id),
+    member_id BIGINT NULL REFERENCES members(id),
+    table_id BIGINT NULL REFERENCES tables(id),
+    reserved_for TIMESTAMPTZ NOT NULL,
+    party_size INTEGER NOT NULL DEFAULT 2,
+    status VARCHAR(40) NOT NULL DEFAULT 'CONFIRMED',
+    notes TEXT,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE kds_tickets (
+    id BIGSERIAL PRIMARY KEY,
+    order_id BIGINT NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
+    branch_id BIGINT NOT NULL REFERENCES branches(id),
+    station_id VARCHAR(80) DEFAULT 'KITCHEN',
+    status VARCHAR(40) NOT NULL DEFAULT 'NEW',
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    ready_at TIMESTAMPTZ NULL
+);
+
+CREATE TABLE user_branch_scope (
+    user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    branch_id BIGINT NOT NULL REFERENCES branches(id) ON DELETE CASCADE,
+    PRIMARY KEY (user_id, branch_id)
+);
+
+CREATE TABLE employees (
+    id BIGSERIAL PRIMARY KEY,
+    user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    branch_id BIGINT NOT NULL REFERENCES branches(id),
+    employee_code VARCHAR(80) NOT NULL UNIQUE,
+    hire_date DATE NOT NULL,
+    employment_status VARCHAR(40) NOT NULL DEFAULT 'ACTIVE',
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE shifts (
+    id BIGSERIAL PRIMARY KEY,
+    employee_id BIGINT NOT NULL REFERENCES employees(id) ON DELETE CASCADE,
+    branch_id BIGINT NOT NULL REFERENCES branches(id),
+    starts_at TIMESTAMPTZ NOT NULL,
+    ends_at TIMESTAMPTZ NOT NULL,
+    status VARCHAR(40) NOT NULL DEFAULT 'SCHEDULED',
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+```
+
+---
+
+## 4.12 Audit & Logs
 
 ```sql
 CREATE TABLE audit_logs (

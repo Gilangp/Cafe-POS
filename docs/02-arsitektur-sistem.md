@@ -1,4 +1,4 @@
-﻿# 2. Arsitektur Sistem
+# 2. Arsitektur Sistem
 
 **Dokumen:** Arsitektur Sistem Velvra
 **Versi:** 1.0.0
@@ -790,12 +790,12 @@ services:
 - Data volume: < 10GB database size di Year 1
 - Availability: 99.5% uptime acceptable (< 4 hours downtime/month)
 
-### 2.16.3 Known Limitations
+### 2.16.3 Batasan Rilis v1.0 & Preparedness Architecture
 
-- **No Multi-Language Support di MVP** (prepared via i18n struktur, implemented later)
-- **No Native Mobile Apps di MVP** (API ready, UI later)
-- **No Offline Mode** (requires full connectivity)
-- **Single Currency** (IDR only di MVP, multi-currency Phase 2)
+- **No Native Mobile Apps di v1.0:** Rilis awal difokuskan pada aplikasi web responsif dan PWA; API telah sepenuhnya disiapkan (`API ready`) untuk native apps iOS/Android pada fase berikutnya sesuai PRD §2.4.
+- **Offline-First Bounded Resilience (POS & KDS):** Aplikasi POS fisik di toko **wajib mendukung offline mode sementara** (*bounded window via IndexedDB local queue*) dan sinkronisasi saat re-connect (`POS-002`). KDS mendukung *local buffering/graceful degradation* dalam jaringan lokal toko (`KDS-005`). Untuk modul web manajemen lainnya (Admin, CMS, Portal) memerlukan konektivitas penuh.
+- **Multi-Branch & Multi-Currency Foundation:** Arsitektur database dan API sejak awal dirancang mendukung *multi-branch, multi-currency, dan multi-timezone* (`§1.2` & `§6.1`), dengan konfigurasi mata uang default tahap awal menggunakan IDR.
+- **Localization Framework (i18n-ready):** Platform disiapkan dengan kerangka kerja i18n sejak Sprint 0, dengan lokalisasi awal mencakup Bahasa Inggris dan Bahasa Indonesia (`§3.1`).
 
 ---
 

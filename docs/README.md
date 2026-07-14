@@ -1,4 +1,4 @@
-﻿# Velvra PRD - Daftar Dokumen
+# Velvra PRD - Daftar Dokumen
 
 Dokumen PRD Velvra telah dipecah menjadi beberapa file terpisah untuk memudahkan navigasi dan maintenance:
 
@@ -38,6 +38,7 @@ Dokumen PRD Velvra telah dipecah menjadi beberapa file terpisah untuk memudahkan
 - **14-roadmap-dan-scalability.md** - Future roadmap dan scalability planning
 - **15-implementation-notes.md** - Engineering handoff, sprint sequencing, DoR/DoD
 - **16-appendices.md** - Priority legend, requirement ID prefix, governance
+- **20-panduan-eksekusi-dan-audit.md** - Master implementation roadmap, checklist audit, & metodologi verifikasi sistem
 
 ## 🗂️ Cara Menggunakan
 
