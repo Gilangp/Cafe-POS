@@ -1,23 +1,23 @@
 'use client';
 
 import { useState } from 'react';
-import { Search, Plus, Minus, Trash2, ChevronRight, CreditCard, Banknote, Smartphone } from 'lucide-react';
+import { Search, Plus, Minus, Trash2, ChevronRight, CreditCard, Banknote, Smartphone, Coffee, ShoppingBag } from 'lucide-react';
 
 const categories = ['Semua', 'Espresso', 'Latte', 'Cold Brew', 'Matcha', 'Pastry', 'Makanan'];
 
 const products = [
-  { id: 1, name: 'Velvet Espresso', price: 30000, category: 'Espresso', emoji: '☕' },
-  { id: 2, name: 'Caramel Latte', price: 38000, category: 'Latte', emoji: '🥛' },
-  { id: 3, name: 'Iced Macchiato', price: 42000, category: 'Latte', emoji: '🧊' },
-  { id: 4, name: 'Golden Cappuccino', price: 35000, category: 'Espresso', emoji: '☕' },
-  { id: 5, name: 'Signature Cold Brew', price: 36000, category: 'Cold Brew', emoji: '🧋' },
-  { id: 6, name: 'Uji Matcha Latte', price: 40000, category: 'Matcha', emoji: '🍵' },
-  { id: 7, name: 'Chocolate Brownie', price: 45000, category: 'Pastry', emoji: '🍫' },
-  { id: 8, name: 'Butter Croissant', price: 32000, category: 'Pastry', emoji: '🥐' },
-  { id: 9, name: 'Almond Pastry', price: 35000, category: 'Pastry', emoji: '🧁' },
-  { id: 10, name: 'Avocado Toast', price: 60000, category: 'Makanan', emoji: '🥑' },
-  { id: 11, name: 'Club Sandwich', price: 65000, category: 'Makanan', emoji: '🥪' },
-  { id: 12, name: 'Tiramisu Slice', price: 55000, category: 'Pastry', emoji: '🍰' },
+  { id: 1, name: 'Velvet Espresso', price: 30000, category: 'Espresso', emoji: 'COFFEE' },
+  { id: 2, name: 'Caramel Latte', price: 38000, category: 'Latte', emoji: 'COFFEE' },
+  { id: 3, name: 'Iced Macchiato', price: 42000, category: 'Latte', emoji: 'COFFEE' },
+  { id: 4, name: 'Golden Cappuccino', price: 35000, category: 'Espresso', emoji: 'COFFEE' },
+  { id: 5, name: 'Signature Cold Brew', price: 36000, category: 'Cold Brew', emoji: 'COFFEE' },
+  { id: 6, name: 'Uji Matcha Latte', price: 40000, category: 'Matcha', emoji: 'COFFEE' },
+  { id: 7, name: 'Chocolate Brownie', price: 45000, category: 'Pastry', emoji: 'PASTRY' },
+  { id: 8, name: 'Butter Croissant', price: 32000, category: 'Pastry', emoji: 'PASTRY' },
+  { id: 9, name: 'Almond Pastry', price: 35000, category: 'Pastry', emoji: 'PASTRY' },
+  { id: 10, name: 'Avocado Toast', price: 60000, category: 'Makanan', emoji: 'FOOD' },
+  { id: 11, name: 'Club Sandwich', price: 65000, category: 'Makanan', emoji: 'FOOD' },
+  { id: 12, name: 'Tiramisu Slice', price: 55000, category: 'Pastry', emoji: 'PASTRY' },
 ];
 
 interface CartItem {
@@ -124,7 +124,9 @@ export default function PosPage() {
                     : 'border-gray-100 bg-white hover:border-[#BA935D]/50'
                 }`}
               >
-                <span className="text-4xl mb-2">{product.emoji}</span>
+                <span className="text-3xl mb-2 text-[#BA935D]">
+                  <Coffee size={28} />
+                </span>
                 <span className="text-sm font-bold text-gray-800 leading-tight mb-1">{product.name}</span>
                 <span className="text-sm font-bold text-[#BA935D]">{fmt(product.price)}</span>
                 {inCart && (
@@ -150,13 +152,15 @@ export default function PosPage() {
         <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3">
           {cart.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center text-gray-300 py-12">
-              <span className="text-5xl mb-3">🛒</span>
+              <ShoppingBag size={48} className="mb-3 text-gray-300" />
               <p className="text-sm font-medium">Belum ada item<br />Pilih menu di sebelah kiri</p>
             </div>
           ) : (
             cart.map((item) => (
               <div key={item.id} className="flex items-center gap-3 rounded-xl bg-gray-50 p-3">
-                <span className="text-2xl">{item.emoji}</span>
+                <div className="p-2 rounded-xl bg-amber-50 text-[#BA935D]">
+                  <Coffee size={20} />
+                </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-bold text-gray-800 truncate">{item.name}</p>
                   <p className="text-xs text-[#BA935D] font-semibold">{fmt(item.price)}</p>

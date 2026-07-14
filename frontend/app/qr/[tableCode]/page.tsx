@@ -14,14 +14,14 @@ interface Product {
 }
 
 const PRODUCTS: Product[] = [
-  { id: 1, name: 'Velvet Espresso', category: 'Espresso', price: 30000, emoji: '☕', desc: 'Espresso shot ganda dengan krema keemasan pekat.' },
-  { id: 2, name: 'Caramel Sea Salt Latte', category: 'Latte', price: 38000, emoji: '🥛', desc: 'Perpaduan espresso artisan dan saus karamel sea salt homemade.' },
-  { id: 3, name: 'Iced Macchiato Cloud', category: 'Latte', price: 42000, emoji: '🧊', desc: 'Cold espresso dengan lapisan macchiato foam dingin.' },
-  { id: 4, name: 'Golden Cappuccino', category: 'Espresso', price: 35000, emoji: '☕', desc: 'Cappuccino klasik racikan rasio 1:1:1.' },
-  { id: 5, name: 'Signature Cold Brew 18H', category: 'Cold Brew', price: 36000, emoji: '🧋', desc: 'Diseduh dengan air dingin secara perlahan selama 18 jam.' },
-  { id: 6, name: 'Valrhona Chocolate Brownie', category: 'Pastry', price: 45000, emoji: '🍫', desc: 'Fudgy brownie hangat dari cokelat Valrhona 70%.' },
-  { id: 7, name: 'French Butter Croissant', category: 'Pastry', price: 32000, emoji: '🥐', desc: 'Croissant panggang segar dengan mentega Prancis.' },
-  { id: 8, name: 'Artisan Avocado Toast', category: 'Makanan', price: 60000, emoji: '🥑', desc: 'Roti sourdough panggang dengan alpukat tumbuk segar.' },
+  { id: 1, name: 'Velvet Espresso', category: 'Espresso', price: 30000, emoji: 'COFFEE', desc: 'Espresso shot ganda dengan krema keemasan pekat.' },
+  { id: 2, name: 'Caramel Sea Salt Latte', category: 'Latte', price: 38000, emoji: 'COFFEE', desc: 'Perpaduan espresso artisan dan saus karamel sea salt homemade.' },
+  { id: 3, name: 'Iced Macchiato Cloud', category: 'Latte', price: 42000, emoji: 'COFFEE', desc: 'Cold espresso dengan lapisan macchiato foam dingin.' },
+  { id: 4, name: 'Golden Cappuccino', category: 'Espresso', price: 35000, emoji: 'COFFEE', desc: 'Cappuccino klasik racikan rasio 1:1:1.' },
+  { id: 5, name: 'Signature Cold Brew 18H', category: 'Cold Brew', price: 36000, emoji: 'COFFEE', desc: 'Diseduh dengan air dingin secara perlahan selama 18 jam.' },
+  { id: 6, name: 'Valrhona Chocolate Brownie', category: 'Pastry', price: 45000, emoji: 'PASTRY', desc: 'Fudgy brownie hangat dari cokelat Valrhona 70%.' },
+  { id: 7, name: 'French Butter Croissant', category: 'Pastry', price: 32000, emoji: 'PASTRY', desc: 'Croissant panggang segar dengan mentega Prancis.' },
+  { id: 8, name: 'Artisan Avocado Toast', category: 'Makanan', price: 60000, emoji: 'FOOD', desc: 'Roti sourdough panggang dengan alpukat tumbuk segar.' },
 ];
 
 import { useRealtimeOrders } from '@/hooks/useRealtimeOrders';
@@ -150,8 +150,8 @@ export default function QrTableOrderingPage() {
                 className="flex items-center justify-between rounded-2xl bg-white border border-gray-200/80 p-4 shadow-sm hover:border-[#BA935D]/50 transition-all"
               >
                 <div className="flex items-center gap-4 min-w-0">
-                  <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-[#FAF6F0] text-3xl">
-                    {product.emoji}
+                  <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-[#FAF6F0] text-[#BA935D]">
+                    <Coffee size={28} />
                   </span>
                   <div className="min-w-0">
                     <span className="text-[10px] font-bold uppercase tracking-wider text-[#BA935D]">{product.category}</span>
@@ -256,7 +256,9 @@ export default function QrTableOrderingPage() {
                   {cart.map((item) => (
                     <div key={item.id} className="flex items-center justify-between rounded-2xl bg-gray-50 p-3.5 border border-gray-100">
                       <div className="flex items-center gap-3">
-                        <span className="text-2xl">{item.emoji}</span>
+                        <div className="p-2 rounded-xl bg-amber-50 text-[#BA935D]">
+                          <Coffee size={20} />
+                        </div>
                         <div>
                           <p className="text-sm font-bold text-gray-800">{item.name}</p>
                           <p className="text-xs font-bold text-[#BA935D]">{fmt(item.price)}</p>

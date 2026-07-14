@@ -1,7 +1,10 @@
 'use client';
 
+import { useState } from 'react';
 import { useProducts, CatalogProduct } from '@/hooks/useProducts';
 import { useRealtimeOrders } from '@/hooks/useRealtimeOrders';
+import { CustomerLayout } from '@/components/customer/customer-layout';
+import { ShoppingBag, Plus, Minus, Trash2, X, Check, MapPin, Search, ChevronDown, Sparkles, Tag, ArrowRight, Coffee } from 'lucide-react';
 
 interface CartItem {
   id: string;
@@ -80,7 +83,7 @@ export default function OnlineOrderPage() {
           name: selectedProduct.name,
           price: finalPrice,
           qty: 1,
-          emoji: '☕',
+          emoji: 'COFFEE',
           ice: iceLevel,
           sweetness: sweetnessLevel,
           milk: milkOption,
@@ -235,7 +238,7 @@ export default function OnlineOrderPage() {
             >
               {/* Image / Emoji Hero */}
               <div className="relative flex items-center justify-center h-48 bg-gradient-to-b from-[#FAF6F0] to-[#f3ebe1] p-6 text-7xl group-hover:scale-105 transition-transform">
-                ☕
+                <Coffee size={48} className="text-[#BA935D]" />
                 {product.tags && product.tags.includes('Best Seller') && (
                   <span className="absolute top-3 right-3 flex items-center gap-1 rounded-full bg-[#BA935D] px-3 py-1 text-[10px] font-bold text-white shadow-md">
                     <Sparkles size={11} /> Favorit
@@ -508,7 +511,9 @@ export default function OnlineOrderPage() {
                 <div className="space-y-4">
                   {cart.map((item) => (
                     <div key={item.id} className="flex items-start gap-3 rounded-2xl border border-gray-100 p-3.5 bg-gray-50/50">
-                      <span className="text-3xl mt-1">{item.emoji}</span>
+                      <div className="p-2 rounded-xl bg-amber-50 text-[#BA935D] mt-1 shrink-0">
+                        <Coffee size={20} />
+                      </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-bold text-gray-800 truncate">{item.name}</p>
                         <p className="text-xs text-[#BA935D] font-bold">{fmt(item.price)}</p>
