@@ -2,16 +2,22 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Supplier extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasUuids;
 
-    protected $fillable = ['name', 'code', 'contact_person', 'email', 'phone', 'address', 'is_active'];
-    protected $casts = ['is_active' => 'boolean'];
+    protected $fillable = [
+        'name',
+        'phone',
+        'address',
+    ];
 
-    public function purchaseOrders() { return $this->hasMany(PurchaseOrder::class); }
+    public function inventories(): HasMany
+    {
+        return $this->hasMany(Inventory::class, 'supplier_id');
+    }
 }

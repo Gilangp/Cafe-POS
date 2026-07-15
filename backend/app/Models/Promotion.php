@@ -2,57 +2,33 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Promotion extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, HasUuids;
 
     protected $fillable = [
-        'name', 'code', 'type', 'value', 'min_order_cents', 'max_discount_cents',
-        'channel', 'start_date', 'end_date', 'usage_count', 'max_usage',
-        'is_active', 'description'
+        'title',
+        'type',
+        'value',
+        'start_date',
+        'end_date',
+        'status',
     ];
 
     protected $casts = [
-        'is_active' => 'boolean',
+        'value' => 'decimal:2',
         'start_date' => 'date',
         'end_date' => 'date',
+        'status' => 'string',
     ];
 
-    public function calculateDiscount(int $subtotalCents, string $orderChannel = 'All'): int
+    public function menus(): BelongsToMany
     {
-        if (!$this->is_active) {
-            return 0;
-        }
-
-        if ($this->max_usage !== null && $this->usage_count >= $this->max_usage) {
-            return 0;
-        }
-
-        if ($this->channel !== 'All' && strtolower($this->channel) !== strtolower($orderChannel)) {
-            return 0;
-        }
-
-        if ($subtotalCents < $this->min_order_cents) {
-            return 0;
-        }
-
-        $discount = 0;
-        if ($this->type === 'percent') {
-            $discount = (int) round(($subtotalCents * $this->value) / 100);
-            if ($this->max_discount_cents !== null && $discount > $this->max_discount_cents) {
-                $discount = $this->max_discount_cents;
-            }
-        } elseif ($this->type === 'nominal') {
-            $discount = (int) round($this->value);
-        } elseif ($this->type === 'bogo') {
-            // Flat BOGO discount estimate or calculation
-            $discount = (int) round($this->value > 0 ? $this->value : ($subtotalCents / 3));
-        }
-
-        return min($discount, $subtotalCents);
+        return $this->belongsToMany(Menu::class, 'menu_promotions');
     }
 }

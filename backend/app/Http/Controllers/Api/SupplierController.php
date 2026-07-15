@@ -4,77 +4,118 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Supplier;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class SupplierController extends Controller
 {
-    public function index(Request $request)
+    /**
+     * Get list of suppliers.
+     */
+    public function index(Request $request): JsonResponse
     {
-        $query = Supplier::query();
+        $query = Supplier::withCount('inventories');
 
-        if ($request->has('search')) {
-            $search = $request->input('search');
+        if ($request->filled('search')) {
+            $search = $request->search;
             $query->where(function ($q) use ($search) {
-                $q->where('name', 'ILIKE', "%{$search}%")
-                  ->orWhere('code', 'ILIKE', "%{$search}%")
-                  ->orWhere('contact_person', 'ILIKE', "%{$search}%");
+                $q->where('name', 'ilike', "%{$search}%")
+                  ->orWhere('phone', 'ilike', "%{$search}%");
             });
         }
 
-        if ($request->has('is_active')) {
-            $query->where('is_active', $request->boolean('is_active'));
-        }
+        $suppliers = $query->orderBy('name')->get();
 
-        $suppliers = $query->orderBy('name')->paginate($request->input('per_page', 50));
-
-        return response()->json($suppliers);
+        return response()->json([
+            'success' => true,
+            'message' => 'Daftar pemasok bahan baku.',
+            'data' => $suppliers,
+            'meta' => ['total' => $suppliers->count()],
+        ]);
     }
 
-    public function store(Request $request)
+    /**
+     * Create a new supplier.
+     */
+    public function store(Request $request): JsonResponse
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'code' => 'nullable|string|max:50|unique:suppliers,code',
-            'contact_person' => 'nullable|string|max:150',
-            'email' => 'nullable|email|max:150',
-            'phone' => 'nullable|string|max:50',
+            'phone' => 'nullable|string|max:25',
             'address' => 'nullable|string',
-            'is_active' => 'boolean',
         ]);
 
         $supplier = Supplier::create($validated);
 
-        return response()->json($supplier, 201);
+        return response()->json([
+            'success' => true,
+            'message' => 'Pemasok berhasil ditambahkan.',
+            'data' => $supplier->loadCount('inventories'),
+            'meta' => null,
+        ], 201);
     }
 
-    public function show(Supplier $supplier)
+    /**
+     * Show single supplier with supplied inventory items.
+     */
+    public function show(string $id): JsonResponse
     {
-        return response()->json($supplier->load('purchaseOrders'));
+        $supplier = Supplier::with('inventories.category')->findOrFail($id);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Detail pemasok.',
+            'data' => $supplier,
+            'meta' => null,
+        ]);
     }
 
-    public function update(Request $request, Supplier $supplier)
+    /**
+     * Update supplier details.
+     */
+    public function update(Request $request, string $id): JsonResponse
     {
+        $supplier = Supplier::findOrFail($id);
+
         $validated = $request->validate([
-            'name' => 'string|max:255',
-            'code' => 'nullable|string|max:50|unique:suppliers,code,' . $supplier->id,
-            'contact_person' => 'nullable|string|max:150',
-            'email' => 'nullable|email|max:150',
-            'phone' => 'nullable|string|max:50',
+            'name' => 'sometimes|required|string|max:255',
+            'phone' => 'nullable|string|max:25',
             'address' => 'nullable|string',
-            'is_active' => 'boolean',
         ]);
 
         $supplier->update($validated);
 
-        return response()->json($supplier);
+        return response()->json([
+            'success' => true,
+            'message' => 'Pemasok berhasil diperbarui.',
+            'data' => $supplier->loadCount('inventories'),
+            'meta' => null,
+        ]);
     }
 
-    public function destroy(Supplier $supplier)
+    /**
+     * Delete supplier if no inventory items depend on it.
+     */
+    public function destroy(string $id): JsonResponse
     {
+        $supplier = Supplier::withCount('inventories')->findOrFail($id);
+
+        if ($supplier->inventories_count > 0) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Pemasok tidak dapat dihapus karena masih terikat dengan item bahan baku aktif.',
+                'data' => null,
+                'meta' => null,
+            ], 400);
+        }
+
         $supplier->delete();
 
         return response()->json([
-            'message' => 'Supplier deleted successfully',
+            'success' => true,
+            'message' => 'Pemasok berhasil dihapus.',
+            'data' => null,
+            'meta' => null,
         ]);
     }
 }

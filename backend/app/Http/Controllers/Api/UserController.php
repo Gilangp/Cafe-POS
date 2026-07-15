@@ -3,92 +3,142 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Role;
 use App\Models\User;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
-    public function index(Request $request)
+    /**
+     * Get list of users with their assigned roles.
+     */
+    public function index(Request $request): JsonResponse
     {
-        $query = User::with('branch');
-
-        if ($request->has('branch_id')) {
-            $query->where('branch_id', $request->branch_id);
-        }
-
-        if ($request->has('role')) {
-            $query->where('role', $request->role);
-        }
+        $query = User::with('roles');
 
         if ($request->has('is_active')) {
             $query->where('is_active', $request->boolean('is_active'));
         }
 
-        if ($request->has('search')) {
-            $search = $request->input('search');
+        if ($request->filled('search')) {
+            $search = $request->search;
             $query->where(function ($q) use ($search) {
-                $q->where('name', 'ILIKE', "%{$search}%")
-                  ->orWhere('email', 'ILIKE', "%{$search}%");
+                $q->where('name', 'ilike', "%{$search}%")
+                  ->orWhere('email', 'ilike', "%{$search}%");
             });
         }
 
-        $users = $query->orderBy('name')->paginate($request->input('per_page', 20));
+        $users = $query->orderBy('name')->get();
 
-        return response()->json($users);
+        return response()->json([
+            'success' => true,
+            'message' => 'Daftar pengguna sistem.',
+            'data' => $users,
+            'meta' => ['total' => $users->count()],
+        ]);
     }
 
-    public function store(Request $request)
+    /**
+     * Create a new user with roles.
+     */
+    public function store(Request $request): JsonResponse
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255|unique:users',
+            'email' => 'required|email|max:255|unique:users,email',
             'password' => 'required|string|min:8',
-            'phone' => 'nullable|string|max:20',
-            'branch_id' => 'nullable|exists:branches,id',
-            'role' => 'required|string|in:super_admin,corporate_admin,branch_manager,cashier,barista,kitchen,inventory_staff,customer',
+            'phone' => 'nullable|string|max:25',
             'is_active' => 'boolean',
+            'role_ids' => 'required|array',
+            'role_ids.*' => 'uuid|exists:roles,id',
         ]);
 
-        $validated['password'] = Hash::make($validated['password']);
-
-        $user = User::create($validated);
-
-        return response()->json($user->load('branch'), 201);
-    }
-
-    public function show(User $user)
-    {
-        return response()->json($user->load('branch'));
-    }
-
-    public function update(Request $request, User $user)
-    {
-        $validated = $request->validate([
-            'name' => 'string|max:255',
-            'email' => 'email|max:255|unique:users,email,' . $user->id,
-            'password' => 'nullable|string|min:8',
-            'phone' => 'nullable|string|max:20',
-            'branch_id' => 'nullable|exists:branches,id',
-            'role' => 'string|in:super_admin,corporate_admin,branch_manager,cashier,barista,kitchen,inventory_staff,customer',
-            'is_active' => 'boolean',
+        $user = User::create([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'password' => Hash::make($validated['password']),
+            'phone' => $validated['phone'] ?? null,
+            'is_active' => $validated['is_active'] ?? true,
         ]);
 
-        if (isset($validated['password'])) {
-            $validated['password'] = Hash::make($validated['password']);
+        if (!empty($validated['role_ids'])) {
+            $user->roles()->sync($validated['role_ids']);
         }
 
-        $user->update($validated);
-
-        return response()->json($user->load('branch'));
+        return response()->json([
+            'success' => true,
+            'message' => 'Pengguna berhasil ditambahkan.',
+            'data' => $user->load('roles'),
+            'meta' => null,
+        ], 201);
     }
 
-    public function destroy(User $user)
+    /**
+     * Show single user detail.
+     */
+    public function show(string $id): JsonResponse
     {
-        $user->delete();
+        $user = User::with('roles')->findOrFail($id);
+        return response()->json(['success' => true, 'message' => 'Detail pengguna.', 'data' => $user, 'meta' => null]);
+    }
+
+    /**
+     * Update user details and roles.
+     */
+    public function update(Request $request, string $id): JsonResponse
+    {
+        $user = User::findOrFail($id);
+
+        $validated = $request->validate([
+            'name' => 'sometimes|required|string|max:255',
+            'email' => 'sometimes|required|email|max:255|unique:users,email,' . $user->id,
+            'password' => 'nullable|string|min:8',
+            'phone' => 'nullable|string|max:25',
+            'is_active' => 'boolean',
+            'role_ids' => 'nullable|array',
+            'role_ids.*' => 'uuid|exists:roles,id',
+        ]);
+
+        if (isset($validated['name'])) $user->name = $validated['name'];
+        if (isset($validated['email'])) $user->email = $validated['email'];
+        if (array_key_exists('phone', $validated)) $user->phone = $validated['phone'];
+        if (isset($validated['is_active'])) $user->is_active = $validated['is_active'];
+        if (!empty($validated['password'])) $user->password = Hash::make($validated['password']);
+
+        $user->save();
+
+        if ($request->has('role_ids')) {
+            $user->roles()->sync($validated['role_ids'] ?? []);
+        }
 
         return response()->json([
-            'message' => 'User deleted successfully',
+            'success' => true,
+            'message' => 'Pengguna berhasil diperbarui.',
+            'data' => $user->load('roles'),
+            'meta' => null,
         ]);
+    }
+
+    /**
+     * Delete user.
+     */
+    public function destroy(string $id): JsonResponse
+    {
+        $user = User::findOrFail($id);
+        $user->roles()->detach();
+        $user->delete();
+
+        return response()->json(['success' => true, 'message' => 'Pengguna berhasil dihapus.', 'data' => null, 'meta' => null]);
+    }
+
+    /**
+     * Get all system roles.
+     */
+    public function roles(): JsonResponse
+    {
+        $roles = Role::orderBy('name')->get();
+        return response()->json(['success' => true, 'message' => 'Daftar peran sistem.', 'data' => $roles, 'meta' => null]);
     }
 }

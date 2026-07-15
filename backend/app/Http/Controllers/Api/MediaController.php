@@ -3,113 +3,112 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\MediaLibrary;
-use App\Models\AuditLog;
+use App\Models\Media;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class MediaController extends Controller
 {
-    public function index(Request $request)
+    /**
+     * List uploaded media records.
+     */
+    public function index(Request $request): JsonResponse
     {
-        $query = MediaLibrary::with('uploader:id,name');
-        if ($request->has('mime_type')) {
+        $query = Media::with('uploader:id,name,email');
+        if ($request->filled('mime_type')) {
             $query->where('mime_type', 'like', '%' . $request->mime_type . '%');
         }
+        $media = $query->latest()->get();
+
         return response()->json([
-            'data' => $query->orderBy('id', 'desc')->get()
+            'success' => true,
+            'message' => 'Daftar berkas media admin.',
+            'data' => $media,
+            'meta' => ['total' => $media->count()],
         ]);
     }
 
-    public function store(Request $request)
+    /**
+     * Upload physical file to storage and save metadata in media table.
+     */
+    public function upload(Request $request): JsonResponse
+    {
+        $request->validate([
+            'file' => 'required|file|max:10240|mimes:jpeg,png,jpg,webp,svg,mp4,pdf',
+        ]);
+
+        $file = $request->file('file');
+        $originalName = $file->getClientOriginalName();
+        $mimeType = $file->getMimeType();
+        $size = $file->getSize();
+
+        // Store in public/media or external storage
+        $storedPath = $file->storeAs('media/' . date('Y/m'), Str::uuid() . '.' . $file->getClientOriginalExtension(), 'public');
+        $publicUrl = Storage::disk('public')->url($storedPath);
+
+        $media = Media::create([
+            'file_name' => $originalName,
+            'file_path' => $publicUrl,
+            'mime_type' => $mimeType,
+            'size' => $size,
+            'uploaded_by' => $request->user() ? $request->user()->id : null,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Berkas media berhasil diunggah.',
+            'data' => $media->load('uploader:id,name'),
+            'meta' => null,
+        ], 201);
+    }
+
+    /**
+     * Store media metadata directly (for client-side direct uploads to Supabase Storage).
+     */
+    public function store(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'disk' => 'nullable|string|max:40',
-            'path' => 'required|string',
-            'filename' => 'required|string|max:255',
+            'file_name' => 'required|string|max:255',
+            'file_path' => 'required|string',
             'mime_type' => 'nullable|string|max:120',
-            'size_bytes' => 'nullable|integer|min:0',
-            'alt_text' => 'nullable|string|max:255',
+            'size' => 'nullable|integer|min:0',
         ]);
 
-        $media = MediaLibrary::create([
-            'disk' => $validated['disk'] ?? 'public',
-            'path' => $validated['path'],
-            'filename' => $validated['filename'],
+        $media = Media::create([
+            'file_name' => $validated['file_name'],
+            'file_path' => $validated['file_path'],
             'mime_type' => $validated['mime_type'] ?? null,
-            'size_bytes' => $validated['size_bytes'] ?? 0,
-            'alt_text' => $validated['alt_text'] ?? null,
-            'uploaded_by' => auth()->id(),
+            'size' => $validated['size'] ?? 0,
+            'uploaded_by' => $request->user() ? $request->user()->id : null,
         ]);
 
-        AuditLog::create([
-            'branch_id' => null,
-            'user_id' => auth()->id(),
-            'auditable_type' => MediaLibrary::class,
-            'auditable_id' => $media->id,
-            'action' => 'CREATED',
-            'old_values' => null,
-            'new_values' => $media->toArray(),
-            'ip_address' => $request->ip(),
-            'user_agent' => $request->userAgent(),
-            'created_at' => now(),
-        ]);
-
-        return response()->json(['data' => $media], 201);
+        return response()->json([
+            'success' => true,
+            'message' => 'Metadata media berhasil disimpan.',
+            'data' => $media->load('uploader:id,name'),
+            'meta' => null,
+        ], 201);
     }
 
-    public function show($id)
+    /**
+     * Show single media detail.
+     */
+    public function show(string $id): JsonResponse
     {
-        $media = MediaLibrary::with('uploader:id,name')->findOrFail($id);
-        return response()->json(['data' => $media]);
+        $media = Media::with('uploader:id,name,email')->findOrFail($id);
+        return response()->json(['success' => true, 'message' => 'Detail media.', 'data' => $media, 'meta' => null]);
     }
 
-    public function update(Request $request, $id)
+    /**
+     * Delete media record and file.
+     */
+    public function destroy(string $id): JsonResponse
     {
-        $media = MediaLibrary::findOrFail($id);
-        $oldValues = $media->toArray();
-
-        $validated = $request->validate([
-            'alt_text' => 'nullable|string|max:255',
-            'filename' => 'sometimes|string|max:255',
-        ]);
-
-        $media->update($validated);
-
-        AuditLog::create([
-            'branch_id' => null,
-            'user_id' => auth()->id(),
-            'auditable_type' => MediaLibrary::class,
-            'auditable_id' => $media->id,
-            'action' => 'UPDATED',
-            'old_values' => $oldValues,
-            'new_values' => $media->toArray(),
-            'ip_address' => $request->ip(),
-            'user_agent' => $request->userAgent(),
-            'created_at' => now(),
-        ]);
-
-        return response()->json(['data' => $media]);
-    }
-
-    public function destroy(Request $request, $id)
-    {
-        $media = MediaLibrary::findOrFail($id);
-        $oldValues = $media->toArray();
+        $media = Media::findOrFail($id);
         $media->delete();
 
-        AuditLog::create([
-            'branch_id' => null,
-            'user_id' => auth()->id(),
-            'auditable_type' => MediaLibrary::class,
-            'auditable_id' => $media->id,
-            'action' => 'DELETED',
-            'old_values' => $oldValues,
-            'new_values' => null,
-            'ip_address' => $request->ip(),
-            'user_agent' => $request->userAgent(),
-            'created_at' => now(),
-        ]);
-
-        return response()->json(['message' => 'Media deleted successfully']);
+        return response()->json(['success' => true, 'message' => 'Media berhasil dihapus.', 'data' => null, 'meta' => null]);
     }
 }

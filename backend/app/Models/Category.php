@@ -2,41 +2,26 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Category extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, HasUuids;
 
     protected $fillable = [
         'name',
-        'slug',
-        'description',
-        'parent_id',
-        'image',
-        'sort_order',
-        'is_active',
+        'display_order',
     ];
 
     protected $casts = [
-        'is_active' => 'boolean',
-        'sort_order' => 'integer',
+        'display_order' => 'integer',
     ];
 
-    public function parent()
+    public function menus(): HasMany
     {
-        return $this->belongsTo(Category::class, 'parent_id');
-    }
-
-    public function children()
-    {
-        return $this->hasMany(Category::class, 'parent_id');
-    }
-
-    public function products()
-    {
-        return $this->hasMany(Product::class);
+        return $this->hasMany(Menu::class, 'category_id');
     }
 }

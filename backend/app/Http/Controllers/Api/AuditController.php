@@ -4,50 +4,40 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\AuditLog;
-use App\Models\AccessLog;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class AuditController extends Controller
 {
-    public function logs(Request $request)
+    /**
+     * Get system audit logs with filtering options (user, module, action).
+     */
+    public function logs(Request $request): JsonResponse
     {
-        $query = AuditLog::with('user:id,name,email', 'branch:id,name');
+        $query = AuditLog::with('user:id,name,email');
 
-        if ($request->has('auditable_type')) {
-            $query->where('auditable_type', 'like', '%' . $request->auditable_type . '%');
+        if ($request->filled('module')) {
+            $query->where('module', 'like', '%' . $request->module . '%');
         }
 
-        if ($request->has('action')) {
-            $query->where('action', $request->action);
+        if ($request->filled('action')) {
+            $query->where('action', 'like', '%' . $request->action . '%');
         }
 
-        if ($request->has('branch_id')) {
-            $query->where('branch_id', $request->branch_id);
-        }
-
-        if ($request->has('user_id')) {
+        if ($request->filled('user_id')) {
             $query->where('user_id', $request->user_id);
         }
 
-        $limit = $request->input('limit', 50);
+        $limit = (int) $request->input('limit', 50);
+        $logs = $query->latest()->limit($limit)->get();
 
         return response()->json([
-            'data' => $query->orderBy('id', 'desc')->limit($limit)->get()
-        ]);
-    }
-
-    public function accessLogs(Request $request)
-    {
-        $query = AccessLog::with('user:id,name,email');
-
-        if ($request->has('status_code')) {
-            $query->where('status_code', $request->status_code);
-        }
-
-        $limit = $request->input('limit', 50);
-
-        return response()->json([
-            'data' => $query->orderBy('id', 'desc')->limit($limit)->get()
+            'success' => true,
+            'message' => 'Daftar audit log sistem.',
+            'data' => $logs,
+            'meta' => [
+                'total' => $logs->count(),
+            ],
         ]);
     }
 }

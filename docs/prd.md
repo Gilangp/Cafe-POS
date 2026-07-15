@@ -57,3 +57,6 @@ Untuk kemudahan pemeliharaan dan kejelasan spesifikasi, dokumen PRD ini telah di
 *   **Roadmap (Gantt Chart)**: Timeline estimasi waktu pengembangan selama 20 minggu (5 Bulan).
 *   **Testing Strategy**: Unit testing, integration testing, E2E, accessibility, dan user acceptance testing (UAT).
 *   **Acceptance Criteria & Definition of Done**: Kriteria serah terima fitur per modul.
+
+### 8. [Rencana Implementasi Terperinci](./implementation_plan.md)
+*   **Checklist Implementasi**: Panduan langkah-demi-langkah (Fase 1 s.d. Fase 10) untuk merombak backend (Laravel) dan frontend (Next.js).

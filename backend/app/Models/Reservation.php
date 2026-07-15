@@ -2,23 +2,35 @@
 
 namespace App\Models;
 
-use App\Models\Concerns\BranchScoped;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Reservation extends Model
 {
-    use BranchScoped, HasFactory, SoftDeletes;
+    use HasFactory, HasUuids;
 
     protected $fillable = [
-        'branch_id', 'member_id', 'reservation_code', 'customer_name', 'customer_phone',
-        'customer_email', 'reservation_date', 'reservation_time', 'party_size',
-        'table_number', 'special_requests', 'status', 'deposit_cents'
+        'table_id',
+        'name',
+        'phone',
+        'reservation_date',
+        'reservation_time',
+        'guest_count',
+        'purpose',
+        'notes',
+        'status',
     ];
 
-    protected $casts = ['reservation_date' => 'date'];
+    protected $casts = [
+        'reservation_date' => 'date',
+        'guest_count' => 'integer',
+        'status' => 'string',
+    ];
 
-    public function branch() { return $this->belongsTo(Branch::class); }
-    public function member() { return $this->belongsTo(Member::class); }
+    public function table(): BelongsTo
+    {
+        return $this->belongsTo(Table::class, 'table_id');
+    }
 }

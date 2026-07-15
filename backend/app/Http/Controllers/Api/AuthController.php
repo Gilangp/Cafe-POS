@@ -4,89 +4,95 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
-    public function login(Request $request)
+    /**
+     * Login internal user using email & password and return Sanctum token.
+     */
+    public function login(Request $request): JsonResponse
     {
         $request->validate([
             'email' => 'required|email',
-            'password' => 'required',
+            'password' => 'required|string',
         ]);
 
-        $user = User::where('email', $request->email)->first();
+        $user = User::with('roles')->where('email', $request->email)->first();
 
         if (!$user || !Hash::check($request->password, $user->password)) {
-            throw ValidationException::withMessages([
-                'email' => ['The provided credentials are incorrect.'],
-            ]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Kredensial email atau password yang Anda masukkan salah.',
+                'data' => null,
+                'meta' => null,
+            ], 401);
         }
 
         if (!$user->is_active) {
             return response()->json([
-                'message' => 'Your account has been deactivated.',
+                'success' => false,
+                'message' => 'Akun Anda telah dinonaktifkan. Silakan hubungi Administrator atau Owner.',
+                'data' => null,
+                'meta' => null,
             ], 403);
         }
 
-        $token = $user->createToken('api-token')->plainTextToken;
+        $token = $user->createToken('auth-token')->plainTextToken;
 
         return response()->json([
-            'user' => $user->load('branch'),
-            'token' => $token,
+            'success' => true,
+            'message' => 'Login berhasil.',
+            'data' => [
+                'user' => $user,
+                'token' => $token,
+            ],
+            'meta' => null,
         ]);
     }
 
-    public function register(Request $request)
-    {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
-            'phone' => 'nullable|string|max:20',
-        ]);
-
-        $user = User::create([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'password' => Hash::make($validated['password']),
-            'phone' => $validated['phone'] ?? null,
-            'role' => 'customer',
-        ]);
-
-        $token = $user->createToken('api-token')->plainTextToken;
-
-        return response()->json([
-            'user' => $user,
-            'token' => $token,
-        ], 201);
-    }
-
-    public function logout(Request $request)
+    /**
+     * Logout & invalidate current token.
+     */
+    public function logout(Request $request): JsonResponse
     {
         $token = $request->user()->currentAccessToken();
         if ($token && method_exists($token, 'delete')) {
             $token->delete();
-        } elseif (method_exists($request->user(), 'tokens')) {
-            $request->user()->tokens()->delete();
         }
 
         return response()->json([
-            'message' => 'Logged out successfully',
+            'success' => true,
+            'message' => 'Logout berhasil.',
+            'data' => null,
+            'meta' => null,
         ]);
     }
 
-    public function me(Request $request)
+    /**
+     * Get currently logged in user profile & roles.
+     */
+    public function me(Request $request): JsonResponse
     {
+        $user = $request->user()->load('roles');
+
         return response()->json([
-            'user' => $request->user()->load('branch'),
+            'success' => true,
+            'message' => 'Data profil pengguna yang sedang login.',
+            'data' => [
+                'user' => $user,
+            ],
+            'meta' => null,
         ]);
     }
 
-    public function refresh(Request $request)
+    /**
+     * Refresh current user token.
+     */
+    public function refresh(Request $request): JsonResponse
     {
         $user = $request->user();
         $token = $user->currentAccessToken();
@@ -96,19 +102,30 @@ class AuthController extends Controller
 
         if (!$user->is_active) {
             return response()->json([
-                'message' => 'Your account has been deactivated.',
+                'success' => false,
+                'message' => 'Akun Anda telah dinonaktifkan.',
+                'data' => null,
+                'meta' => null,
             ], 403);
         }
 
-        $newToken = $user->createToken('api-token')->plainTextToken;
+        $newToken = $user->createToken('auth-token')->plainTextToken;
 
         return response()->json([
-            'user' => $user->load('branch'),
-            'token' => $newToken,
+            'success' => true,
+            'message' => 'Token berhasil diperbarui.',
+            'data' => [
+                'user' => $user->load('roles'),
+                'token' => $newToken,
+            ],
+            'meta' => null,
         ]);
     }
 
-    public function updateProfile(Request $request)
+    /**
+     * Update logged in user profile details.
+     */
+    public function updateProfile(Request $request): JsonResponse
     {
         $user = $request->user();
         $validated = $request->validate([
@@ -130,20 +147,12 @@ class AuthController extends Controller
         $user->save();
 
         return response()->json([
-            'message' => 'Profile updated successfully',
-            'user' => $user->load('branch'),
-        ]);
-    }
-
-    public function forgotPassword(Request $request)
-    {
-        $request->validate([
-            'email' => 'required|email|exists:users,email',
-        ]);
-
-        // Password reset logic will be implemented here
-        return response()->json([
-            'message' => 'Password reset link sent to your email',
+            'success' => true,
+            'message' => 'Profil berhasil diperbarui.',
+            'data' => [
+                'user' => $user->load('roles'),
+            ],
+            'meta' => null,
         ]);
     }
 }

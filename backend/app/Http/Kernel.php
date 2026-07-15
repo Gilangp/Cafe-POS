@@ -25,6 +25,7 @@ class Kernel extends HttpKernel
         'api' => [
             \Illuminate\Routing\Middleware\ThrottleRequests::class.':api',
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
+            \App\Http\Middleware\AuditLogMiddleware::class,
         ],
     ];
 
@@ -40,7 +41,7 @@ class Kernel extends HttpKernel
         'signed' => \Illuminate\Routing\Middleware\ValidateSignature::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
-        'permission' => \App\Http\Middleware\CheckUserPermission::class,
-        'branch.scope' => \App\Http\Middleware\CheckBranchScope::class,
+        'role' => \App\Http\Middleware\RoleMiddleware::class,
+        'audit' => \App\Http\Middleware\AuditLogMiddleware::class,
     ];
 }
