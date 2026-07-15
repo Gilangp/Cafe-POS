@@ -1,0 +1,11 @@
+.git
+.gitignore
+.env
+.env.example
+node_modules
+vendor
+storage/*.key
+tests
+phpunit.xml
+.phpunit.result.cache
+docker-compose.yml
