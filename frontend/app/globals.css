@@ -4,23 +4,79 @@
 
 :root {
   --font-inter: 'Inter', sans-serif;
+  --font-poppins: 'Poppins', sans-serif;
   --font-playfair: 'Playfair Display', serif;
 }
 
 @layer base {
   :root {
-    --background: 40 43% 96%; /* #FAF6F0 warm cream */
-    --foreground: 22 13% 11%; /* #1E1A17 dark espresso text */
-    --card: 0 0% 100%;
-    --card-foreground: 22 13% 11%;
+    /* NEMU Space Light Theme (Table 30.2) */
+    --background: 36 60% 95%; /* #FAF3E7 Ivory Cream */
+    --foreground: 154 34% 18%; /* #1E3D31 Deep Forest Green */
+    
+    --card: 0 0% 100%; /* #FFFFFF Surface */
+    --card-foreground: 154 34% 18%;
+    
     --popover: 0 0% 100%;
-    --popover-foreground: 22 13% 11%;
-    --primary: 36 38% 54%; /* #BA935D exact matte golden-tan from button screenshot */
-    --primary-foreground: 19 8% 6%;
-    --muted: 36 33% 90%;
-    --muted-foreground: 22 10% 45%;
-    --border: 36 25% 85%;
-    --accent: 26 56% 62%;
+    --popover-foreground: 154 34% 18%;
+    
+    --primary: 154 34% 18%; /* #1E3D31 Deep Forest Green */
+    --primary-hover: 154 37% 14%; /* #163026 Darker Forest Green */
+    --primary-foreground: 0 0% 100%; /* White */
+    
+    --secondary: 25 33% 33%; /* #6F4E37 Roasted Brown */
+    --secondary-foreground: 0 0% 100%;
+    
+    --accent: 35 51% 57%; /* #C89B5C Warm Gold */
+    --accent-foreground: 154 34% 18%;
+    
+    --muted: 38 42% 90%; /* #F1E9DA Beige Kertas (Surface Muted) */
+    --muted-foreground: 29 12% 32%; /* #5C5348 Warm Grey Brown */
+    
+    --border: 38 35% 83%; /* #E4D9C4 */
+    --input: 38 35% 83%;
+    --ring: 154 34% 18%;
+    
+    --success: 120 23% 39%; /* #4C7A4C */
+    --warning: 41 57% 51%; /* #C79A3C */
+    --destructive: 2 55% 45%; /* #B23A34 */
+    --destructive-foreground: 0 0% 100%;
+    
+    --radius: 0.75rem; /* --radius-md 12px */
+  }
+
+  .dark {
+    /* NEMU Space Dark Theme (Table 30.2) */
+    --background: 150 23% 10%; /* #14201A Deep Pine Black-Green */
+    --foreground: 36 43% 93%; /* #F5EFE6 */
+    
+    --card: 150 18% 14%; /* #1E2B24 Surface Dark */
+    --card-foreground: 36 43% 93%;
+    
+    --popover: 150 18% 14%;
+    --popover-foreground: 36 43% 93%;
+    
+    --primary: 36 43% 85%; /* #E8DCC8 Warm Cream */
+    --primary-hover: 36 50% 90%; /* #F2E9DA Lighter Cream */
+    --primary-foreground: 150 23% 10%;
+    
+    --secondary: 28 28% 52%; /* #A9825F Muted Caramel */
+    --secondary-foreground: 150 23% 10%;
+    
+    --accent: 39 56% 65%; /* #D9B675 Soft Gold */
+    --accent-foreground: 150 23% 10%;
+    
+    --muted: 150 14% 18%; /* #26332C */
+    --muted-foreground: 28 17% 66%; /* #B8A99A */
+    
+    --border: 150 12% 23%; /* #33413A */
+    --input: 150 12% 23%;
+    --ring: 39 56% 65%;
+    
+    --success: 120 23% 55%; /* #6FA96F */
+    --warning: 41 68% 62%; /* #E0B75C */
+    --destructive: 4 61% 62%; /* #D96A63 */
+    --destructive-foreground: 0 0% 100%;
   }
 
   * {
@@ -33,12 +89,12 @@
   }
 
   body {
-    @apply bg-background text-foreground font-sans antialiased;
+    @apply bg-[#FAF3E7] dark:bg-[#14201A] text-[#1E3D31] dark:text-[#F5EFE6] font-sans antialiased;
     font-feature-settings: 'rlig' 1, 'calt' 1;
   }
 
   ::selection {
-    background: rgba(186, 147, 93, 0.3);
+    background: rgba(200, 155, 92, 0.3);
   }
 }
 
@@ -47,67 +103,69 @@
     @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
   }
 
-  /* Exact EXPLORE MENU button styling from reference image */
+  /* NEMU Space Primary CTA Button */
   .btn-primary {
-    @apply inline-flex h-12 items-center justify-center rounded-full bg-[#BA935D] px-8 text-[13px] font-bold uppercase tracking-[0.12em] text-[#110E0D] transition-all duration-300 hover:bg-[#A8824C] hover:scale-105 shadow-sm;
+    @apply inline-flex h-12 items-center justify-center rounded-xl bg-[#1E3D31] px-8 text-[14px] font-semibold tracking-wide text-white transition-all duration-300 hover:bg-[#163026] hover:scale-105 shadow-md active:scale-95;
   }
 
-  /* Exact LEARN MORE button styling from reference image */
+  /* NEMU Space Secondary CTA Button */
   .btn-secondary {
-    @apply inline-flex h-12 items-center justify-center rounded-full border border-white/30 bg-transparent px-8 text-[13px] font-bold uppercase tracking-[0.12em] text-white transition-all duration-300 hover:border-white hover:bg-white/10;
+    @apply inline-flex h-12 items-center justify-center rounded-xl border border-[#1E3D31]/30 bg-transparent px-8 text-[14px] font-semibold tracking-wide text-[#1E3D31] transition-all duration-300 hover:border-[#1E3D31] hover:bg-[#1E3D31]/10 active:scale-95;
   }
 
-  .btn-outline-dark {
-    @apply inline-flex h-12 items-center justify-center rounded-full border border-foreground/30 bg-transparent px-8 text-[13px] font-bold uppercase tracking-[0.12em] text-foreground transition-all duration-300 hover:border-[#BA935D] hover:bg-[#BA935D]/10 hover:text-[#BA935D];
+  .btn-gold {
+    @apply inline-flex h-12 items-center justify-center rounded-xl bg-[#C89B5C] px-8 text-[14px] font-semibold tracking-wide text-[#1E3D31] transition-all duration-300 hover:bg-[#b58849] hover:scale-105 shadow-md active:scale-95;
   }
 
   .section-title {
-    @apply font-serif text-3xl font-bold tracking-tight text-foreground sm:text-4xl md:text-5xl lg:text-6xl;
+    @apply font-heading text-3xl font-bold tracking-tight text-[#1E3D31] dark:text-[#F5EFE6] sm:text-4xl md:text-5xl lg:text-6xl;
   }
 
   .section-subtitle {
-    @apply mx-auto mt-4 max-w-2xl text-base text-muted-foreground sm:text-lg;
+    @apply mx-auto mt-4 max-w-2xl text-base text-[#5C5348] dark:text-[#B8A99A] sm:text-lg font-sans;
   }
 }
 
 @layer utilities {
   .text-gold {
-    color: #BA935D;
+    color: #C89B5C;
   }
 
-  .bg-dark-hero {
-    background-color: #12100E;
+  .bg-forest {
+    background-color: #1E3D31;
   }
 
-  /* Dotted leader lines for the bistro menu layout */
+  .bg-ivory {
+    background-color: #FAF3E7;
+  }
+
+  /* Dotted leader lines for the menu layout */
   .menu-dots {
     flex-grow: 1;
-    border-bottom: 2px dotted #DECBB1;
+    border-bottom: 2px dotted #E4D9C4;
     margin: 0 12px;
     position: relative;
     top: -6px;
   }
 
-  /* Postcard tape decoration */
   .mask-tape {
     position: absolute;
     top: -12px;
     left: 50%;
-    transform: translateX(-50%);
+    transform: translateX(-50%) rotate(-1deg);
     width: 90px;
     height: 24px;
-    background-color: rgba(222, 203, 177, 0.7);
+    background-color: rgba(228, 217, 196, 0.7);
     backdrop-filter: blur(4px);
     box-shadow: 0 2px 4px rgba(0,0,0,0.06);
     border-radius: 2px;
-    transform: translateX(-50%) rotate(-1deg);
   }
 }
 
 /* Hide all scrollbars globally across the entire app while maintaining smooth scrolling */
 * {
-  -ms-overflow-style: none !important; /* IE and Edge */
-  scrollbar-width: none !important; /* Firefox */
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
 }
 
 ::-webkit-scrollbar,

@@ -102,7 +102,7 @@ Dokumen ini disusun sebagai panduan langkah-demi-langkah (checklist) untuk merom
 ### FASE 5: FRONTEND DESIGN SYSTEM & SHARED SETUP (FRONTEND)
 > **Referensi Dokumen:** [06_design_system.md](./06_design_system.md) (Bab 30 & 31)
 
-- [ ] **5.1 Konfigurasi Tailwind CSS & Theme Variables**
+- [x] **5.1 Konfigurasi Tailwind CSS & Theme Variables**
   - Modifikasi `tailwind.config.ts` untuk memuat palette NEMU Space:
     - Primary: `#1E3D31` (Deep Forest Green)
     - Accent: `#C89B5C` (Warm Gold)
@@ -110,9 +110,9 @@ Dokumen ini disusun sebagai panduan langkah-demi-langkah (checklist) untuk merom
     - Background Light: `#FAF3E7` (Ivory Cream)
     - Background Dark: `#14201A` (Deep Pine Black-Green)
   - Pasang font Poppins (Heading) & Inter (Body) via Google Fonts.
-- [ ] **5.2 Setup API Client & Interceptors**
+- [x] **5.2 Setup API Client & Interceptors**
   - Setup Axios/Fetch di `lib/api.ts` yang otomatis mengirimkan header token Sanctum Bearer.
-- [ ] **5.3 Setup Shared UI Components (shadcn/ui)**
+- [x] **5.3 Setup Shared UI Components (shadcn/ui)**
   - Buat komponen fundamental: Button, Card, Dialog/Modal, Input, Select, Table, Badge, Toast Notification, dan Drawer.
   - Implementasikan sticky Navbar & Footer responsif.
 
@@ -122,20 +122,20 @@ Dokumen ini disusun sebagai panduan langkah-demi-langkah (checklist) untuk merom
 > **Referensi Dokumen:** [04_modules_specification.md](./04_modules_specification.md) (Bab 14) & [02_system_architecture.md](./02_system_architecture.md) (Bab 11.1)
 > **Referensi Visual Landing Page:** File gambar [docs/Nemu Space.jfif](./Nemu Space.jfif)
 
-- [ ] **6.1 Halaman Utama (Landing Page `/`)**
+- [x] **6.1 Halaman Utama (Landing Page `/`)**
   - Render banner slider utama (Bab 14.2) dengan layout visual mengacu pada referensi gambar [Nemu Space.jfif](./Nemu Space.jfif).
   - Section Tentang Kami.
   - Section Kategori Kopi ("Handcrafted Curations") dengan foto bulat/organik berlatar gelap tekstur biji kopi.
   - Section Menu Favorit ("Barista Recommends") grid menu berlatar terang dengan badge bestseller.
   - Section Promo, FAQ, Testimoni, dan footer solid hijau tua.
-- [ ] **6.2 Halaman Menu Publik (`/menu`)**
+- [x] **6.2 Halaman Menu Publik (`/menu`)**
   - Filter kategori dinamis & pencarian menu.
-- [ ] **6.3 Halaman Reservasi Publik (`/reservasi` & `/reservasi/status`)**
+- [x] **6.3 Halaman Reservasi Publik (`/reservasi` & `/reservasi/status`)**
   - Form reservasi (Nama, HP, Tanggal, Jam, Jumlah Tamu).
   - Halaman cek status reservasi tanpa login.
-- [ ] **6.4 Halaman Artikel (`/artikel` & `/artikel/[slug]`) & Galeri (`/galeri`)**
+- [x] **6.4 Halaman Artikel (`/artikel` & `/artikel/[slug]`) & Galeri (`/galeri`)**
   - Blog artikel dengan detail dinamis dan Galeri foto lightbox.
-- [ ] **6.5 Konfigurasi PWA (Progressive Web App)**
+- [x] **6.5 Konfigurasi PWA (Progressive Web App)**
   - Setup service worker, manifest JSON, icons, dan strategi offline caching untuk Landing Page & Menu.
 
 ---
@@ -143,15 +143,15 @@ Dokumen ini disusun sebagai panduan langkah-demi-langkah (checklist) untuk merom
 ### FASE 7: PORTAL KASIR & SCREEN POS (FRONTEND)
 > **Referensi Dokumen:** [04_modules_specification.md](./04_modules_specification.md) (Bab 17) & [02_system_architecture.md](./02_system_architecture.md) (Bab 11.2)
 
-- [ ] **7.1 Halaman Login (`/login`)**
+- [x] **7.1 Halaman Login (`/login`)**
   - Form login multi-role dengan redirect dinamis ke modul terkait.
-- [ ] **7.2 Layar POS Kasir (`/kasir/pos`)**
+- [x] **7.2 Layar POS Kasir (`/kasir/pos`)**
   - Layar split: Grid menu bersongsong gambar di kiri, keranjang & pembayaran di kanan.
   - Input catatan pesanan (misal: "less sugar", "no ice") per item.
   - Input diskon transaksi (nominal / persentase).
   - Pilihan pembayaran (Tunai, QRIS, Kartu).
   - Tombol bayar & print struk (thermal print template).
-- [ ] **7.3 Riwayat Transaksi & Reservasi Hari Ini**
+- [x] **7.3 Riwayat Transaksi & Reservasi Hari Ini**
   - Riwayat transaksi shift berjalan dengan detail item & status.
   - Widget list reservasi hari ini yang siap dicheck-in.
 
@@ -160,15 +160,15 @@ Dokumen ini disusun sebagai panduan langkah-demi-langkah (checklist) untuk merom
 ### FASE 8: KITCHEN DISPLAY SYSTEM (FRONTEND)
 > **Referensi Dokumen:** [04_modules_specification.md](./04_modules_specification.md) (Bab 41)
 
-- [ ] **8.1 Layar Antrian Dapur (`/dapur/kitchen-display`)**
+- [x] **8.1 Layar Antrian Dapur (`/dapur/kitchen-display`)**
   - Tiga kolom antrian: **Diterima**, **Diproses**, dan **Siap**.
   - Setiap kartu pesanan menampilkan detail item, jumlah, catatan, dan elapsed time.
-- [ ] **8.2 Real-time Sync & Sound Alert**
+- [x] **8.2 Real-time Sync & Sound Alert**
   - Polling interval 3-5 detik (atau websocket) untuk menarik pesanan baru.
   - Suara notifikasi (bell/alert) ketika pesanan baru masuk ke kolom "Diterima".
-- [ ] **8.3 Timer Keterlambatan**
+- [x] **8.3 Timer Keterlambatan**
   - Indikator warna kartu tiket berubah jika waktu berjalan melewati batas wajar (default > 10 menit: hijau → kuning → merah).
-- [ ] **8.4 Sinkronisasi POS**
+- [x] **8.4 Sinkronisasi POS**
   - Begitu KDS mengubah status tiket menjadi "Siap", notifikasi/penanda visual langsung muncul di dasbor Kasir.
 
 ---
@@ -176,18 +176,18 @@ Dokumen ini disusun sebagai panduan langkah-demi-langkah (checklist) untuk merom
 ### FASE 9: PORTAL ADMIN CMS & INVENTORY (FRONTEND)
 > **Referensi Dokumen:** [04_modules_specification.md](./04_modules_specification.md) (Bab 15, 18, 19, 20)
 
-- [ ] **9.1 Halaman CMS Landing Page & Settings**
+- [x] **9.1 Halaman CMS Landing Page & Settings**
   - Pengelolaan seksi aktif (toggle on/off), drag & drop urutan banner, pengelolaan kontak & jam buka.
-- [ ] **9.2 Halaman CRUD Menu, Kategori & Promo**
+- [x] **9.2 Halaman CRUD Menu, Kategori & Promo**
   - Pengelolaan resep/komposisi bahan baku per item menu.
   - CRUD Promo dengan masa berlaku tanggal & waktu.
-- [ ] **9.3 Halaman Manajemen Reservasi**
+- [x] **9.3 Halaman Manajemen Reservasi**
   - Daftar antrian reservasi masuk dengan pilihan aksi: Konfirmasi (dan pilih Nomor Meja) / Tolak / Selesai / Batal.
-- [ ] **9.4 Halaman Manajemen Inventory**
+- [x] **9.4 Halaman Manajemen Inventory**
   - Daftar stok bahan baku saat ini.
   - Fitur pencatatan barang masuk (Stock In) dan barang keluar manual (Stock Out).
   - Notifikasi visual/peringatan apabila stok berada di bawah `minimum_stock`.
-- [ ] **9.5 Halaman Laporan & Ekspor**
+- [x] **9.5 Halaman Laporan & Ekspor**
   - Grafik & tabel ringkasan penjualan, mutasi barang, dan reservasi.
   - Fitur unduh laporan PDF & Excel.
 
@@ -196,15 +196,15 @@ Dokumen ini disusun sebagai panduan langkah-demi-langkah (checklist) untuk merom
 ### FASE 10: PORTAL OWNER, AUDIT LOG & BACKUP (FRONTEND)
 > **Referensi Dokumen:** [04_modules_specification.md](./04_modules_specification.md) (Bab 16.3) & [07_roadmap_and_testing.md](./07_roadmap_and_testing.md)
 
-- [ ] **10.1 Dasbor Bisnis Owner**
+- [x] **10.1 Dasbor Bisnis Owner**
   - Grafik tren penjualan mingguan/bulanan (Recharts).
   - Statistik top menu terlaris & profitabilitas.
-- [ ] **10.2 Manajemen User & Multi-Role**
+- [x] **10.2 Manajemen User & Multi-Role**
   - Kelola user internal (buat/edit/nonaktifkan akun Kasir, Admin, Dapur/Barista).
   - Pengaturan peran ganda (misal: Kasir sekaligus Dapur).
-- [ ] **10.3 Halaman Audit Log & Keamanan**
+- [x] **10.3 Halaman Audit Log & Keamanan**
   - Menampilkan riwayat log aktivitas user internal secara terperinci.
-- [ ] **10.4 Menu Backup & Restore**
+- [x] **10.4 Menu Backup & Restore**
   - Tombol ekspor database manual & restore database dengan prompt double-confirmation.
 
 ---

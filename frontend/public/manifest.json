@@ -1,0 +1,43 @@
+{
+  "name": "NEMU Space Specialty Roastery & Cafe",
+  "short_name": "NEMU Space",
+  "description": "Artisan handcrafted coffee curations, slow-bar specialty brews, and seamless digital service.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FAF3E7",
+  "theme_color": "#1E3D31",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/images/favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Katalog Menu",
+      "short_name": "Menu",
+      "description": "Jelajahi sajian kopi specialty & hidangan",
+      "url": "/menu"
+    },
+    {
+      "name": "Reservasi Meja",
+      "short_name": "Reservasi",
+      "description": "Pesan meja atau cek status reservasi",
+      "url": "/reservasi"
+    }
+  ]
+}
