@@ -4,6 +4,8 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Coffee, Mail, Lock, Eye, EyeOff, Loader2, ArrowRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import api from '@/shared/api/axios';
+import { useAuthStore } from '@/store/auth.store';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -38,18 +40,44 @@ export default function LoginPage() {
 
     setStatus('loading');
 
-    // Simulasi ke Backend Auth
-    setTimeout(() => {
-      if (email.includes('admin') || email.includes('owner') || email.includes('kasir')) {
+    try {
+      const response = await api.post('/auth/login', { email, password });
+      
+      if (response.data?.success) {
         setStatus('success');
+        
+        const { user, token } = response.data.data;
+        const userRole = user.roles && user.roles.length > 0 ? user.roles[0].name : 'Unknown';
+        
+        // Simpan ke Global Store
+        useAuthStore.getState().setToken(token);
+        useAuthStore.getState().setUser({
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          role: userRole,
+        });
+
+        if (rememberMe) {
+          localStorage.setItem('nemu_remember', email);
+        }
+        
+        // Redirect berdasarkan role
         setTimeout(() => {
-          router.push('/dashboard');
+          const roleLower = userRole.toLowerCase();
+          if (roleLower === 'kasir') router.push('/kasir/pos');
+          else if (roleLower === 'dapur_barista') router.push('/admin/kds');
+          else if (roleLower === 'owner') router.push('/admin/analytics');
+          else router.push('/admin');
         }, 800);
       } else {
         setStatus('error');
-        setErrorMessage('Email atau password yang Anda masukkan tidak sesuai.');
+        setErrorMessage(response.data?.message || 'Login gagal.');
       }
-    }, 1200);
+    } catch (error: any) {
+      setStatus('error');
+      setErrorMessage(error.response?.data?.message || 'Terjadi kesalahan jaringan atau server.');
+    }
   };
 
   return (
