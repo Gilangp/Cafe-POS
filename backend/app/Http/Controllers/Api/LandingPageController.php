@@ -11,7 +11,8 @@ use App\Models\Setting;
 use App\Models\SocialMedia;
 use App\Models\Testimonial;
 use Illuminate\Http\JsonResponse;
-
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 class LandingPageController extends Controller
 {
     /**
@@ -94,6 +95,41 @@ class LandingPageController extends Controller
             'data' => $testimonials,
             'meta' => ['total' => $testimonials->count()],
         ]);
+    }
+
+    /**
+     * Submit a new testimonial (Customer)
+     */
+    public function storeTestimonial(Request $request): JsonResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:100',
+            'role' => 'nullable|string|max:100',
+            'rating' => 'required|integer|min:1|max:5',
+            'content' => 'required|string|max:500',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validasi gagal.',
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+
+        $testimonial = Testimonial::create([
+            'name' => $request->name,
+            'role' => $request->role,
+            'rating' => $request->rating,
+            'content' => $request->content,
+            'is_active' => false, // Needs admin approval
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Ulasan berhasil dikirim dan menunggu persetujuan.',
+            'data' => $testimonial,
+        ], 201);
     }
 
     /**

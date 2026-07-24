@@ -47,6 +47,7 @@ Route::prefix('v1')->group(function () {
     Route::get('/promotions', [App\Http\Controllers\Api\LandingPageController::class, 'promotions']);
     Route::get('/faqs', [App\Http\Controllers\Api\LandingPageController::class, 'faqs']);
     Route::get('/testimonials', [App\Http\Controllers\Api\LandingPageController::class, 'testimonials']);
+    Route::post('/testimonials', [App\Http\Controllers\Api\LandingPageController::class, 'storeTestimonial']);
     Route::get('/settings', [App\Http\Controllers\Api\LandingPageController::class, 'settings']);
 
     // ─── Auth Endpoints (FASE 2) ─────────────────────────────────────
