@@ -27,6 +27,7 @@ import {
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useLanguage, LanguageProvider } from '@/shared/providers/language-context';
+import { CartProvider } from '@/shared/providers/cart-context';
 import { Toaster } from '@/shared/components/ui/toaster';
 import api from '@/shared/api/axios';
 
@@ -342,12 +343,14 @@ export function PublicLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <LanguageProvider>
-      <div className="min-h-screen flex flex-col bg-[#FAF3E7] dark:bg-[#14201A] selection:bg-[#C89B5C]/30 text-[#1E3D31] dark:text-[#F5EFE6] pt-20">
-        <PublicNavbar settings={settings} />
-        <main className="flex-1">{children}</main>
-        <PublicFooter settings={settings} />
-        <Toaster />
-      </div>
+      <CartProvider>
+        <div className="min-h-screen flex flex-col bg-[#FAF3E7] dark:bg-[#14201A] selection:bg-[#C89B5C]/30 text-[#1E3D31] dark:text-[#F5EFE6] pt-20">
+          <PublicNavbar settings={settings} />
+          <main className="flex-1">{children}</main>
+          <PublicFooter settings={settings} />
+          <Toaster />
+        </div>
+      </CartProvider>
     </LanguageProvider>
   );
 }
