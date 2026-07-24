@@ -18,12 +18,12 @@ export function LandingHeader() {
 
   const navItems = [
     { href: '#home', label: t.header.home },
-    { href: '#featured', label: t.header.featured },
+    { href: '#featured', label: (t.header as any).featured ?? 'Featured' },
     { href: '#about', label: t.header.about },
-    { href: '#journey', label: t.header.journey },
-    { href: '#reviews', label: t.header.reviews },
+    { href: '#journey', label: (t.header as any).journey ?? 'Journey' },
+    { href: '#reviews', label: (t.header as any).reviews ?? 'Reviews' },
     { href: '#menu', label: t.header.menu },
-    { href: '#locations', label: t.header.locations },
+    { href: '#locations', label: (t.header as any).locations ?? 'Locations' },
   ];
 
   return (

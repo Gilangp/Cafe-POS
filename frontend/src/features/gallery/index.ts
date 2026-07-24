@@ -1,3 +1,1 @@
-﻿// gallery feature exports
-export * from './components';
-
+﻿// feature barrel - components exported individually

@@ -74,7 +74,7 @@ export function TestimonialsSection({ testimonials }: { testimonials?: Testimoni
     setIsSubmitting(true);
     try {
       const res = await api.post<any>('/testimonials', formData);
-      if (res.success) {
+      if (res.data?.success) {
         toast({
           title: locale === 'id' ? 'Berhasil Mengirim Ulasan' : 'Review Submitted Successfully',
           description: locale === 'id' ? 'Ulasan Anda sedang diproses oleh admin.' : 'Your review is being processed by the admin.',
@@ -86,7 +86,6 @@ export function TestimonialsSection({ testimonials }: { testimonials?: Testimoni
       toast({
         title: locale === 'id' ? 'Gagal Mengirim Ulasan' : 'Failed to Submit Review',
         description: locale === 'id' ? 'Silakan coba lagi.' : 'Please try again later.',
-        variant: 'destructive',
       });
     } finally {
       setIsSubmitting(false);

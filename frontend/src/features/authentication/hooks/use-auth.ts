@@ -5,24 +5,23 @@ import { useCallback } from 'react';
 export { AuthProvider } from '@/shared/providers/auth-provider';
 
 export function useAuth() {
-  const { user, token, isAuthenticated, isLoading, login, logout, fetchProfile } = useAuthStore();
+  const { user, token, isAuthenticated, logout } = useAuthStore();
 
   const checkSession = useCallback(() => {
     if (typeof window === 'undefined') return false;
-    const currentToken = window.localStorage.getItem('velvra_access_token');
-    const adminSession = window.localStorage.getItem('velvra_admin_session');
-    return !!(currentToken || adminSession || isAuthenticated);
+    const currentToken = window.localStorage.getItem('auth-storage');
+    return !!(currentToken || isAuthenticated);
   }, [isAuthenticated]);
 
   return {
     user,
     token,
     isAuthenticated,
-    isLoading,
-    login,
+    isLoading: false,
+    login: undefined,
     logout,
-    fetchProfile,
+    fetchProfile: undefined,
     checkSession,
-    isSuperAdmin: user?.role === 'super_admin' || user?.role === 'Super Admin',
+    isSuperAdmin: user?.role === 'super_admin' || user?.role === 'Super Admin' || user?.role === 'Owner',
   };
 }

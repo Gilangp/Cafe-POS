@@ -45,7 +45,7 @@ const defaultBanners: HeroBannerData[] = [
 
 export function HeroSlider({ banners }: { banners?: HeroBannerData[] }) {
   const { t } = useLanguage();
-  const activeBanners = banners && banners.length > 0 ? banners : t.landing.hero.defaultBanners.map((b, i) => ({ id: i + 1, ...b }));
+  const activeBanners: HeroBannerData[] = banners && banners.length > 0 ? banners : t.landing.hero.defaultBanners.map((b, i) => ({ id: i + 1, ...b })) as HeroBannerData[];
   const [currentIndex, setCurrentIndex] = React.useState(0);
 
   React.useEffect(() => {

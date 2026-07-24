@@ -44,17 +44,31 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Fetch Event - Strategic Routing (Stale-While-Revalidate / Network-First / Offline Fallback)
+// Fetch Event - Strategic Routing
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
 
-  // Ignore non-GET requests and chrome-extension schemes
+  // ====================================================================
+  // PENTING: Jangan pernah intersep request API apapun.
+  // Biarkan semua request ke /api/v1/* langsung ke network tanpa cache.
+  // Ini mencegah error "Failed to convert value to Response" pada
+  // request POST/PUT/DELETE yang tidak bisa di-cache oleh Service Worker.
+  // ====================================================================
+  if (url.pathname.startsWith('/api/')) {
+    return; // Biarkan browser menangani sendiri, SW tidak ikut campur
+  }
+
+  // Ignore non-GET requests, chrome-extension, dan non-http schemes
   if (event.request.method !== 'GET' || !url.protocol.startsWith('http')) {
     return;
   }
 
-  // 1. API Caching Strategy (Network-First with Stale Cache Fallback for Landing Page & Menus)
-  if (url.pathname.includes('/api/v1/landing-page') || url.pathname.includes('/api/v1/menus') || url.pathname.includes('/api/v1/categories')) {
+  // 1. API Landing Page & Menu: Caching (Network-First dengan Stale Fallback)
+  if (
+    url.pathname.includes('/api/v1/landing-page') ||
+    url.pathname.includes('/api/v1/menus') ||
+    url.pathname.includes('/api/v1/categories')
+  ) {
     event.respondWith(
       fetch(event.request)
         .then((networkResponse) => {
@@ -99,14 +113,17 @@ self.addEventListener('fetch', (event) => {
           }
           return networkResponse;
         })
-        .catch(() => {
-          // If offline and request is a navigation, fallback to root or cached page
+        .catch((err) => {
+          console.error('[Service Worker] Fetch failed:', err);
+          // Jika offline dan request navigasi, fallback ke root
           if (event.request.mode === 'navigate' && !cachedResponse) {
-            return caches.match('/');
+            return caches.match('/').then(res => res || Response.error());
           }
+          return Response.error();
         });
 
-      return cachedResponse || fetchPromise;
+      // Harus selalu mereturn Response, jika undefined akan TypeError
+      return cachedResponse || fetchPromise.then(res => res || Response.error());
     })
   );
 });

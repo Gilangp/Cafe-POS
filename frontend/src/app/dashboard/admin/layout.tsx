@@ -12,24 +12,30 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [authChecked, setAuthChecked] = useState(false);
 
   useEffect(() => {
-    if (pathname === '/admin/login') {
-      setAuthChecked(true);
-      return;
+    // Check from localStorage matching Zustand persist key
+    const authStorage = localStorage.getItem('auth-storage');
+    let isAuthenticated = false;
+
+    if (authStorage) {
+      try {
+        const parsed = JSON.parse(authStorage);
+        if (parsed?.state?.token) {
+          isAuthenticated = true;
+        }
+      } catch (e) {
+        console.error("Gagal parsing auth-storage", e);
+      }
     }
 
-    const session = localStorage.getItem('velvra_admin_session');
-    if (!session) {
-      // Auto redirect to login if session does not exist
-      router.replace('/admin/login');
+    if (!isAuthenticated) {
+      // Auto redirect to global login if token does not exist
+      router.replace('/login');
     } else {
       setAuthChecked(true);
     }
-  }, [pathname, router]);
+  }, [router]);
 
-  // If on login page, render full screen without sidebar/header
-  if (pathname === '/admin/login') {
-    return <div className="min-h-screen bg-[#12100E] text-white">{children}</div>;
-  }
+
 
   // Optional loading guard while checking session
   if (!authChecked) {

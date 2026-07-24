@@ -79,7 +79,6 @@ export default function ReservasiPage() {
       toast({
         title: 'Validasi Gagal',
         description: 'Mohon lengkapi semua field yang wajib diisi.',
-        variant: 'destructive',
       });
       return false;
     }
@@ -87,7 +86,6 @@ export default function ReservasiPage() {
       toast({
         title: 'Validasi Gagal',
         description: 'Mohon jelaskan keperluan Anda.',
-        variant: 'destructive',
       });
       return false;
     }
@@ -95,7 +93,6 @@ export default function ReservasiPage() {
       toast({
         title: 'Validasi Gagal',
         description: 'Anda harus menyetujui syarat reservasi.',
-        variant: 'destructive',
       });
       return false;
     }
@@ -103,7 +100,6 @@ export default function ReservasiPage() {
       toast({
         title: 'Validasi Gagal',
         description: 'Jumlah orang minimal 1.',
-        variant: 'destructive',
       });
       return false;
     }
@@ -111,7 +107,6 @@ export default function ReservasiPage() {
        toast({
         title: 'Validasi Gagal',
         description: 'Tanggal tidak boleh sebelum hari ini.',
-        variant: 'destructive',
       });
       return false;
     }
@@ -135,8 +130,8 @@ export default function ReservasiPage() {
         notes,
       });
 
-      if (res.success || res.data) {
-        setCreatedReservation(res.data || {
+      if (res.data?.success || res.data) {
+        setCreatedReservation(res.data?.data || {
           id: `RES-${Math.floor(1000 + Math.random() * 9000)}`,
           name,
           phone,
@@ -162,7 +157,6 @@ export default function ReservasiPage() {
       toast({
         title: 'Validasi Gagal',
         description: 'Nomor WhatsApp dan Kode Reservasi wajib diisi.',
-        variant: 'destructive',
       });
       return;
     }

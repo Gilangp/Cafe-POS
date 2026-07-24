@@ -1,4 +1,4 @@
-﻿export const ENDPOINTS = {
+export const ENDPOINTS = {
   AUTH: {
     LOGIN: '/auth/login',
     LOGOUT: '/auth/logout',
@@ -6,7 +6,7 @@
   },
   MENU: {
     LIST: '/menus',
-    DETAIL: (id: string) => /menus/,
+    DETAIL: (id: string) => `/menus/${id}`,
   },
   TESTIMONIALS: {
     LIST: '/testimonials',

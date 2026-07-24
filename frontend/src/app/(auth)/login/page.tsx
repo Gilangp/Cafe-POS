@@ -61,14 +61,18 @@ export default function LoginPage() {
         if (rememberMe) {
           localStorage.setItem('nemu_remember', email);
         }
+
+        // Set cookie untuk Next.js Middleware
+        document.cookie = `auth_token=${token}; path=/; max-age=${60 * 60 * 24 * 7}`; // 7 hari
         
+
         // Redirect berdasarkan role
         setTimeout(() => {
           const roleLower = userRole.toLowerCase();
-          if (roleLower === 'kasir') router.push('/kasir/pos');
-          else if (roleLower === 'dapur_barista') router.push('/admin/kds');
-          else if (roleLower === 'owner') router.push('/admin/analytics');
-          else router.push('/admin');
+          if (roleLower === 'kasir') window.location.href = '/dashboard/cashier/pos';
+          else if (roleLower === 'dapur_barista') window.location.href = '/dashboard/admin/kds';
+          else if (roleLower === 'owner') window.location.href = '/dashboard/owner';
+          else window.location.href = '/dashboard/admin';
         }, 800);
       } else {
         setStatus('error');
