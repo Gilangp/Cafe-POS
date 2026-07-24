@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Search, Star, Phone, Mail, ShoppingBag, Plus, Sparkles, Loader2, Gift, Check, X } from 'lucide-react';
+import { Search, Star, Phone, Mail, ShoppingBag, Plus, Loader2, Gift, Check, X } from 'lucide-react';
 import { useCustomers, CustomerMember } from '@/features/users/hooks/use-customers';
 
 const tierStyle: Record<string, { badge: string; bg: string }> = {
@@ -70,7 +70,7 @@ export default function CrmPage() {
             <h1 className="font-serif text-3xl font-bold text-gray-800">Pelanggan & CRM</h1>
             {usingLive ? (
               <span className="flex items-center gap-1 rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold text-emerald-700">
-                <Sparkles size={13} /> Live Supabase CRM
+ Live Supabase CRM
               </span>
             ) : (
               <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-bold text-amber-700">

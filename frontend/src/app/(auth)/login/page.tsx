@@ -1,361 +1,243 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Coffee, Lock, Mail, KeyRound, ArrowRight, ShieldCheck, AlertCircle, Sparkles, User, Store, Shield, ChefHat } from 'lucide-react';
-import { useAuthStore } from '@/store/auth.store';
-
-const ROLES_INFO = [
-  {
-    code: 'barista',
-    title: 'Kasir & POS',
-    pin: '1111',
-    desc: 'Akses transaksi kasir, struk thermal, & check-in reservasi meja',
-    icon: Store,
-    badge: 'POS Terminal',
-    redirect: '/kasir/pos',
-  },
-  {
-    code: 'kds',
-    title: 'Dapur / Barista KDS',
-    pin: '2222',
-    desc: 'Layar antrean dapur, timer pesanan, & notifikasi real-time',
-    icon: ChefHat,
-    badge: 'Kitchen Display',
-    redirect: '/admin/kds',
-  },
-  {
-    code: 'store_manager',
-    title: 'Admin & Store Manager',
-    pin: '1234',
-    desc: 'Manajemen menu, stok inventori, promo, & persetujuan reservasi',
-    icon: Shield,
-    badge: 'Management',
-    redirect: '/admin',
-  },
-  {
-    code: 'super_admin',
-    title: 'Owner / Executive',
-    pin: '8888',
-    desc: 'Laporan laba rugi, audit log sistem, analitik bisnis, & backup',
-    icon: User,
-    badge: 'Executive',
-    redirect: '/admin/analytics',
-  },
-];
+import { Coffee, Mail, Lock, Eye, EyeOff, Loader2, ArrowRight } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export default function LoginPage() {
   const router = useRouter();
-  const [tab, setTab] = useState<'pin' | 'email'>('pin');
-  const [pin, setPin] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [selectedRoleCode, setSelectedRoleCode] = useState<string>('barista');
+  const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
+  
+  const [status, setStatus] = useState<'default' | 'loading' | 'error' | 'success'>('default');
+  const [errorMessage, setErrorMessage] = useState('');
 
-  const handlePinInput = (num: string) => {
-    if (pin.length < 4) {
-      const nextPin = pin + num;
-      setPin(nextPin);
-      if (nextPin.length === 4) {
-        verifyLogin(nextPin, 'pin');
-      }
-    }
-  };
-
-  const handleBackspace = () => {
-    setPin((prev) => prev.slice(0, -1));
-  };
-
-  const verifyLogin = (valueToVerify: string, mode: 'pin' | 'email') => {
-    setLoading(true);
-    setError(null);
-
-    setTimeout(() => {
-      if (mode === 'pin') {
-        const matchedRole = ROLES_INFO.find((r) => r.pin === valueToVerify);
-        if (matchedRole) {
-          const session = {
-            name: matchedRole.code === 'super_admin' ? 'Gilang P. (Owner)' : matchedRole.code === 'store_manager' ? 'Nadia (Manager)' : matchedRole.code === 'kds' ? 'Budi (Barista Lead)' : 'Risa (Kasir Shift 1)',
-            role: matchedRole.title,
-            roleCode: matchedRole.code,
-            mode: 'PIN Auth',
-            loggedAt: Date.now(),
-          };
-          localStorage.setItem('velvra_admin_session', JSON.stringify(session));
-          localStorage.setItem('velvra_access_token', 'nemu-token-' + matchedRole.code + '-' + Date.now());
-          useAuthStore.getState().setUser({
-            id: matchedRole.code === 'super_admin' ? 1 : matchedRole.code === 'store_manager' ? 2 : matchedRole.code === 'kds' ? 3 : 4,
-            name: session.name,
-            email: `${matchedRole.code}@nemuspace.com`,
-            role: matchedRole.code,
-            permissions: ['all'],
-          });
-          useAuthStore.getState().setToken('nemu-token-' + matchedRole.code + '-' + Date.now());
-          router.push(matchedRole.redirect);
-        } else {
-          setError('PIN tidak valid. Gunakan PIN demo di bawah untuk memilih peran/role.');
-          setPin('');
-          setLoading(false);
-        }
-      } else {
-        if (
-          (email.toLowerCase().includes('admin') || email.toLowerCase().includes('owner') || email.toLowerCase().includes('kasir') || email.toLowerCase().includes('nemu')) &&
-          password.length >= 4
-        ) {
-          const targetRole = ROLES_INFO.find((r) => r.code === selectedRoleCode) || ROLES_INFO[0];
-          const session = {
-            name: email.split('@')[0].toUpperCase(),
-            role: targetRole.title,
-            roleCode: targetRole.code,
-            mode: 'Email Auth',
-            loggedAt: Date.now(),
-          };
-          localStorage.setItem('velvra_admin_session', JSON.stringify(session));
-          localStorage.setItem('velvra_access_token', 'nemu-token-' + targetRole.code + '-' + Date.now());
-          useAuthStore.getState().setUser({
-            id: 1,
-            name: session.name,
-            email: email,
-            role: targetRole.code,
-            permissions: ['all'],
-          });
-          useAuthStore.getState().setToken('nemu-token-' + targetRole.code + '-' + Date.now());
-          router.push(targetRole.redirect);
-        } else {
-          setError('Kredensial tidak tepat. Masukkan email (misal: kasir@nemuspace.com) dan kata sandi minimal 4 karakter.');
-          setLoading(false);
-        }
-      }
-    }, 500);
-  };
-
-  const handleEmailSubmit = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email || !password) return;
-    verifyLogin('', 'email');
+    if (!email || !password) {
+      setStatus('error');
+      setErrorMessage('Email dan password wajib diisi.');
+      return;
+    }
+    
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setStatus('error');
+      setErrorMessage('Format email tidak valid.');
+      return;
+    }
+
+    if (password.length < 8) {
+      setStatus('error');
+      setErrorMessage('Password minimal 8 karakter.');
+      return;
+    }
+
+    setStatus('loading');
+
+    // Simulasi ke Backend Auth
+    setTimeout(() => {
+      if (email.includes('admin') || email.includes('owner') || email.includes('kasir')) {
+        setStatus('success');
+        setTimeout(() => {
+          router.push('/dashboard');
+        }, 800);
+      } else {
+        setStatus('error');
+        setErrorMessage('Email atau password yang Anda masukkan tidak sesuai.');
+      }
+    }, 1200);
   };
 
   return (
-    <div className="flex min-h-screen w-full items-center justify-center bg-[#1E3D31] dark:bg-[#14201A] px-4 py-12 text-white relative overflow-x-hidden selection:bg-[#C89B5C]/30">
-      {/* Dynamic Background Glows */}
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute -left-32 -top-32 h-96 w-96 rounded-full bg-[#C89B5C]/15 blur-[120px]" />
-        <div className="absolute -bottom-32 -right-32 h-96 w-96 rounded-full bg-[#C89B5C]/15 blur-[120px]" />
-      </div>
-
-      <div className="relative w-full max-w-2xl rounded-3xl border border-white/15 bg-[#163026]/95 dark:bg-[#1A2620]/95 p-6 sm:p-10 shadow-2xl backdrop-blur-2xl">
-        {/* Brand Header */}
-        <div className="flex flex-col items-center text-center">
-          <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-[#C89B5C] to-[#9e7641] shadow-lg shadow-[#C89B5C]/20 text-[#1E3D31] mb-4">
-            <Coffee size={34} className="stroke-[2.2]" />
+    <div className="flex min-h-screen w-full bg-[#FAF3E7] dark:bg-[#0A100D]">
+      {/* Kolom Kiri: Branding (40%) - Sembunyi di Mobile */}
+      <div className="hidden lg:flex lg:w-[40%] flex-col justify-between bg-[#1E3D31] text-white p-12 relative overflow-hidden">
+        {/* Dekorasi Latar Belakang */}
+        <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
+          <div className="absolute -top-32 -left-32 w-96 h-96 rounded-full bg-[#C89B5C] blur-[100px]" />
+          <div className="absolute bottom-0 right-0 w-full h-1/2 bg-gradient-to-t from-[#0A1A12] to-transparent" />
+        </div>
+        
+        <div className="relative z-10 flex items-center gap-3">
+          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-[#C89B5C] to-[#9e7641] shadow-lg">
+            <Coffee size={24} className="text-[#1E3D31] stroke-[2.5]" />
           </div>
-          <h1 className="font-heading text-3xl sm:text-4xl font-extrabold tracking-wide text-white">
-            NEMU <span className="text-[#C89B5C] font-light">Space</span> Portal
-          </h1>
-          <p className="mt-1 text-xs sm:text-sm text-[#E4D9C4]/80 uppercase tracking-[0.25em] font-sans font-medium">
-            Specialty Roastery · Enterprise POS & Management
+          <div>
+            <h1 className="font-heading text-2xl font-bold tracking-wide">
+              NEMU <span className="text-[#C89B5C] font-light">Space</span>
+            </h1>
+          </div>
+        </div>
+
+        <div className="relative z-10 max-w-sm">
+          <h2 className="text-3xl font-heading font-bold leading-tight mb-4 text-white">
+            Kelola operasional kedai kopi dengan lebih cerdas.
+          </h2>
+          <p className="text-white/80 text-sm leading-relaxed">
+            Sistem manajemen terintegrasi untuk Owner, Admin, dan Kasir. Akses semua kebutuhan operasional NEMU Space dalam satu pintu yang aman dan cepat.
           </p>
         </div>
 
-        {/* Tab Switcher */}
-        <div className="mt-8 flex rounded-2xl bg-black/30 p-1.5 border border-white/10 max-w-md mx-auto">
-          <button
-            onClick={() => { setTab('pin'); setError(null); setPin(''); }}
-            className={`flex-1 flex items-center justify-center gap-2 rounded-xl py-3 text-xs font-bold transition-all ${
-              tab === 'pin' ? 'bg-[#C89B5C] text-[#1E3D31] shadow-lg' : 'text-white/70 hover:text-white'
-            }`}
-          >
-            <KeyRound size={16} /> Cepat via PIN (Shift)
-          </button>
-          <button
-            onClick={() => { setTab('email'); setError(null); }}
-            className={`flex-1 flex items-center justify-center gap-2 rounded-xl py-3 text-xs font-bold transition-all ${
-              tab === 'email' ? 'bg-[#C89B5C] text-[#1E3D31] shadow-lg' : 'text-white/70 hover:text-white'
-            }`}
-          >
-            <Mail size={16} /> Email Kredensial
-          </button>
+        <div className="relative z-10 text-xs text-white/50">
+          &copy; {new Date().getFullYear()} NEMU Space Specialty Roastery.
         </div>
+      </div>
 
-        {/* Error Alert */}
-        {error && (
-          <div className="mt-6 flex items-start gap-3 rounded-2xl border border-red-500/40 bg-red-500/15 p-4 text-xs font-semibold text-red-300 animate-in fade-in">
-            <AlertCircle size={18} className="shrink-0 mt-0.5 text-red-400" />
-            <span className="leading-relaxed">{error}</span>
-          </div>
-        )}
-
-        {/* PIN Auth Mode */}
-        {tab === 'pin' && (
-          <div className="mt-8 flex flex-col items-center">
-            {/* Role Demo Quick Picker */}
-            <div className="w-full mb-8 space-y-3">
-              <span className="block text-[11px] font-bold uppercase tracking-wider text-[#C89B5C] text-center">
-                ★ Pilih Role untuk Isi PIN Otomatis / Cepat:
-              </span>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-                {ROLES_INFO.map((r) => {
-                  const Icon = r.icon;
-                  const isSelected = pin === r.pin;
-                  return (
-                    <button
-                      key={r.code}
-                      type="button"
-                      onClick={() => {
-                        setPin(r.pin);
-                        verifyLogin(r.pin, 'pin');
-                      }}
-                      className={`flex flex-col items-center justify-center p-3 rounded-2xl border text-center transition-all ${
-                        isSelected
-                          ? 'bg-[#C89B5C] border-[#C89B5C] text-[#1E3D31] shadow-md scale-105 font-bold'
-                          : 'bg-white/5 border-white/15 text-white/90 hover:bg-white/10 hover:border-[#C89B5C]/50'
-                      }`}
-                    >
-                      <Icon size={18} className={isSelected ? 'text-[#1E3D31]' : 'text-[#C89B5C]'} />
-                      <span className="text-xs font-bold mt-1.5 leading-tight">{r.title}</span>
-                      <span className="text-[10px] font-mono mt-0.5 opacity-80">PIN: {r.pin}</span>
-                    </button>
-                  );
-                })}
+      {/* Kolom Kanan: Login Card (60%) */}
+      <div className="flex-1 flex items-center justify-center p-6 lg:p-12">
+        <motion.div 
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: 'easeOut' }}
+          className="w-full max-w-[420px] sm:max-w-[480px] bg-white dark:bg-[#14201A] rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] border border-[#E4D9C4]/50 dark:border-white/10 p-8 sm:p-10"
+        >
+          {/* Header Mobile Only */}
+          <div className="flex lg:hidden items-center justify-center mb-8">
+            <div className="flex flex-col items-center gap-3">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-[#C89B5C] to-[#9e7641] shadow-lg">
+                <Coffee size={24} className="text-[#1E3D31] stroke-[2.5]" />
               </div>
+              <h1 className="font-heading text-xl font-bold tracking-wide text-[#1E3D31] dark:text-white">
+                NEMU <span className="text-[#C89B5C] font-light">Space</span>
+              </h1>
             </div>
+          </div>
 
-            {/* PIN Display Dots */}
-            <div className="flex items-center gap-3.5 mb-8">
-              {[0, 1, 2, 3].map((idx) => (
-                <div
-                  key={idx}
-                  className={`flex h-14 w-14 items-center justify-center rounded-2xl border-2 transition-all font-mono text-2xl font-extrabold ${
-                    pin.length > idx
-                      ? 'border-[#C89B5C] bg-[#C89B5C]/25 text-[#C89B5C] shadow-[0_0_20px_rgba(200,155,93,0.3)]'
-                      : 'border-white/15 bg-black/25 text-gray-500'
-                  }`}
-                >
-                  {pin.length > idx ? '●' : '·'}
+          <div className="mb-8 text-center sm:text-left">
+            <h2 className="text-2xl font-bold text-[#1E3D31] dark:text-white mb-2">Masuk ke Dashboard</h2>
+            <p className="text-sm text-gray-500 dark:text-gray-400">Silakan masuk menggunakan akun yang telah diberikan.</p>
+          </div>
+
+          <AnimatePresence>
+            {status === 'error' && (
+              <motion.div
+                initial={{ opacity: 0, height: 0, marginBottom: 0 }}
+                animate={{ opacity: 1, height: 'auto', marginBottom: 24 }}
+                exit={{ opacity: 0, height: 0, marginBottom: 0 }}
+                className="overflow-hidden"
+              >
+                <div className="p-3 bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 rounded-lg text-sm text-red-600 dark:text-red-400 flex items-start gap-2">
+                  <div className="mt-0.5">•</div>
+                  <span>{errorMessage}</span>
                 </div>
-              ))}
-            </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
-            {/* Keypad */}
-            <div className="grid w-full max-w-sm grid-cols-3 gap-3">
-              {['1', '2', '3', '4', '5', '6', '7', '8', '9'].map((num) => (
-                <button
-                  key={num}
-                  disabled={loading}
-                  onClick={() => handlePinInput(num)}
-                  className="flex h-14 items-center justify-center rounded-2xl border border-white/10 bg-black/25 font-mono text-xl font-bold text-white transition-all hover:bg-white/10 hover:border-[#C89B5C]/40 active:scale-95 disabled:opacity-50"
-                >
-                  {num}
-                </button>
-              ))}
-              <button
-                disabled={loading}
-                onClick={() => setPin('')}
-                className="flex h-14 items-center justify-center rounded-2xl border border-white/10 bg-black/25 text-xs font-bold text-red-400 uppercase tracking-wider transition-all hover:bg-red-500/15 active:scale-95"
-              >
-                Reset
-              </button>
-              <button
-                disabled={loading}
-                onClick={() => handlePinInput('0')}
-                className="flex h-14 items-center justify-center rounded-2xl border border-white/10 bg-black/25 font-mono text-xl font-bold text-white transition-all hover:bg-white/10 hover:border-[#C89B5C]/40 active:scale-95"
-              >
-                0
-              </button>
-              <button
-                disabled={loading || pin.length === 0}
-                onClick={handleBackspace}
-                className="flex h-14 items-center justify-center rounded-2xl border border-white/10 bg-black/25 text-xs font-bold text-[#C89B5C] uppercase tracking-wider transition-all hover:bg-[#C89B5C]/15 active:scale-95 disabled:opacity-30"
-              >
-                Hapus
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* Email Auth Mode */}
-        {tab === 'email' && (
-          <form onSubmit={handleEmailSubmit} className="mt-8 space-y-5 max-w-md mx-auto">
-            <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-[#E4D9C4]/80 mb-2">
-                Pilih Target Role Akses
-              </label>
-              <select
-                value={selectedRoleCode}
-                onChange={(e) => setSelectedRoleCode(e.target.value)}
-                className="w-full rounded-2xl border border-white/15 bg-black/35 py-3.5 px-4 text-sm font-semibold text-white focus:border-[#C89B5C] focus:outline-none"
-              >
-                {ROLES_INFO.map((r) => (
-                  <option key={r.code} value={r.code} className="bg-[#1E3D31] text-white">
-                    {r.title} ({r.badge}) ➔ {r.redirect}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-[#E4D9C4]/80 mb-2">
-                Alamat Email
+          <form onSubmit={handleLogin} className="space-y-5">
+            {/* Email Field */}
+            <div className="space-y-1.5">
+              <label htmlFor="email" className="block text-sm font-semibold text-[#1E3D31] dark:text-gray-300">
+                Email
               </label>
               <div className="relative">
-                <Mail size={17} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/50" />
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Mail size={18} className="text-gray-400" />
+                </div>
                 <input
+                  id="email"
                   type="email"
-                  required
+                  autoComplete="email"
+                  disabled={status === 'loading' || status === 'success'}
+                  className="block w-full pl-10 pr-3 py-2.5 border border-gray-200 dark:border-gray-700 rounded-lg text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#C89B5C] focus:border-transparent bg-gray-50 dark:bg-[#1A2620] text-gray-900 dark:text-white transition-all disabled:opacity-60"
+                  placeholder="admin@nemuspace.com"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="kasir@nemuspace.com atau admin@nemuspace.com"
-                  className="w-full rounded-2xl border border-white/15 bg-black/35 py-3.5 pl-11 pr-4 text-sm text-white placeholder:text-white/40 focus:border-[#C89B5C] focus:outline-none focus:ring-1 focus:ring-[#C89B5C]"
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    if (status === 'error') setStatus('default');
+                  }}
                 />
               </div>
             </div>
 
-            <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-[#E4D9C4]/80 mb-2">
-                Kata Sandi
+            {/* Password Field */}
+            <div className="space-y-1.5">
+              <label htmlFor="password" className="block text-sm font-semibold text-[#1E3D31] dark:text-gray-300">
+                Password
               </label>
               <div className="relative">
-                <Lock size={17} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/50" />
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Lock size={18} className="text-gray-400" />
+                </div>
                 <input
-                  type="password"
-                  required
+                  id="password"
+                  type={showPassword ? 'text' : 'password'}
+                  autoComplete="current-password"
+                  disabled={status === 'loading' || status === 'success'}
+                  className="block w-full pl-10 pr-10 py-2.5 border border-gray-200 dark:border-gray-700 rounded-lg text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#C89B5C] focus:border-transparent bg-gray-50 dark:bg-[#1A2620] text-gray-900 dark:text-white transition-all disabled:opacity-60"
+                  placeholder="••••••••"
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••••••"
-                  className="w-full rounded-2xl border border-white/15 bg-black/35 py-3.5 pl-11 pr-4 text-sm text-white placeholder:text-white/40 focus:border-[#C89B5C] focus:outline-none focus:ring-1 focus:ring-[#C89B5C]"
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    if (status === 'error') setStatus('default');
+                  }}
                 />
+                <button
+                  type="button"
+                  tabIndex={-1}
+                  onClick={() => setShowPassword(!showPassword)}
+                  disabled={status === 'loading' || status === 'success'}
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 focus:outline-none"
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
               </div>
             </div>
 
+            {/* Options */}
+            <div className="flex items-center justify-between pt-1">
+              <div className="flex items-center">
+                <input
+                  id="remember-me"
+                  name="remember-me"
+                  type="checkbox"
+                  disabled={status === 'loading' || status === 'success'}
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                  className="h-4 w-4 text-[#C89B5C] focus:ring-[#C89B5C] border-gray-300 rounded"
+                />
+                <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-600 dark:text-gray-400">
+                  Ingat Saya
+                </label>
+              </div>
+
+              <div className="text-sm">
+                <a href="/forgot-password" className="font-semibold text-[#C89B5C] hover:text-[#b88c4d] transition-colors">
+                  Lupa Password?
+                </a>
+              </div>
+            </div>
+
+            {/* Submit Button */}
             <div className="pt-2">
               <button
                 type="submit"
-                disabled={loading}
-                className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[#C89B5C] py-4 text-sm font-bold text-[#1E3D31] hover:bg-[#b88c4d] transition-all shadow-lg hover:scale-[1.01] active:scale-95 disabled:opacity-50"
+                disabled={status === 'loading' || status === 'success'}
+                className={`group relative w-full flex justify-center items-center gap-2 py-3 px-4 border border-transparent text-sm font-bold rounded-lg text-[#1E3D31] transition-all shadow-md
+                  ${status === 'success' ? 'bg-green-500 text-white' : 'bg-[#C89B5C] hover:bg-[#b88c4d]'} 
+                  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#C89B5C] disabled:opacity-70`}
               >
-                <Sparkles size={18} />
-                <span>Masuk ke Portal NEMU Space</span>
-                <ArrowRight size={18} />
+                {status === 'loading' ? (
+                  <>
+                    <Loader2 size={18} className="animate-spin" />
+                    Memproses...
+                  </>
+                ) : status === 'success' ? (
+                  'Login Berhasil'
+                ) : (
+                  <>
+                    Masuk
+                    <ArrowRight size={18} className="transition-transform group-hover:translate-x-1" />
+                  </>
+                )}
               </button>
             </div>
-
-            <div className="mt-4 flex items-center justify-center gap-2 text-xs text-white/70 text-center">
-              <ShieldCheck size={15} className="text-[#C89B5C]" />
-              <span>Email Demo: <strong className="text-[#C89B5C]">kasir@nemuspace.com</strong> · Pass: apapun</span>
-            </div>
           </form>
-        )}
-
-        {/* Footer Info */}
-        <div className="mt-10 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-white/60">
-          <div className="flex items-center gap-2">
-            <ShieldCheck size={16} className="text-[#C89B5C]" />
-            <span>Multi-Role RBAC & Offline-First POS Ready</span>
-          </div>
-          <span>&copy; {new Date().getFullYear()} NEMU Space Specialty Roastery</span>
-        </div>
+        </motion.div>
       </div>
     </div>
   );

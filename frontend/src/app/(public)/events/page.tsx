@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { PublicLayout } from '@/shared/components/layout/public-layout';
-import { Calendar, Clock, MapPin, Users, Ticket, CheckCircle2, ArrowRight, Sparkles, Coffee } from 'lucide-react';
+import { Calendar, Clock, MapPin, Users, Ticket, CheckCircle2, ArrowRight, Coffee } from 'lucide-react';
 import Link from 'next/link';
 
 interface CoffeeEvent {

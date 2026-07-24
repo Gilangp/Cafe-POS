@@ -18,7 +18,6 @@ import {
   Smartphone,
   Monitor,
   CheckCircle2,
-  Sparkles,
   Save,
   X,
   Layers,
@@ -425,7 +424,6 @@ export default function CmsPage() {
               </div>
 
               <div className="text-[11px] text-gray-400 text-center flex items-center justify-center gap-1 pt-2">
-                <Sparkles size={13} className="text-[#C89B5C]" />
                 <span>Perubahan urutan & status aktif langsung direfleksikan di atas.</span>
               </div>
             </div>

@@ -1,7 +1,7 @@
 'use client';
 
 import { PublicLayout } from '@/shared/components/layout/public-layout';
-import { Coffee, Award, Users, ShieldCheck, Heart, Sparkles, MapPin, Clock, ArrowRight } from 'lucide-react';
+import { Coffee, Award, Users, ShieldCheck, Heart, MapPin, Clock, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 
 export default function AboutPage() {
@@ -81,14 +81,14 @@ export default function AboutPage() {
           <div className="rounded-3xl bg-[#12100E] text-white p-12 text-center relative overflow-hidden border-2 border-[#BA935D]/40 shadow-2xl space-y-6">
             <h3 className="font-serif text-3xl sm:text-4xl font-bold text-white">Rasakan Pengalaman NEMU Space Hari Ini</h3>
             <p className="text-sm text-white/70 max-w-xl mx-auto leading-relaxed">
-              Kunjungi langsung lounge kami atau pesan melalui layanan pengantaran cepat kami.
+              Kunjungi langsung lounge kami dan nikmati suasana santai dengan kopi terbaik bersama teman atau kolega Anda.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
               <Link
                 href="/menu"
                 className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-2xl bg-[#BA935D] px-8 text-xs font-bold uppercase tracking-wider text-[#12100E] hover:bg-[#c8a169] transition-all shadow-lg"
               >
-                <span>Pesan Online Sekarang</span>
+                <span>Lihat Katalog Menu</span>
                 <ArrowRight size={16} />
               </Link>
               <Link

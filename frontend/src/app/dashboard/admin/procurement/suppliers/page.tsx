@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Plus, Search, Phone, Mail, Package, Edit2, Trash2, Check, X, Loader2, Sparkles, Building2, MapPin } from 'lucide-react';
+import { Plus, Search, Phone, Mail, Package, Edit2, Trash2, Check, X, Loader2, Building2, MapPin } from 'lucide-react';
 import { useProcurement, SupplierItem } from '@/features/inventory/hooks/use-procurement';
 import { PermissionGuard } from '@/shared/components/common/permission-guard';
 
@@ -124,7 +124,7 @@ export default function ProcurementSuppliersPage() {
             <h1 className="font-serif text-3xl font-bold text-gray-800">Manajemen Supplier Pengadaan</h1>
             {usingLive ? (
               <span className="flex items-center gap-1 rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold text-emerald-700">
-                <Sparkles size={13} /> Terhubung API Laravel V1
+ Terhubung API Laravel V1
               </span>
             ) : (
               <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-bold text-amber-700">

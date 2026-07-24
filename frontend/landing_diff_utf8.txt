@@ -1,0 +1,185 @@
+﻿diff --git a/frontend/src/features/landing/components/categories/curations-section.tsx b/frontend/src/features/landing/components/categories/curations-section.tsx
+index 7b1941c..39e4f13 100644
+--- a/frontend/src/features/landing/components/categories/curations-section.tsx
++++ b/frontend/src/features/landing/components/categories/curations-section.tsx
+@@ -3,7 +3,7 @@
+ import * as React from 'react';
+ import Link from 'next/link';
+ import Image from 'next/image';
+-import { ArrowRight, Sparkles } from 'lucide-react';
++import { ArrowRight } from 'lucide-react';
+ import { cn } from '@/shared/utils/utils';
+ import { useLanguage } from '@/shared/providers/language-context';
+ 
+@@ -80,7 +80,6 @@ export function CurationsSection({ categories }: { categories?: CategoryData[] }
+         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-16 border-b border-white/10">
+           <div className="space-y-3 max-w-2xl">
+             <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[#C89B5C] bg-[#C89B5C]/15 px-3.5 py-1.5 rounded-full backdrop-blur-md">
+-              <Sparkles size={14} />
+               <span>{t.landing.curations.badge}</span>
+             </div>
+             <h2 className="font-heading text-3xl sm:text-5xl font-extrabold tracking-tight text-white leading-tight">
+diff --git a/frontend/src/features/landing/components/faq/faq-section.tsx b/frontend/src/features/landing/components/faq/faq-section.tsx
+index cf7dd08..b6b3447 100644
+--- a/frontend/src/features/landing/components/faq/faq-section.tsx
++++ b/frontend/src/features/landing/components/faq/faq-section.tsx
+@@ -1,7 +1,7 @@
+ 'use client';
+ 
+ import * as React from 'react';
+-import { HelpCircle, ChevronDown, ChevronUp, Sparkles } from 'lucide-react';
++import { HelpCircle, ChevronDown, ChevronUp } from 'lucide-react';
+ import { cn } from '@/shared/utils/utils';
+ import { useLanguage } from '@/shared/providers/language-context';
+ 
+@@ -54,7 +54,6 @@ export function FaqSection({ faqs }: { faqs?: FaqData[] }) {
+         {/* Title Header */}
+         <div className="text-center space-y-3 pb-16">
+           <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[#1E3D31] dark:text-[#C89B5C] bg-[#1E3D31]/10 dark:bg-[#C89B5C]/15 px-3.5 py-1.5 rounded-full">
+-            <Sparkles size={14} className="text-[#C89B5C]" />
+             <span>{t.landing.faq.badge}</span>
+           </div>
+           <h2 className="font-heading text-3xl sm:text-5xl font-bold tracking-tight text-[#1E3D31] dark:text-[#F5EFE6] leading-tight">
+diff --git a/frontend/src/features/landing/components/featured-menu/barista-recommends.tsx b/frontend/src/features/landing/components/featured-menu/barista-recommends.tsx
+index f93f5a0..9316932 100644
+--- a/frontend/src/features/landing/components/featured-menu/barista-recommends.tsx
++++ b/frontend/src/features/landing/components/featured-menu/barista-recommends.tsx
+@@ -3,7 +3,7 @@
+ import * as React from 'react';
+ import Link from 'next/link';
+ import Image from 'next/image';
+-import { ArrowRight, Sparkles, ShoppingBag, Eye } from 'lucide-react';
++import { ArrowRight, ShoppingBag, Eye } from 'lucide-react';
+ import { Button } from '@/shared/components/ui/button';
+ import { Badge } from '@/shared/components/ui/badge';
+ import { Card } from '@/shared/components/ui/card';
+@@ -93,7 +93,6 @@ export function BaristaRecommendsSection({ menus }: { menus?: MenuData[] }) {
+         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-12 border-b border-[#E4D9C4] dark:border-[#33413A]">
+           <div className="space-y-3 max-w-2xl">
+             <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[#1E3D31] dark:text-[#C89B5C] bg-[#1E3D31]/10 dark:bg-[#C89B5C]/15 px-3.5 py-1.5 rounded-full">
+-              <Sparkles size={14} className="text-[#C89B5C]" />
+               <span>{t.landing.barista.badge}</span>
+             </div>
+             <h2 className="font-heading text-3xl sm:text-5xl font-bold tracking-tight text-[#1E3D31] dark:text-[#F5EFE6] leading-tight">
+diff --git a/frontend/src/features/landing/components/hero/hero-section.tsx b/frontend/src/features/landing/components/hero/hero-section.tsx
+index 1eb94b1..2f34a79 100644
+--- a/frontend/src/features/landing/components/hero/hero-section.tsx
++++ b/frontend/src/features/landing/components/hero/hero-section.tsx
+@@ -1,7 +1,7 @@
+ 'use client';
+ 
+ import Image from 'next/image';
+-import { Sparkles, ShieldCheck, Flame, Clock } from 'lucide-react';
++import { ShieldCheck, Flame, Clock } from 'lucide-react';
+ import { useLanguage } from '@/shared/providers/language-context';
+ 
+ export function HeroSection() {
+@@ -32,7 +32,6 @@ export function HeroSection() {
+         <div className="lg:col-span-7 space-y-6 text-left">
+           {/* Subtitle Badge */}
+           <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 backdrop-blur-md">
+-            <Sparkles size={14} className="text-primary animate-pulse" />
+             <span className="font-serif text-xs italic tracking-wide text-primary">
+               {t.hero.subtitle}
+             </span>
+diff --git a/frontend/src/features/landing/components/hero/hero-slider.tsx b/frontend/src/features/landing/components/hero/hero-slider.tsx
+index 9f89575..ffcfbac 100644
+--- a/frontend/src/features/landing/components/hero/hero-slider.tsx
++++ b/frontend/src/features/landing/components/hero/hero-slider.tsx
+@@ -2,7 +2,7 @@
+ 
+ import * as React from 'react';
+ import Link from 'next/link';
+-import { ChevronLeft, ChevronRight, ArrowRight, Sparkles, Coffee } from 'lucide-react';
++import { ChevronLeft, ChevronRight, ArrowRight, Coffee } from 'lucide-react';
+ import { Button } from '@/shared/components/ui/button';
+ import { cn } from '@/shared/utils/utils';
+ import { useLanguage } from '@/shared/providers/language-context';
+@@ -90,7 +90,6 @@ export function HeroSlider({ banners }: { banners?: HeroBannerData[] }) {
+             <div className="relative z-20 max-w-7xl mx-auto h-full px-4 sm:px-6 lg:px-8 flex flex-col justify-center items-start pt-16 sm:pt-20">
+               <div className="max-w-3xl space-y-6 animate-in fade-in slide-in-from-bottom-6 duration-700">
+                 <div className="inline-flex items-center gap-2 rounded-full border border-[#C89B5C]/40 bg-[#C89B5C]/15 px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-[#C89B5C] backdrop-blur-md">
+-                  <Sparkles size={14} />
+                   <span>{t.landing.hero.badge}</span>
+                 </div>
+ 
+diff --git a/frontend/src/features/landing/components/promotion/promotions-section.tsx b/frontend/src/features/landing/components/promotion/promotions-section.tsx
+index f408ef1..a8131a7 100644
+--- a/frontend/src/features/landing/components/promotion/promotions-section.tsx
++++ b/frontend/src/features/landing/components/promotion/promotions-section.tsx
+@@ -3,7 +3,7 @@
+ import * as React from 'react';
+ import Link from 'next/link';
+ import Image from 'next/image';
+-import { Sparkles, Tag, ArrowRight, Calendar, Percent } from 'lucide-react';
++import { Tag, ArrowRight, Calendar, Percent } from 'lucide-react';
+ import { Button } from '@/shared/components/ui/button';
+ import { Card } from '@/shared/components/ui/card';
+ import { Badge } from '@/shared/components/ui/badge';
+diff --git a/frontend/src/features/landing/components/testimonial/testimonials-section.tsx b/frontend/src/features/landing/components/testimonial/testimonials-section.tsx
+index 16e646d..e7a9299 100644
+--- a/frontend/src/features/landing/components/testimonial/testimonials-section.tsx
++++ b/frontend/src/features/landing/components/testimonial/testimonials-section.tsx
+@@ -1,7 +1,8 @@
+ 'use client';
+ 
+ import * as React from 'react';
+-import { Star, Quote, Sparkles, MessageSquare, Loader2 } from 'lucide-react';
++import { Star, Quote, PenLine, Loader2 } from 'lucide-react';
++
+ import { Card } from '@/shared/components/ui/card';
+ import { Button } from '@/shared/components/ui/button';
+ import { Dialog } from '@/shared/components/ui/dialog';
+@@ -98,7 +99,7 @@ export function TestimonialsSection({ testimonials }: { testimonials?: Testimoni
+         {/* Title Header */}
+         <div className="text-center max-w-3xl mx-auto space-y-3 pb-8">
+           <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[#1E3D31] dark:text-[#C89B5C] bg-[#1E3D31]/10 dark:bg-[#C89B5C]/15 px-3.5 py-1.5 rounded-full">
+-            <Sparkles size={14} className="text-[#C89B5C]" />
++            
+             <span>{t.landing.testimonials.badge}</span>
+           </div>
+           <h2 className="font-heading text-3xl sm:text-5xl font-bold tracking-tight text-[#1E3D31] dark:text-[#F5EFE6] leading-tight">
+@@ -111,7 +112,7 @@ export function TestimonialsSection({ testimonials }: { testimonials?: Testimoni
+ 
+         <div className="flex justify-center pb-16">
+           <Button variant="gold" className="rounded-xl px-6 gap-2 font-bold shadow-md h-12" onClick={() => setIsOpen(true)}>
+-            <MessageSquare size={16} />
++            <PenLine size={18} />
+             <span>{locale === 'id' ? 'Tulis Ulasan Anda' : 'Write a Review'}</span>
+           </Button>
+           
+@@ -122,7 +123,7 @@ export function TestimonialsSection({ testimonials }: { testimonials?: Testimoni
+             description={locale === 'id' ? 'Ulasan Anda sangat berarti bagi kami dan pengunjung lainnya.' : 'Your review means a lot to us and other visitors.'}
+             footer={
+               <Button type="submit" form="testimonial-form" disabled={isSubmitting} variant="gold" className="w-full h-12 rounded-xl font-bold shadow-md text-base">
+-                {isSubmitting ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : null}
++                {isSubmitting ? <Loader2 className="animate-spin mr-2" size={18} /> : null}
+                 {locale === 'id' ? 'Kirim Ulasan' : 'Submit Review'}
+               </Button>
+             }
+@@ -146,7 +147,7 @@ export function TestimonialsSection({ testimonials }: { testimonials?: Testimoni
+                       onClick={() => setFormData({ ...formData, rating: star })}
+                       className="focus:outline-none"
+                     >
+-                      <Star size={24} className={cn("transition-colors", formData.rating >= star ? "fill-[#C89B5C] text-[#C89B5C]" : "text-gray-300")} />
++                      <Star className={cn("h-6 w-6", formData.rating >= star ? "fill-[#C89B5C] text-[#C89B5C]" : "text-gray-300")} />
+                     </button>
+                   ))}
+                 </div>
+@@ -179,14 +180,14 @@ export function TestimonialsSection({ testimonials }: { testimonials?: Testimoni
+               >
+                 {/* Quote Icon */}
+                 <div className="absolute top-4 right-6 text-[#E4D9C4]/40 dark:text-[#33413A] group-hover:text-[#C89B5C]/30 transition-colors pointer-events-none">
+-                  <Quote size={40} />
++                  <Quote size={64} />
+                 </div>
+ 
+                 <div className="space-y-4">
+                   {/* Stars */}
+                   <div className="flex gap-1 text-[#C89B5C]">
+                     {Array.from({ length: rating }).map((_, i) => (
+-                      <Star key={i} size={15} className="fill-[#C89B5C] text-[#C89B5C]" />
++                      <Star key={i} className="h-4 w-4 fill-current" />
+                     ))}
+                   </div>
+ 

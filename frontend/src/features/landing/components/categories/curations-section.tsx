@@ -3,7 +3,7 @@
 import * as React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowRight, Sparkles } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { cn } from '@/shared/utils/utils';
 import { useLanguage } from '@/shared/providers/language-context';
 
@@ -80,7 +80,6 @@ export function CurationsSection({ categories }: { categories?: CategoryData[] }
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-16 border-b border-white/10">
           <div className="space-y-3 max-w-2xl">
             <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[#C89B5C] bg-[#C89B5C]/15 px-3.5 py-1.5 rounded-full backdrop-blur-md">
-              <Sparkles size={14} />
               <span>{t.landing.curations.badge}</span>
             </div>
             <h2 className="font-heading text-3xl sm:text-5xl font-extrabold tracking-tight text-white leading-tight">

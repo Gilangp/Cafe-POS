@@ -12,7 +12,6 @@ import {
   X,
   Check,
   Loader2,
-  Sparkles,
   DollarSign,
   Utensils,
   Store,
@@ -279,7 +278,7 @@ export default function MenuPage() {
             </h1>
             {usingLive ? (
               <span className="flex items-center gap-1.5 rounded-full bg-emerald-500/20 border border-emerald-500/30 px-3.5 py-1 text-xs font-bold text-emerald-600 dark:text-emerald-400">
-                <Sparkles size={13} /> Terhubung API Live
+ Terhubung API Live
               </span>
             ) : (
               <span className="rounded-full bg-[#1E3D31] text-[#C89B5C] px-3.5 py-1 text-xs font-bold shadow-sm">

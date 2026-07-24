@@ -59,15 +59,8 @@ export function LandingHeader() {
           ))}
         </nav>
 
-        {/* Right Side: CTA Button first, then Icon-Only Language Toggle at far right ("posisi kanan sendiri") */}
+        {/* Right Side: Icon-Only Language Toggle at far right */}
         <div className="hidden items-center gap-5 lg:flex">
-          <a
-            href="#menu"
-            className="btn-primary h-11 px-6 text-[12px] tracking-wider"
-          >
-            {t.header.orderOnline}
-          </a>
-
           {/* Luxury Circular Icon-Only Language Switcher at far right */}
           <button
             onClick={toggleLocale}
@@ -120,16 +113,7 @@ export function LandingHeader() {
                 {item.label}
               </Link>
             ))}
-            <div className="mt-4 pt-4 border-t border-white/10">
-              <a
-                href="#menu"
-                onClick={() => setMobileOpen(false)}
-                className="btn-primary w-full h-12 text-xs"
-              >
-                {t.header.orderOnline}
-              </a>
-            </div>
-          </nav>
+            </nav>
         </div>
       )}
     </header>

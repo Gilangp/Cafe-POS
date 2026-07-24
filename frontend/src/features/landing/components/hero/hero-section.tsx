@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { Sparkles, ShieldCheck, Flame, Clock } from 'lucide-react';
+import { ShieldCheck, Flame, Clock } from 'lucide-react';
 import { useLanguage } from '@/shared/providers/language-context';
 
 export function HeroSection() {
@@ -32,7 +32,6 @@ export function HeroSection() {
         <div className="lg:col-span-7 space-y-6 text-left">
           {/* Subtitle Badge */}
           <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 backdrop-blur-md">
-            <Sparkles size={14} className="text-primary animate-pulse" />
             <span className="font-serif text-xs italic tracking-wide text-primary">
               {t.hero.subtitle}
             </span>

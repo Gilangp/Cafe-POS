@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { PublicLayout } from '@/shared/components/layout/public-layout';
-import { Briefcase, Heart, Award, Sparkles, MapPin, Clock, CheckCircle2, Send, ChevronRight, UserCheck } from 'lucide-react';
+import { Briefcase, Heart, Award, MapPin, Clock, CheckCircle2, Send, ChevronRight, UserCheck } from 'lucide-react';
 
 interface JobVacancy {
   id: string;
@@ -125,7 +125,6 @@ export default function CareersPage() {
 
             <div className="rounded-3xl bg-white border border-gray-200 p-6 shadow-sm space-y-3">
               <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#12100E] text-[#BA935D]">
-                <Sparkles size={22} />
               </div>
               <h3 className="font-serif text-lg font-bold text-gray-800">Free Daily Brew & Pastry</h3>
               <p className="text-xs text-gray-500 leading-relaxed">

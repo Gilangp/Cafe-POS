@@ -77,50 +77,6 @@ export function LandingFooter() {
             </div>
           </div>
 
-          {/* Right Side: Stay In Touch / Newsletter Box matching reference */}
-          <div className="lg:col-span-6 flex flex-col justify-center">
-            <div className="rounded-3xl border border-primary/30 bg-[#1A1715]/90 p-8 shadow-2xl relative overflow-hidden backdrop-blur-xl">
-              {/* Decorative background circle */}
-              <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-primary/10 blur-2xl" />
-
-              <div className="grid sm:grid-cols-12 gap-6 items-center">
-                <div className="sm:col-span-8 space-y-3">
-                  <h3 className="font-serif text-2xl font-bold text-white">{t.footer.stayInTouch}</h3>
-                  <p className="text-xs sm:text-sm text-white/70 leading-relaxed">
-                    {t.footer.newsletterDesc}
-                  </p>
-
-                  <form onSubmit={(e) => e.preventDefault()} className="mt-4 flex flex-col sm:flex-row gap-2 pt-2">
-                    <input
-                      type="email"
-                      placeholder={t.footer.placeholder}
-                      required
-                      className="h-12 w-full rounded-full border border-white/20 bg-white/5 px-5 text-sm text-white placeholder:text-white/40 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-                    />
-                    <button
-                      type="submit"
-                      className="btn-primary shrink-0 flex items-center justify-center gap-2"
-                    >
-                      <span>{t.footer.subscribeBtn}</span>
-                      <Send size={15} />
-                    </button>
-                  </form>
-                </div>
-
-                {/* Steaming Coffee Cup Graphic inside newsletter box matching reference */}
-                <div className="sm:col-span-4 hidden sm:flex justify-center">
-                  <div className="relative w-28 h-28 animate-float">
-                    <Image
-                      src="/images/cappuccino.png"
-                      alt="Velvet Cup"
-                      fill
-                      className="object-contain drop-shadow-[0_15px_25px_rgba(0,0,0,0.8)]"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
 
         {/* Bottom Bar */}

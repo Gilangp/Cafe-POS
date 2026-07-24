@@ -12,7 +12,6 @@ import {
   Check,
   X,
   Loader2,
-  Sparkles,
   ChevronRight,
   Truck,
   Receipt,
@@ -217,7 +216,7 @@ export default function PurchaseOrdersPage() {
             <h1 className="font-serif text-3xl font-bold text-gray-800">Purchase Orders (PO)</h1>
             {usingLive ? (
               <span className="flex items-center gap-1 rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold text-emerald-700">
-                <Sparkles size={13} /> Terhubung API Laravel V1
+ Terhubung API Laravel V1
               </span>
             ) : (
               <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-bold text-amber-700">

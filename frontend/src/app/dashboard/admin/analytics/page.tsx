@@ -8,7 +8,6 @@ import {
   Users,
   DollarSign,
   Download,
-  Sparkles,
   RefreshCw,
   Check,
   Calendar,
@@ -154,7 +153,7 @@ export default function AnalyticsPage() {
             <span>Filter rentang waktu (hari ini, minggu ini, bulan ini, custom range) dan ekspor PDF / Excel.</span>
             {liveConnected ? (
               <span className="flex items-center gap-1.5 rounded-full bg-emerald-500/20 border border-emerald-500/30 px-3 py-0.5 text-[11px] font-bold text-emerald-600 dark:text-emerald-400">
-                <Sparkles size={12} /> Live Cloud Sync
+ Live Cloud Sync
               </span>
             ) : (
               <span className="rounded-full bg-[#1E3D31] text-[#C89B5C] px-3 py-0.5 text-[11px] font-bold">

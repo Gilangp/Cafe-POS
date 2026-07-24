@@ -12,7 +12,6 @@ import {
   Building2,
   Save,
   Database,
-  Sparkles,
   CheckCircle,
   RefreshCw,
   Download,
@@ -480,7 +479,6 @@ COMMIT;`;
                 <div className="rounded-3xl bg-[#FAF3E7] dark:bg-black/35 p-6 border border-[#C89B5C]/40 space-y-4 flex flex-col justify-between">
                   <div>
                     <div className="flex items-center gap-2 text-xs font-extrabold text-gray-900 dark:text-white">
-                      <Sparkles size={18} className="text-[#C89B5C]" />
                       <span>Seed Menu & KDS Sample</span>
                     </div>
                     <p className="text-xs text-gray-600 dark:text-gray-300 leading-relaxed mt-2">
@@ -492,7 +490,7 @@ COMMIT;`;
                     disabled={seeding}
                     className="w-full flex items-center justify-center gap-2 rounded-2xl bg-[#1E3D31] py-3 text-xs font-extrabold text-[#C89B5C] hover:bg-[#163026] active:scale-95 transition-all shadow-md"
                   >
-                    {seeding ? <RefreshCw size={15} className="animate-spin" /> : <Sparkles size={15} />}
+                    {seeding ? <RefreshCw size={15} className="animate-spin" /> : null}
                     <span>{seeding ? 'Menyinkronkan ke Cloud...' : 'Sync & Seed Data Sekarang'}</span>
                   </button>
                 </div>
@@ -514,7 +512,6 @@ COMMIT;`;
 
               {seedResult && (
                 <div className="rounded-2xl bg-blue-500/15 border border-blue-500/30 p-4 text-xs font-bold text-blue-800 dark:text-blue-300 flex items-center gap-2.5">
-                  <Sparkles size={18} className="text-blue-600 shrink-0" />
                   <span>{seedResult}</span>
                 </div>
               )}

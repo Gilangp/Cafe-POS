@@ -39,7 +39,6 @@ import {
   CheckCircle2,
   AlertTriangle,
   Receipt,
-  Sparkles,
 } from 'lucide-react';
 import { useProducts } from '@/features/menu/hooks/use-products';
 import { useRealtimeOrders } from '@/features/cashier/hooks/use-realtime-orders';
@@ -546,7 +545,6 @@ export default function PosPage() {
       {kdsReadyNotification && (
         <div className="fixed top-6 right-6 z-50 animate-in slide-in-from-top-4 duration-300 rounded-3xl bg-emerald-700 p-5 text-white shadow-2xl border-2 border-emerald-300 flex items-center gap-4 max-w-md">
           <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white text-emerald-800 animate-bounce shadow-lg">
-            <Sparkles size={26} />
           </div>
           <div className="flex-1 min-w-0">
             <p className="font-heading text-base font-extrabold text-white flex items-center gap-1.5">
@@ -1039,7 +1037,6 @@ export default function PosPage() {
                 </span>
               ) : (
                 <>
-                  <Sparkles size={17} />
                   <span>Bayar & Cetak Struk ({fmt(total)})</span>
                   <ChevronRight size={17} />
                 </>

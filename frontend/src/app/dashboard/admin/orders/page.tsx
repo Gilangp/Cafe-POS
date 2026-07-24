@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Search, Eye, ChevronDown, Download, Sparkles, Loader2, Check, X } from 'lucide-react';
+import { Search, Eye, ChevronDown, Download, Loader2, Check, X } from 'lucide-react';
 import { useRealtimeOrders, LiveOrder } from '@/features/cashier/hooks/use-realtime-orders';
 
 const statusStyle: Record<string, string> = {
@@ -94,7 +94,7 @@ export default function OrdersPage() {
             <h1 className="font-serif text-3xl font-bold text-gray-800">Semua Riwayat Order</h1>
             {liveConnected ? (
               <span className="flex items-center gap-1 rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold text-emerald-700">
-                <Sparkles size={13} /> Live Supabase Connected
+ Live Supabase Connected
               </span>
             ) : (
               <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-bold text-amber-700">

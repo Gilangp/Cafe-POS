@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { HelpCircle, ChevronDown, ChevronUp, Sparkles } from 'lucide-react';
+import { HelpCircle, ChevronDown, ChevronUp } from 'lucide-react';
 import { cn } from '@/shared/utils/utils';
 import { useLanguage } from '@/shared/providers/language-context';
 
@@ -54,7 +54,6 @@ export function FaqSection({ faqs }: { faqs?: FaqData[] }) {
         {/* Title Header */}
         <div className="text-center space-y-3 pb-16">
           <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[#1E3D31] dark:text-[#C89B5C] bg-[#1E3D31]/10 dark:bg-[#C89B5C]/15 px-3.5 py-1.5 rounded-full">
-            <Sparkles size={14} className="text-[#C89B5C]" />
             <span>{t.landing.faq.badge}</span>
           </div>
           <h2 className="font-heading text-3xl sm:text-5xl font-bold tracking-tight text-[#1E3D31] dark:text-[#F5EFE6] leading-tight">

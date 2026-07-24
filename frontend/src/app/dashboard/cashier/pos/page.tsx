@@ -14,7 +14,6 @@ import {
   MapPin,
   Search,
   ChevronDown,
-  Sparkles,
   Tag,
   ArrowRight,
   Coffee,
@@ -304,7 +303,7 @@ export default function OnlineOrderPage() {
                 <Coffee size={48} className="text-[#BA935D]" />
                 {product.tags && product.tags.includes('Best Seller') && (
                   <span className="absolute top-3 right-3 flex items-center gap-1 rounded-full bg-[#BA935D] px-3 py-1 text-[10px] font-bold text-white shadow-md">
-                    <Sparkles size={11} /> Favorit
+ Favorit
                   </span>
                 )}
               </div>

@@ -1,7 +1,8 @@
 'use client';
 
 import * as React from 'react';
-import { Star, Quote, Sparkles, MessageSquare, Loader2 } from 'lucide-react';
+import { Star, Quote, PenLine, Loader2 } from 'lucide-react';
+
 import { Card } from '@/shared/components/ui/card';
 import { Button } from '@/shared/components/ui/button';
 import { Dialog } from '@/shared/components/ui/dialog';
@@ -98,7 +99,7 @@ export function TestimonialsSection({ testimonials }: { testimonials?: Testimoni
         {/* Title Header */}
         <div className="text-center max-w-3xl mx-auto space-y-3 pb-8">
           <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[#1E3D31] dark:text-[#C89B5C] bg-[#1E3D31]/10 dark:bg-[#C89B5C]/15 px-3.5 py-1.5 rounded-full">
-            <Sparkles size={14} className="text-[#C89B5C]" />
+            
             <span>{t.landing.testimonials.badge}</span>
           </div>
           <h2 className="font-heading text-3xl sm:text-5xl font-bold tracking-tight text-[#1E3D31] dark:text-[#F5EFE6] leading-tight">
@@ -111,7 +112,7 @@ export function TestimonialsSection({ testimonials }: { testimonials?: Testimoni
 
         <div className="flex justify-center pb-16">
           <Button variant="gold" className="rounded-xl px-6 gap-2 font-bold shadow-md h-12" onClick={() => setIsOpen(true)}>
-            <MessageSquare size={16} />
+            <PenLine size={18} />
             <span>{locale === 'id' ? 'Tulis Ulasan Anda' : 'Write a Review'}</span>
           </Button>
           
@@ -122,7 +123,7 @@ export function TestimonialsSection({ testimonials }: { testimonials?: Testimoni
             description={locale === 'id' ? 'Ulasan Anda sangat berarti bagi kami dan pengunjung lainnya.' : 'Your review means a lot to us and other visitors.'}
             footer={
               <Button type="submit" form="testimonial-form" disabled={isSubmitting} variant="gold" className="w-full h-12 rounded-xl font-bold shadow-md text-base">
-                {isSubmitting ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : null}
+                {isSubmitting ? <Loader2 className="animate-spin mr-2" size={18} /> : null}
                 {locale === 'id' ? 'Kirim Ulasan' : 'Submit Review'}
               </Button>
             }
@@ -146,7 +147,7 @@ export function TestimonialsSection({ testimonials }: { testimonials?: Testimoni
                       onClick={() => setFormData({ ...formData, rating: star })}
                       className="focus:outline-none"
                     >
-                      <Star size={24} className={cn("transition-colors", formData.rating >= star ? "fill-[#C89B5C] text-[#C89B5C]" : "text-gray-300")} />
+                      <Star className={cn("h-6 w-6", formData.rating >= star ? "fill-[#C89B5C] text-[#C89B5C]" : "text-gray-300")} />
                     </button>
                   ))}
                 </div>
@@ -179,14 +180,14 @@ export function TestimonialsSection({ testimonials }: { testimonials?: Testimoni
               >
                 {/* Quote Icon */}
                 <div className="absolute top-4 right-6 text-[#E4D9C4]/40 dark:text-[#33413A] group-hover:text-[#C89B5C]/30 transition-colors pointer-events-none">
-                  <Quote size={40} />
+                  <Quote size={64} />
                 </div>
 
                 <div className="space-y-4">
                   {/* Stars */}
                   <div className="flex gap-1 text-[#C89B5C]">
                     {Array.from({ length: rating }).map((_, i) => (
-                      <Star key={i} size={15} className="fill-[#C89B5C] text-[#C89B5C]" />
+                      <Star key={i} className="h-4 w-4 fill-current" />
                     ))}
                   </div>
 

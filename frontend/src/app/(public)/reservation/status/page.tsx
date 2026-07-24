@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { PublicLayout } from '@/shared/components/layout/public-layout';
-import { Search, AlertCircle, Sparkles, Calendar, Phone } from 'lucide-react';
+import { Search, AlertCircle, Calendar, Phone } from 'lucide-react';
 import { Button } from '@/shared/components/ui/button';
 import { Card } from '@/shared/components/ui/card';
 import { Input } from '@/shared/components/ui/input';
@@ -42,7 +42,6 @@ export default function StatusReservasiPage() {
         <div className="absolute top-0 right-0 -translate-y-1/3 translate-x-1/3 w-96 h-96 rounded-full bg-[#C89B5C]/15 blur-3xl pointer-events-none" />
         <div className="max-w-3xl mx-auto text-center space-y-3 px-4 relative z-10">
           <div className="inline-flex items-center gap-2 rounded-full bg-[#C89B5C]/15 border border-[#C89B5C]/30 px-4 py-1 text-xs font-bold uppercase tracking-widest text-[#C89B5C]">
-            <Sparkles size={14} />
             <span>NEMU Space Tracker</span>
           </div>
           <h1 className="font-heading text-3xl sm:text-5xl font-extrabold text-white">Cek Status Reservasi</h1>

@@ -14,7 +14,6 @@ import {
   Trash2,
   X,
   Check,
-  Sparkles,
   DollarSign,
   Clock,
   Layers,

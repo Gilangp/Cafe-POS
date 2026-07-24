@@ -19,7 +19,6 @@ import {
   CheckSquare,
   Square,
   BellRing,
-  Sparkles,
   ChevronRight,
 } from 'lucide-react';
 import { useRealtimeOrders, LiveOrder } from '@/features/cashier/hooks/use-realtime-orders';
@@ -119,7 +118,7 @@ export default function KdsPage() {
           </div>
           <div className="flex-1 min-w-0">
             <p className="font-heading text-base font-extrabold text-[#C89B5C] flex items-center gap-1.5">
-              <Sparkles size={16} /> Tiket Pesanan Baru Masuk!
+ Tiket Pesanan Baru Masuk!
             </p>
             <p className="text-xs font-bold text-white mt-1 truncate">
               {newAlert.order_number} — {newAlert.customer_name}

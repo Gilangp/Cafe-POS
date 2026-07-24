@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { PublicLayout } from '@/shared/components/layout/public-layout';
-import { ShieldCheck, CheckCircle2, Eye, Keyboard, Smartphone, Sparkles, Sliders, Check } from 'lucide-react';
+import { ShieldCheck, CheckCircle2, Eye, Keyboard, Smartphone, Sliders, Check } from 'lucide-react';
 
 export default function AccessibilityPage() {
   const [fontSize, setFontSize] = useState<'normal' | 'large' | 'xl'>('normal');

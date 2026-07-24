@@ -15,7 +15,6 @@ import {
   ShieldCheck,
   Database,
   ArrowUpRight,
-  Sparkles,
   FileSpreadsheet,
 } from 'lucide-react';
 import Link from 'next/link';
@@ -82,7 +81,7 @@ export default function AdminDashboardPage() {
               {greeting}, Owner & Eksekutif (10.1)
             </h1>
             <span className="rounded-full bg-[#1E3D31] text-[#C89B5C] px-3.5 py-1 text-xs font-bold shadow-sm flex items-center gap-1.5">
-              <Sparkles size={13} /> Portal Bisnis Owner
+ Portal Bisnis Owner
             </span>
           </div>
           <p className="mt-1 text-xs sm:text-sm text-gray-500 dark:text-gray-400 font-sans">

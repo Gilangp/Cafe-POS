@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { PublicLayout } from '@/shared/components/layout/public-layout';
-import { BookOpen, Search, Calendar, User, ArrowRight, Sparkles, Tag } from 'lucide-react';
+import { BookOpen, Search, Calendar, User, ArrowRight, Tag } from 'lucide-react';
 import { Button } from '@/shared/components/ui/button';
 import { Card } from '@/shared/components/ui/card';
 import { Badge } from '@/shared/components/ui/badge';
@@ -150,7 +150,6 @@ export default function ArtikelPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-3 max-w-2xl">
             <div className="inline-flex items-center gap-2 rounded-full bg-[#C89B5C]/15 border border-[#C89B5C]/30 px-3.5 py-1.5 text-xs font-bold uppercase tracking-widest text-[#C89B5C] backdrop-blur-md">
-              <Sparkles size={14} />
               <span>NEMU Space Journal & Stories</span>
             </div>
             <h1 className="font-heading text-4xl sm:text-6xl font-extrabold text-white tracking-tight">

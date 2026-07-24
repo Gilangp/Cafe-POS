@@ -8,7 +8,6 @@ import {
   Package,
   Plus,
   ChevronDown,
-  Sparkles,
   Check,
   X,
   Loader2,
@@ -262,7 +261,7 @@ export default function InventoryPage() {
             </h1>
             {usingLive ? (
               <span className="flex items-center gap-1.5 rounded-full bg-emerald-500/20 border border-emerald-500/30 px-3.5 py-1 text-xs font-bold text-emerald-600 dark:text-emerald-400">
-                <Sparkles size={13} /> Terhubung API Live
+ Terhubung API Live
               </span>
             ) : (
               <span className="rounded-full bg-[#1E3D31] text-[#C89B5C] px-3.5 py-1 text-xs font-bold shadow-sm">
@@ -574,7 +573,7 @@ export default function InventoryPage() {
                       <td className="px-6 py-4">
                         {log.type === 'BOM_AUTO_DEDUCT' && (
                           <span className="rounded-full bg-blue-500/15 border border-blue-500/30 text-blue-700 dark:text-blue-300 px-3 py-1 text-[10px] font-extrabold flex items-center gap-1 w-fit">
-                            <Sparkles size={11} /> BOM Auto-Deduct POS
+ BOM Auto-Deduct POS
                           </span>
                         )}
                         {log.type === 'STOCK_IN' && (

@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import Link from 'next/link';
-import { ChevronLeft, ChevronRight, ArrowRight, Sparkles, Coffee } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ArrowRight, Coffee } from 'lucide-react';
 import { Button } from '@/shared/components/ui/button';
 import { cn } from '@/shared/utils/utils';
 import { useLanguage } from '@/shared/providers/language-context';
@@ -22,8 +22,8 @@ const defaultBanners: HeroBannerData[] = [
     title: 'HANDCRAFTED SPECIALTY CURATIONS',
     subtitle: 'Menghadirkan esensi biji kopi nusantara grade-A dengan teknik sangrai presisi dan sentuhan slow-bar berkelas artistik.',
     image_url: 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=1920&q=80',
-    cta_text: 'Pesan Sekarang',
-    cta_link: '/order',
+    cta_text: 'Eksplorasi Menu',
+    cta_link: '/menu',
   },
   {
     id: 2,
@@ -31,7 +31,7 @@ const defaultBanners: HeroBannerData[] = [
     subtitle: 'Ruang kolaborasi inspiratif bagi para kreator, pecinta kopi, dan penikmat kenyamanan estetik di tengah kota.',
     image_url: 'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=1920&q=80',
     cta_text: 'Reservasi Meja',
-    cta_link: '/reservasi',
+    cta_link: '/reservation',
   },
   {
     id: 3,
@@ -90,7 +90,6 @@ export function HeroSlider({ banners }: { banners?: HeroBannerData[] }) {
             <div className="relative z-20 max-w-7xl mx-auto h-full px-4 sm:px-6 lg:px-8 flex flex-col justify-center items-start pt-16 sm:pt-20">
               <div className="max-w-3xl space-y-6 animate-in fade-in slide-in-from-bottom-6 duration-700">
                 <div className="inline-flex items-center gap-2 rounded-full border border-[#C89B5C]/40 bg-[#C89B5C]/15 px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-[#C89B5C] backdrop-blur-md">
-                  <Sparkles size={14} />
                   <span>{t.landing.hero.badge}</span>
                 </div>
 
@@ -105,21 +104,21 @@ export function HeroSlider({ banners }: { banners?: HeroBannerData[] }) {
                 )}
 
                 <div className="flex flex-wrap items-center gap-4 pt-4">
-                  <Link href={banner.cta_link || '/order'}>
+                  <Link href={banner.cta_link || '/menu'}>
                     <Button variant="gold" size="lg" className="h-14 px-8 rounded-2xl text-base font-bold shadow-xl gap-3">
-                      <span>{banner.cta_text || t.landing.hero.btnOrder}</span>
+                      <span>{banner.cta_text || 'Eksplorasi Menu'}</span>
                       <ArrowRight className="h-5 w-5" />
                     </Button>
                   </Link>
 
-                  <Link href="/reservasi">
+                  <Link href="/reservation">
                     <Button
                       variant="outline"
                       size="lg"
                       className="h-14 px-8 rounded-2xl text-base font-semibold border-white/30 text-white hover:bg-white/10 hover:border-white gap-2 backdrop-blur-sm"
                     >
                       <Coffee className="h-5 w-5 text-[#C89B5C]" />
-                      <span>{t.landing.hero.btnReserve}</span>
+                      <span>{t.landing.hero.btnReserve || 'Reservasi Meja'}</span>
                     </Button>
                   </Link>
                 </div>

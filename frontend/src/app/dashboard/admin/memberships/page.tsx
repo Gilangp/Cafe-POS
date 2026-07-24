@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Star, Users, Gift, TrendingUp, Sparkles, Check } from 'lucide-react';
+import { Star, Users, Gift, TrendingUp, Check } from 'lucide-react';
 import { useCustomers } from '@/features/users/hooks/use-customers';
 
 const tierBadge: Record<string, string> = {
@@ -75,7 +75,7 @@ export default function MembershipsPage() {
             <h1 className="font-serif text-3xl font-bold text-gray-800">Membership & Loyalty Tiers</h1>
             {usingLive ? (
               <span className="flex items-center gap-1 rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold text-emerald-700">
-                <Sparkles size={13} /> Live Customer Tiers
+ Live Customer Tiers
               </span>
             ) : (
               <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-bold text-amber-700">

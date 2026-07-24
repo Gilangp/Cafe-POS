@@ -3,7 +3,7 @@
 import * as React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowRight, Sparkles, ShoppingBag, Eye } from 'lucide-react';
+import { ArrowRight, ShoppingBag, Eye, Sparkles, Coffee } from 'lucide-react';
 import { Button } from '@/shared/components/ui/button';
 import { Badge } from '@/shared/components/ui/badge';
 import { Card } from '@/shared/components/ui/card';
@@ -93,7 +93,7 @@ export function BaristaRecommendsSection({ menus }: { menus?: MenuData[] }) {
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-12 border-b border-[#E4D9C4] dark:border-[#33413A]">
           <div className="space-y-3 max-w-2xl">
             <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[#1E3D31] dark:text-[#C89B5C] bg-[#1E3D31]/10 dark:bg-[#C89B5C]/15 px-3.5 py-1.5 rounded-full">
-              <Sparkles size={14} className="text-[#C89B5C]" />
+              <Coffee size={14} className="text-[#C89B5C]" />
               <span>{t.landing.barista.badge}</span>
             </div>
             <h2 className="font-heading text-3xl sm:text-5xl font-bold tracking-tight text-[#1E3D31] dark:text-[#F5EFE6] leading-tight">
@@ -164,12 +164,6 @@ export function BaristaRecommendsSection({ menus }: { menus?: MenuData[] }) {
                   </span>
                 </div>
 
-                <Link href={`/menu/${menu.slug || menu.id}`} className="shrink-0">
-                  <Button size="sm" variant="gold" className="rounded-xl px-4 gap-1.5 font-bold shadow-sm whitespace-nowrap">
-                    <ShoppingBag size={14} className="shrink-0" />
-                    <span>{t.landing.barista.orderBtn}</span>
-                  </Button>
-                </Link>
               </div>
             </Card>
           ))}

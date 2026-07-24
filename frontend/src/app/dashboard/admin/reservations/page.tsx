@@ -13,7 +13,6 @@ import {
   MapPin,
   Utensils,
   Phone,
-  Sparkles,
   AlertCircle,
   Layout,
   List,

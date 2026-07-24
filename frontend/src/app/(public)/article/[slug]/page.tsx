@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { PublicLayout } from '@/shared/components/layout/public-layout';
-import { Calendar, User, ArrowLeft, Share2, Bookmark, Sparkles, Tag } from 'lucide-react';
+import { Calendar, User, ArrowLeft, Share2, Bookmark, Tag } from 'lucide-react';
 import { Button } from '@/shared/components/ui/button';
 import { Badge } from '@/shared/components/ui/badge';
 import { Card } from '@/shared/components/ui/card';
@@ -182,7 +182,6 @@ export default function ArticleDetailPage() {
               <div className="rounded-2xl bg-[#1E3D31] text-white p-8 border border-[#C89B5C]/30 shadow-xl mt-12 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
                 <div className="space-y-2 max-w-md">
                   <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-[#C89B5C]">
-                    <Sparkles size={14} />
                     <span>NEMU Space Experience</span>
                   </div>
                   <h3 className="font-heading text-2xl font-bold text-white leading-snug">

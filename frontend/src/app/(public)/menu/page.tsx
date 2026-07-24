@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { PublicLayout } from '@/shared/components/layout/public-layout';
-import { Coffee, Search, Filter, ShoppingBag, Sparkles, Check, ArrowRight, X } from 'lucide-react';
+import { Coffee, Search, Filter, ShoppingBag, Check, ArrowRight, X } from 'lucide-react';
 import { Button } from '@/shared/components/ui/button';
 import { Badge } from '@/shared/components/ui/badge';
 import { Card } from '@/shared/components/ui/card';
@@ -203,7 +203,6 @@ export default function MenuPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-3 max-w-2xl">
             <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[#C89B5C] bg-[#C89B5C]/15 px-3.5 py-1.5 rounded-full backdrop-blur-md">
-              <Sparkles size={14} />
               <span>Katalog Menu & Curations</span>
             </div>
             <h1 className="font-heading text-4xl sm:text-6xl font-extrabold text-white tracking-tight">
@@ -212,15 +211,6 @@ export default function MenuPage() {
             <p className="text-sm sm:text-base text-[#FAF3E7]/80 leading-relaxed font-light">
               Seluruh sajian dikurasi dengan presisi rasa, menggunakan bahan baku organik terbaik dan disajikan segar oleh barista kami.
             </p>
-          </div>
-
-          <div className="shrink-0">
-            <Link href="/menu">
-              <Button variant="gold" size="lg" className="rounded-2xl h-13 px-6 font-bold shadow-xl gap-2">
-                <ShoppingBag size={18} />
-                <span>Pesan Cepat via Online</span>
-              </Button>
-            </Link>
           </div>
         </div>
       </section>
@@ -379,7 +369,7 @@ export default function MenuPage() {
                     </div>
                   </div>
 
-                  {/* Price & Action Footer */}
+                  {/* Price Footer */}
                   <div className="p-5 pt-0 flex items-center justify-between border-t border-[#E4D9C4]/40 dark:border-[#33413A]/40 mt-4 pt-4">
                     <div className="flex flex-col">
                       <span className="text-[10px] font-bold uppercase text-[#5C5348] dark:text-[#B8A99A]">Harga</span>
@@ -387,13 +377,6 @@ export default function MenuPage() {
                         {formatPrice(item.price)}
                       </span>
                     </div>
-
-                    <Link href={`/order?item_id=${item.id}`}>
-                      <Button size="sm" variant="gold" className="rounded-xl px-4 gap-1.5 font-bold shadow-sm">
-                        <ShoppingBag size={14} />
-                        <span>Pesan</span>
-                      </Button>
-                    </Link>
                   </div>
                 </Card>
               ))}

@@ -3,7 +3,7 @@
 import * as React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Sparkles, Tag, ArrowRight, Calendar, Percent } from 'lucide-react';
+import { Tag, ArrowRight, Calendar, Percent } from 'lucide-react';
 import { Button } from '@/shared/components/ui/button';
 import { Card } from '@/shared/components/ui/card';
 import { Badge } from '@/shared/components/ui/badge';
@@ -75,13 +75,6 @@ export function PromotionsSection({ promotions }: { promotions?: PromotionData[]
               {t.landing.promotions.desc}
             </p>
           </div>
-
-          <Link href="/menu">
-            <Button variant="outline" className="rounded-xl font-bold gap-2 border-[#1E3D31] text-[#1E3D31] dark:border-white/30 dark:text-white">
-              <span>{t.landing.promotions.claimBtn}</span>
-              <ArrowRight size={16} />
-            </Button>
-          </Link>
         </div>
 
         {/* Promotions Grid */}
@@ -105,12 +98,7 @@ export function PromotionsSection({ promotions }: { promotions?: PromotionData[]
                     className="object-cover transition-transform duration-500 group-hover:scale-108"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60" />
-                  {promo.code && (
-                    <div className="absolute bottom-3 left-3 bg-[#C89B5C] text-[#1E3D31] font-heading font-extrabold text-xs px-3 py-1 rounded-xl shadow-md uppercase tracking-wider flex items-center gap-1">
-                      <Tag size={12} />
-                      <span>{promo.code}</span>
-                    </div>
-                  )}
+
                 </div>
 
                 {/* Content */}
@@ -130,12 +118,6 @@ export function PromotionsSection({ promotions }: { promotions?: PromotionData[]
                   <Calendar size={14} className="text-[#C89B5C]" />
                   <span>{t.landing.promotions.validUntil} {promo.end_date ? new Date(promo.end_date).toLocaleDateString('id-ID', { month: 'short', year: 'numeric' }) : 'Terbatas'}</span>
                 </div>
-
-                <Link href="/menu">
-                  <Button size="sm" variant="gold" className="rounded-xl px-4 font-bold shadow-sm">
-                    {t.landing.promotions.claimBtn}
-                  </Button>
-                </Link>
               </div>
             </Card>
           ))}
