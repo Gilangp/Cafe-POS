@@ -249,7 +249,7 @@ export default function DashboardPage() {
                     }}
                     itemStyle={{ color: '#C89B5C' }}
                     formatter={(value: any) => [formatCurrency(Number(value) || 0), 'Pendapatan']}
-                    labelFormatter={(label) => new Date(label).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+                    labelFormatter={(label: any) => label ? new Date(label).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) : ''}
                   />
                   <Area 
                     type="monotone" 
