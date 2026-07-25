@@ -52,8 +52,8 @@ export default function DashboardPage() {
         getTopMenus()
       ]);
       setSummary(summaryData);
-      setChartData(chartRes);
-      setTopMenus(menusRes);
+      setChartData(chartRes || []);
+      setTopMenus(menusRes || []);
     } catch (err: any) {
       setError(err?.response?.data?.message || 'Gagal mengambil data dashboard. Pastikan Anda memiliki akses (Owner/Admin).');
     } finally {
@@ -209,7 +209,7 @@ export default function DashboardPage() {
               <div className="w-full h-full flex items-center justify-center">
                 <Loader2 className="w-8 h-8 text-accent animate-spin" />
               </div>
-            ) : chartData.length > 0 ? (
+            ) : chartData?.length > 0 ? (
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                   <defs>
@@ -280,7 +280,7 @@ export default function DashboardPage() {
               <div className="flex flex-1 items-center justify-center">
                 <Loader2 className="w-8 h-8 text-accent animate-spin" />
               </div>
-            ) : topMenus.length > 0 ? (
+            ) : topMenus?.length > 0 ? (
               topMenus.map((menu, index) => (
                 <div key={index} className="flex items-center gap-4">
                   <div className="w-10 h-10 rounded-xl bg-gray-50 dark:bg-black/20 flex items-center justify-center shrink-0 border border-black/5 dark:border-white/5">
