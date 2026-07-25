@@ -5,7 +5,7 @@ import axios, { AxiosRequestConfig } from 'axios';
 const API_BASE_URL =
   typeof window !== 'undefined'
     ? '/api/v1'
-    : 'http://localhost:8000/api/v1';
+    : (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1');
 
 const _axios = axios.create({
   baseURL: API_BASE_URL,
