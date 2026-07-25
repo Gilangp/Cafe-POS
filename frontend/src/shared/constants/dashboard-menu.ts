@@ -28,53 +28,47 @@ export const DASHBOARD_MENU: MenuItem[] = [
     title: 'Operasional',
     roles: ['owner', 'admin', 'kasir', 'dapur_barista', 'multi_role'],
     items: [
-      { title: 'POS', icon: Calculator, href: '/dashboard/pos', roles: ['owner', 'kasir', 'multi_role'] },
-      { title: 'Reservasi', icon: CalendarCheck, href: '/dashboard/reservasi', roles: ['owner', 'admin', 'kasir', 'multi_role'] },
-      { title: 'Menu', icon: Utensils, href: '/dashboard/menu', roles: ['owner', 'admin', 'kasir', 'dapur_barista', 'multi_role'] },
-      { title: 'Kategori Menu', icon: Tags, href: '/dashboard/kategori-menu', roles: ['owner', 'admin'] },
-      { title: 'Inventory', icon: Package, href: '/dashboard/inventory', roles: ['owner', 'admin', 'dapur_barista', 'multi_role'] },
-      { title: 'Daftar Pesanan', icon: ClipboardList, href: '/dashboard/daftar-pesanan', roles: ['owner', 'dapur_barista', 'multi_role'] },
-      { title: 'Status Pesanan', icon: Clock, href: '/dashboard/status-pesanan', roles: ['owner', 'dapur_barista', 'multi_role'] },
+      { title: 'POS (Kasir)', icon: Calculator, href: '/dashboard/pos', roles: ['owner', 'kasir', 'multi_role'] },
+      { title: 'KDS (Dapur)', icon: Clock, href: '/dashboard/admin/kds', roles: ['owner', 'admin', 'dapur_barista', 'multi_role'] },
+      { title: 'Riwayat Pesanan', icon: ClipboardList, href: '/dashboard/admin/orders', roles: ['owner', 'admin', 'kasir', 'multi_role'] },
+      { title: 'Reservasi', icon: CalendarCheck, href: '/dashboard/admin/reservations', roles: ['owner', 'admin', 'kasir', 'multi_role'] },
+      { title: 'Menu', icon: Utensils, href: '/dashboard/admin/menu', roles: ['owner', 'admin'] },
+      { title: 'Inventory', icon: Package, href: '/dashboard/admin/inventory', roles: ['owner', 'admin', 'multi_role'] },
     ]
   },
   {
     title: 'Konten Website',
     roles: ['owner', 'admin'],
     items: [
-      { title: 'Landing Page', icon: MonitorPlay, href: '/dashboard/cms/landing', roles: ['owner', 'admin'] },
-      { title: 'Banner', icon: ImageIcon, href: '/dashboard/cms/banner', roles: ['owner', 'admin'] },
-      { title: 'Artikel', icon: FileText, href: '/dashboard/cms/artikel', roles: ['owner', 'admin'] },
-      { title: 'Galeri', icon: ImageIcon, href: '/dashboard/cms/galeri', roles: ['owner', 'admin'] },
-      { title: 'Promo', icon: Ticket, href: '/dashboard/cms/promo', roles: ['owner', 'admin'] },
-      { title: 'FAQ', icon: HelpCircle, href: '/dashboard/cms/faq', roles: ['owner', 'admin'] },
+      { title: 'CMS Terpadu', icon: MonitorPlay, href: '/dashboard/admin/cms', roles: ['owner', 'admin'] },
+      { title: 'Promo', icon: Ticket, href: '/dashboard/admin/promotions', roles: ['owner', 'admin'] },
     ]
   },
   {
     title: 'Laporan',
     roles: ['owner', 'admin'],
     items: [
-      { title: 'Penjualan', icon: TrendingUp, href: '/dashboard/laporan/penjualan', roles: ['owner', 'admin'] },
-      { title: 'Reservasi', icon: CalendarClock, href: '/dashboard/laporan/reservasi', roles: ['owner', 'admin'] },
-      { title: 'Inventory', icon: Archive, href: '/dashboard/laporan/inventory', roles: ['owner', 'admin'] },
+      { title: 'Penjualan', icon: FileText, href: '/dashboard/admin/reports', roles: ['owner', 'admin'] },
+      { title: 'Analitik', icon: TrendingUp, href: '/dashboard/admin/analytics', roles: ['owner', 'admin'] },
     ]
   },
   {
     title: 'Manajemen',
     roles: ['owner', 'admin'],
     items: [
-      { title: 'User', icon: Users, href: '/dashboard/manajemen/user', roles: ['owner', 'admin'] },
-      { title: 'Role', icon: Shield, href: '/dashboard/manajemen/role', roles: ['owner'] },
-      { title: 'Permission', icon: Key, href: '/dashboard/manajemen/permission', roles: ['owner'] },
+      { title: 'User & Karyawan', icon: Users, href: '/dashboard/admin/users', roles: ['owner', 'admin'] },
+      { title: 'CRM & Member', icon: Shield, href: '/dashboard/admin/memberships', roles: ['owner', 'admin'] },
+      { title: 'Daftar Suplier', icon: Package, href: '/dashboard/admin/suppliers', roles: ['owner', 'admin'] },
+      { title: 'Pembelian (PO)', icon: TrendingUp, href: '/dashboard/admin/procurement', roles: ['owner', 'admin'] },
     ]
   },
   {
     title: 'Pengaturan',
-    roles: ['owner'],
+    roles: ['owner', 'admin'],
     items: [
-      { title: 'Pengaturan Website', icon: Settings, href: '/dashboard/pengaturan/website', roles: ['owner'] },
-      { title: 'Profil Coffee Shop', icon: Store, href: '/dashboard/pengaturan/profil', roles: ['owner'] },
-      { title: 'Backup', icon: Database, href: '/dashboard/pengaturan/backup', roles: ['owner'] },
-      { title: 'Aktivitas Sistem', icon: Activity, href: '/dashboard/pengaturan/aktivitas', roles: ['owner'] },
+      { title: 'Pengaturan Umum', icon: Settings, href: '/dashboard/admin/settings', roles: ['owner', 'admin'] },
+      { title: 'Aktivitas Sistem', icon: Activity, href: '/dashboard/admin/audit', roles: ['owner'] },
+      { title: 'Backup', icon: Database, href: '/dashboard/admin/backup', roles: ['owner'] },
     ]
   }
 ];

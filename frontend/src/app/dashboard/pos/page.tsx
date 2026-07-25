@@ -17,7 +17,8 @@ import {
   CheckCircle2,
   AlertCircle,
   Printer,
-  X
+  X,
+  MapPin
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -34,6 +35,9 @@ export default function PosPage() {
   const [completedTransaction, setCompletedTransaction] = useState<any>(null);
   const [cashGiven, setCashGiven] = useState<number | ''>('');
   const [showQrisModal, setShowQrisModal] = useState(false);
+  
+  const [orderType, setOrderType] = useState<'dine_in' | 'takeaway' | null>(null);
+  const [assignedTable, setAssignedTable] = useState('');
 
   const cart = useCartStore();
 
@@ -80,6 +84,18 @@ export default function PosPage() {
   const handleProcessOrder = async () => {
     if (cart.items.length === 0) return;
     
+    if (!orderType) {
+      setError('Pilih Dine In atau Takeaway terlebih dahulu!');
+      setTimeout(() => setError(''), 4000);
+      return;
+    }
+    
+    if (orderType === 'dine_in' && !assignedTable.trim()) {
+      setError('Nomor Meja wajib diisi untuk pesanan Dine In!');
+      setTimeout(() => setError(''), 4000);
+      return;
+    }
+
     if (cart.paymentMethod === 'tunai' && (Number(cashGiven) < cart.getTotal())) {
       setError('Nominal uang tunai tidak mencukupi.');
       return;
@@ -99,9 +115,12 @@ export default function PosPage() {
     setError('');
 
     try {
+      const finalOrderType = orderType ?? 'dine_in';
       const payload = {
         payment_method: cart.paymentMethod,
         discount: cart.discount,
+        order_type: finalOrderType,
+        table_number: finalOrderType === 'takeaway' ? null : (assignedTable.trim() || null),
         items: cart.items.map(i => ({
           menu_id: i.menu_id,
           quantity: i.quantity,
@@ -118,6 +137,8 @@ export default function PosPage() {
       cart.clearCart();
       setCashGiven('');
       setShowQrisModal(false);
+      setOrderType(null);
+      setAssignedTable('');
       
     } catch (err: any) {
       setError(err?.response?.data?.message || 'Gagal memproses pesanan.');
@@ -236,6 +257,38 @@ export default function PosPage() {
           </div>
           <div className="bg-white/20 px-3 py-1 rounded-full text-xs xl:text-sm font-bold shrink-0 ml-2">
             {cart.items.reduce((acc, curr) => acc + curr.quantity, 0)} Items
+          </div>
+        </div>
+
+        {/* Dine In / Takeaway Toggle (Top of Cart) */}
+        <div className="p-3 border-b border-black/5 dark:border-white/5 bg-gray-50 dark:bg-black/10">
+          <div className="flex items-center justify-between gap-2 bg-white dark:bg-[#1A2620] border border-gray-200 dark:border-white/10 p-1.5 rounded-xl">
+             <div className="flex gap-1 flex-1">
+               <button 
+                  onClick={() => setOrderType('dine_in')}
+                  className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${orderType === 'dine_in' ? 'bg-[#1E3D31] text-accent shadow-md' : 'text-gray-500 hover:bg-gray-100 dark:hover:bg-white/5'}`}
+               >
+                 Dine In
+               </button>
+               <button 
+                  onClick={() => { setOrderType('takeaway'); setAssignedTable(''); }}
+                  className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${orderType === 'takeaway' ? 'bg-[#1E3D31] text-accent shadow-md' : 'text-gray-500 hover:bg-gray-100 dark:hover:bg-white/5'}`}
+               >
+                 Takeaway
+               </button>
+             </div>
+             
+             {orderType === 'dine_in' && (
+               <div className="flex items-center gap-2 border-l border-gray-200 dark:border-white/10 pl-3 ml-1 w-24">
+                 <MapPin size={14} className="text-gray-400 shrink-0" />
+                 <input 
+                   value={assignedTable}
+                   onChange={(e) => setAssignedTable(e.target.value)}
+                   placeholder="No. Meja"
+                   className="bg-transparent border-none focus:outline-none text-xs font-bold text-primary dark:text-white w-full placeholder-gray-400"
+                 />
+               </div>
+             )}
           </div>
         </div>
 

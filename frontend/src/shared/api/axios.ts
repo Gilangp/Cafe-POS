@@ -1,11 +1,16 @@
 import axios, { AxiosRequestConfig } from 'axios';
 
-// Browser: pakai path relatif → diproxy oleh Next.js (tidak ada CORS)
+// Browser: pakai path relatif -> diproxy oleh Next.js (tidak ada CORS)
 // Server-side: pakai full URL langsung ke backend
-const API_BASE_URL =
-  typeof window !== 'undefined'
-    ? '/api/v1'
-    : (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1');
+const getBaseUrl = () => {
+  // BYPASS NEXT.JS PROXY to prevent 'socket hang up' (ECONNRESET)
+  // PHP artisan serve crashes when Next.js proxy keeps connections open.
+  // We hit the backend directly. CORS is already enabled in Laravel.
+  const base = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+  return `${base.replace(/\/api(\/v1)?\/?$/, '')}/api/v1`;
+};
+
+const API_BASE_URL = getBaseUrl();
 
 const _axios = axios.create({
   baseURL: API_BASE_URL,

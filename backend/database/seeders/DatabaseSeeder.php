@@ -328,29 +328,28 @@ class DatabaseSeeder extends Seeder
             'image' => '/images/menu/singkong.jpg',
             'status' => 'tersedia',
             'is_best_seller' => false,
-        ]);
-
-        // 10. Seed 10 Physical Tables
+        ]);        // 10. Seed 10 Physical Tables
+        $tables = [];
         for ($i = 1; $i <= 10; $i++) {
             $num = str_pad($i, 2, '0', STR_PAD_LEFT);
             $cap = ($i <= 4) ? 2 : (($i <= 8) ? 4 : 6);
-            Table::create([
+            $tables[] = Table::create([
                 'table_number' => "T-{$num}",
-                'capacity' => $cap,
-                'status' => 'tersedia',
+                'capacity'     => $cap,
+                'status'       => 'tersedia',
             ]);
         }
 
         // 11. Seed FAQs
         $faqs = [
             [
-                'question' => 'Apakah NEMU Space buka 24 jam?',
-                'answer' => 'Saat ini kami buka setiap hari mulai pukul 08:00 hingga 23:00 WIB.',
+                'question'      => 'Apakah NEMU Space buka 24 jam?',
+                'answer'        => 'Saat ini kami buka setiap hari mulai pukul 08:00 hingga 23:00 WIB.',
                 'display_order' => 1,
             ],
             [
-                'question' => 'Apakah tersedia koneksi internet (Wi-Fi)?',
-                'answer' => 'Ya, kami menyediakan Wi-Fi berkecepatan tinggi gratis bagi seluruh pelanggan yang menikmati hidangan kami.',
+                'question'      => 'Apakah tersedia koneksi internet (Wi-Fi)?',
+                'answer'        => 'Ya, kami menyediakan Wi-Fi berkecepatan tinggi gratis bagi seluruh pelanggan yang menikmati hidangan kami.',
                 'display_order' => 2,
             ],
         ];
@@ -359,68 +358,71 @@ class DatabaseSeeder extends Seeder
             Faq::create($f);
         }
 
-        // 12. Seed Dummy Transactions & Reservations (Past 30 Days) for Dashboard
-        $kasir_id = $kasir->id;
+        // 12. Seed Dummy Transactions (Past 30 Days) for Dashboard
+        $kasir_id       = $kasir->id;
         $payment_methods = ['tunai', 'qris', 'kartu'];
-        $startDate = now()->subDays(30);
-        $menuList = Menu::all();
-        
+        $order_types    = ['dine_in', 'takeaway'];
+        $startDate      = now()->subDays(30);
+        $menuList       = Menu::all();
+
         for ($i = 0; $i < 60; $i++) {
             $randomDate = $startDate->copy()->addDays(rand(0, 30))->addHours(rand(8, 22));
-            
+            $orderType  = $order_types[array_rand($order_types)];
+            $tableNum   = $orderType === 'dine_in' ? $tables[array_rand($tables)]->table_number : null;
+
             $transaction = Transaction::create([
                 'invoice_number' => 'INV-' . $randomDate->format('Ymd') . '-' . strtoupper(Str::random(4)),
-                'cashier_id' => $kasir_id,
-                'subtotal' => 0, 
-                'discount' => 0,
-                'total' => 0,
+                'cashier_id'     => $kasir_id,
+                'order_type'     => $orderType,
+                'table_number'   => $tableNum,
+                'subtotal'       => 0,
+                'discount'       => 0,
+                'total'          => 0,
                 'payment_method' => $payment_methods[array_rand($payment_methods)],
-                'status' => 'selesai',
-                'created_at' => $randomDate,
-                'updated_at' => $randomDate,
+                'status'         => 'selesai',
+                'created_at'     => $randomDate,
+                'updated_at'     => $randomDate,
             ]);
 
             $subtotal = 0;
             $numItems = rand(1, 4);
             for ($j = 0; $j < $numItems; $j++) {
-                $menu = $menuList->random();
-                $qty = rand(1, 3);
+                $menu         = $menuList->random();
+                $qty          = rand(1, 3);
                 $itemSubtotal = $menu->price * $qty;
-                $subtotal += $itemSubtotal;
+                $subtotal     += $itemSubtotal;
 
                 TransactionItem::create([
-                    'transaction_id' => $transaction->id,
-                    'menu_id' => $menu->id,
+                    'transaction_id'    => $transaction->id,
+                    'menu_id'           => $menu->id,
                     'menu_name_snapshot' => $menu->name,
-                    'price_snapshot' => $menu->price,
-                    'quantity' => $qty,
-                    'subtotal' => $itemSubtotal,
-                    'created_at' => $randomDate,
-                    'updated_at' => $randomDate,
+                    'price_snapshot'    => $menu->price,
+                    'quantity'          => $qty,
+                    'subtotal'          => $itemSubtotal,
+                    'created_at'        => $randomDate,
+                    'updated_at'        => $randomDate,
                 ]);
             }
-            
-            $transaction->update([
-                'subtotal' => $subtotal,
-                'total' => $subtotal, 
-            ]);
+
+            $transaction->update(['subtotal' => $subtotal, 'total' => $subtotal]);
         }
 
-        // Add today's and future reservations
+        // 13. Seed Reservations
         for ($k = 0; $k < 10; $k++) {
-            $isToday = $k < 4; 
+            $isToday = $k < 4;
             $resDate = $isToday ? now() : now()->addDays(rand(1, 7));
             $resTime = str_pad(rand(10, 20), 2, '0', STR_PAD_LEFT) . ':00:00';
-            
+            $table   = $tables[array_rand($tables)];
+
             Reservation::create([
-                'customer_name' => 'Pelanggan ' . ($k + 1),
-                'customer_email' => 'pelanggan' . ($k + 1) . '@email.com',
-                'customer_phone' => '081234567' . rand(100, 999),
+                'customer_name'    => 'Pelanggan ' . ($k + 1),
+                'customer_email'   => 'pelanggan' . ($k + 1) . '@email.com',
+                'customer_phone'   => '081234567' . rand(100, 999),
                 'reservation_date' => $resDate->toDateString(),
                 'reservation_time' => $resTime,
-                'party_size' => rand(2, 6),
-                'table_id' => rand(1, 10),
-                'status' => 'menunggu_konfirmasi',
+                'party_size'       => rand(2, 6),
+                'table_id'         => $table->id,
+                'status'           => 'menunggu_konfirmasi',
             ]);
         }
     }

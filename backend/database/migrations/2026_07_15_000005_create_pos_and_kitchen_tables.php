@@ -19,14 +19,15 @@ return new class extends Migration
         Schema::create('reservations', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->foreignUuid('table_id')->nullable()->constrained('tables')->nullOnDelete();
-            $table->string('name', 100);
-            $table->string('phone', 20);
+            $table->string('customer_name', 100);
+            $table->string('customer_email', 150)->nullable();
+            $table->string('customer_phone', 20);
             $table->date('reservation_date');
             $table->time('reservation_time');
-            $table->integer('guest_count');
+            $table->integer('party_size')->default(2);
             $table->string('purpose', 50)->nullable();
             $table->text('notes')->nullable();
-            $table->enum('status', ['menunggu', 'dikonfirmasi', 'ditolak', 'selesai', 'dibatalkan'])->default('menunggu');
+            $table->enum('status', ['menunggu_konfirmasi', 'dikonfirmasi', 'ditolak', 'selesai', 'dibatalkan'])->default('menunggu_konfirmasi');
             $table->timestamps();
 
             $table->index(['reservation_date', 'status'], 'idx_reservations_date_status');
@@ -36,6 +37,9 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->string('invoice_number', 30)->unique();
             $table->foreignUuid('cashier_id')->constrained('users');
+            $table->enum('order_type', ['dine_in', 'takeaway'])->default('dine_in');
+            $table->string('table_number', 20)->nullable();
+            $table->string('customer_name', 100)->nullable();
             $table->decimal('subtotal', 12, 2);
             $table->decimal('discount', 12, 2)->default(0);
             $table->decimal('total', 12, 2);
@@ -66,7 +70,7 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->foreignUuid('transaction_id')->unique()->constrained('transactions')->onDelete('cascade');
             $table->string('ticket_number', 30)->unique();
-            $table->enum('status', ['diterima', 'diproses', 'siap', 'diserahkan'])->default('diterima');
+            $table->enum('status', ['diterima', 'diproses', 'siap', 'disajikan', 'dibatalkan'])->default('diterima');
             $table->foreignUuid('assigned_to')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamp('received_at');
             $table->timestamp('processed_at')->nullable();
@@ -84,7 +88,7 @@ return new class extends Migration
             $table->string('menu_name_snapshot', 150);
             $table->integer('quantity');
             $table->string('note', 200)->nullable();
-            $table->enum('item_status', ['diterima', 'diproses', 'siap'])->default('diterima');
+            $table->enum('item_status', ['menunggu', 'diproses', 'selesai', 'dibatalkan'])->default('menunggu');
             $table->timestamps();
 
             $table->index('order_ticket_id');

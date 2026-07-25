@@ -16,6 +16,9 @@ class Transaction extends Model
     protected $fillable = [
         'invoice_number',
         'cashier_id',
+        'order_type',
+        'table_number',
+        'customer_name',
         'subtotal',
         'discount',
         'total',

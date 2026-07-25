@@ -106,6 +106,9 @@ class PosController extends Controller
         $validated = $request->validate([
             'payment_method' => 'required|in:tunai,qris,kartu',
             'discount' => 'nullable|numeric|min:0',
+            'order_type' => 'required|in:dine_in,takeaway',
+            'table_number' => 'nullable|string|max:50',
+            'customer_name' => 'nullable|string|max:255',
             'items' => 'required|array|min:1',
             'items.*.menu_id' => 'required|uuid|exists:menus,id',
             'items.*.quantity' => 'required|integer|min:1',
@@ -146,6 +149,9 @@ class PosController extends Controller
                 'discount' => $discount,
                 'total' => $total,
                 'payment_method' => $validated['payment_method'],
+                'order_type' => $validated['order_type'] ?? 'dine_in',
+                'table_number' => $validated['table_number'] ?? null,
+                'customer_name' => $validated['customer_name'] ?? 'Pelanggan',
                 'status' => 'selesai',
             ]);
 
@@ -175,7 +181,7 @@ class PosController extends Controller
                     'menu_name_snapshot' => $menu->name,
                     'quantity' => $qty,
                     'note' => $data['note'],
-                    'item_status' => 'diterima',
+                    'item_status' => 'menunggu',
                 ]);
 
                 // Auto-deduct raw material inventory based on menu ingredients

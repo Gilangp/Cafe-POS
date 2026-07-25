@@ -17,7 +17,7 @@ class KdsController extends Controller
      */
     public function activeTickets(Request $request): JsonResponse
     {
-        $query = OrderTicket::with(['items', 'transaction:id,invoice_number,payment_method,created_at'])
+        $query = OrderTicket::with(['items', 'transaction:id,invoice_number,payment_method,order_type,table_number,customer_name,created_at'])
             ->whereIn('status', ['diterima', 'diproses', 'siap'])
             ->orderBy('received_at', 'asc');
 

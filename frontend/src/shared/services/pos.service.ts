@@ -30,6 +30,9 @@ export interface CartItem {
 export interface OrderPayload {
   payment_method: 'tunai' | 'qris' | 'kartu';
   discount?: number;
+  order_type: 'dine_in' | 'takeaway';
+  table_number?: string | null;
+  customer_name?: string | null;
   items: {
     menu_id: string;
     quantity: number;

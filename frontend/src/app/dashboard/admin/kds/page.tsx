@@ -3,79 +3,48 @@
 import { useState, useEffect } from 'react';
 import {
   Clock,
-  CheckCircle,
+  CheckCircle2,
   ChefHat,
-  AlertTriangle,
   Volume2,
   VolumeX,
-  Flame,
   Zap,
   Play,
   Check,
   PackageCheck,
   UtensilsCrossed,
   Timer,
-  RefreshCw,
-  CheckSquare,
-  Square,
   BellRing,
-  ChevronRight,
+  Circle,
+  AlertCircle,
+  Coffee
 } from 'lucide-react';
 import { useRealtimeOrders, LiveOrder } from '@/features/cashier/hooks/use-realtime-orders';
 
 const channelLabel: Record<string, string> = {
-  dine_in: 'Dine In (Makan di Tempat)',
-  takeaway: 'Takeaway (Bawa Pulang)',
-  delivery: 'Delivery (Pengantaran)',
-  online: 'Online Order',
+  dine_in: 'Makan di Tempat',
+  takeaway: 'Bawa Pulang',
+  delivery: 'Delivery',
+  online: 'Online',
 };
 
-// Helper to format ticking elapsed time & determine aging level (8.3 & KDS-002)
 function getTicketTiming(timestamp?: number, fallbackText?: string) {
-  if (!timestamp) {
-    return {
-      elapsedFormatted: fallbackText || 'Baru Saja',
-      level: 'normal' as const,
-      badgeText: '< 5m Normal',
-      borderClass: 'border-blue-500/50 hover:border-blue-400',
-      headerClass: 'bg-[#163026] text-white border-b border-[#C89B5C]/30',
-      badgeClass: 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30',
-    };
-  }
-
+  if (!timestamp) return { elapsed: fallbackText || 'Baru Saja', level: 'normal', color: 'text-gray-500 dark:text-gray-400', bg: 'bg-gray-100 dark:bg-gray-800', pulse: false };
   const seconds = Math.floor((Date.now() - timestamp) / 1000);
   const minutes = Math.floor(seconds / 60);
   const remSec = seconds % 60;
-  const elapsedFormatted = `${minutes < 10 ? '0' : ''}${minutes}m ${remSec < 10 ? '0' : ''}${remSec}s`;
-
-  if (minutes >= 10) {
-    return {
-      elapsedFormatted,
-      level: 'critical' as const,
-      badgeText: `🚨 KRITIS (>10m)`,
-      borderClass: 'border-red-600 animate-pulse shadow-[0_0_20px_rgba(239,68,68,0.35)]',
-      headerClass: 'bg-red-700 text-white font-extrabold border-b border-red-500',
-      badgeClass: 'bg-white text-red-700 font-extrabold shadow animate-bounce',
-    };
-  } else if (minutes >= 5) {
-    return {
-      elapsedFormatted,
-      level: 'warning' as const,
-      badgeText: `⚠️ PERHATIAN (5-10m)`,
-      borderClass: 'border-amber-500 hover:border-amber-400 shadow-[0_0_15px_rgba(245,158,11,0.25)]',
-      headerClass: 'bg-amber-700 text-white font-bold border-b border-amber-500',
-      badgeClass: 'bg-black/40 text-amber-300 border border-amber-400 font-bold',
-    };
+  
+  let elapsed = '';
+  if (minutes >= 60) {
+    const hrs = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    elapsed = `${hrs}j ${mins}m`;
+  } else {
+    elapsed = `${minutes < 10 ? '0' : ''}${minutes}:${remSec < 10 ? '0' : ''}${remSec}`;
   }
-
-  return {
-    elapsedFormatted,
-    level: 'normal' as const,
-    badgeText: '✓ Normal (<5m)',
-    borderClass: 'border-[#C89B5C]/50 hover:border-[#C89B5C]',
-    headerClass: 'bg-[#1E3D31] text-white border-b border-[#C89B5C]/30',
-    badgeClass: 'bg-[#C89B5C]/20 text-[#C89B5C] border border-[#C89B5C]/30',
-  };
+  
+  if (minutes >= 10) return { elapsed, level: 'critical', color: 'text-red-600', bg: 'bg-red-50 dark:bg-red-500/20', pulse: true };
+  if (minutes >= 5) return { elapsed, level: 'warning', color: 'text-amber-600', bg: 'bg-amber-50 dark:bg-amber-500/20', pulse: false };
+  return { elapsed, level: 'normal', color: 'text-green-600', bg: 'bg-green-50 dark:bg-green-500/20', pulse: false };
 }
 
 export default function KdsPage() {
@@ -83,11 +52,8 @@ export default function KdsPage() {
   const [audioEnabled, setAudioEnabled] = useState(true);
   const [ticker, setTicker] = useState(0);
 
-  // 1-second live ticker loop for elapsed time updating (8.1 & 8.3)
   useEffect(() => {
-    const interval = setInterval(() => {
-      setTicker((prev) => prev + 1);
-    }, 1000);
+    const interval = setInterval(() => setTicker((prev) => prev + 1), 1000);
     return () => clearInterval(interval);
   }, []);
 
@@ -109,432 +75,349 @@ export default function KdsPage() {
   };
 
   return (
-    <div className="space-y-6 -m-6 lg:-m-8 p-6 lg:p-8 bg-[#0E0C0A] min-h-full relative text-white selection:bg-[#C89B5C]/30">
-      {/* 8.2 Realtime Alert Pop */}
+    <div className="flex flex-col h-[calc(100vh-180px)] gap-6">
+      
+      {/* Realtime Alert Popup */}
       {newAlert && (
-        <div className="fixed top-6 right-6 z-50 animate-in slide-in-from-top-4 duration-300 rounded-3xl bg-[#1E3D31] p-5 text-white shadow-2xl border-2 border-[#C89B5C] flex items-center gap-4 max-w-md">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#C89B5C] text-[#1E3D31] animate-bounce shadow-lg">
-            <BellRing size={26} className="stroke-[2.5]" />
+        <div className="fixed top-6 right-6 z-50 animate-in slide-in-from-top-4 duration-300 rounded-2xl bg-white dark:bg-[#1A2620] p-5 shadow-card-shadow border border-black/5 dark:border-white/5 flex items-center gap-4 max-w-sm">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary text-accent shadow-sm">
+            <BellRing size={24} className="animate-pulse" />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="font-heading text-base font-extrabold text-[#C89B5C] flex items-center gap-1.5">
- Tiket Pesanan Baru Masuk!
-            </p>
-            <p className="text-xs font-bold text-white mt-1 truncate">
-              {newAlert.order_number} — {newAlert.customer_name}
-            </p>
-            <p className="text-[11px] text-[#E4D9C4]/80 font-mono mt-0.5">
-              Meja: <strong>{newAlert.table_number || channelLabel[newAlert.order_type]}</strong> · {newAlert.items_count || 1} Item
+            <p className="text-sm font-bold font-heading text-primary dark:text-cream-100">Pesanan Baru Masuk</p>
+            <p className="text-xs text-primary/60 dark:text-cream-400/60 mt-1 truncate">
+              {newAlert.order_number} • {newAlert.table_number || channelLabel[newAlert.order_type]}
             </p>
           </div>
         </div>
       )}
 
-      {/* KDS Header Banner */}
-      <div className="flex items-center justify-between flex-wrap gap-4 border-b border-white/15 pb-5">
-        <div className="flex items-center gap-4">
-          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#1E3D31] border-2 border-[#C89B5C] shadow-lg shadow-[#C89B5C]/15">
-            <ChefHat size={30} className="text-[#C89B5C]" />
+      {/* Standard Dashboard Header */}
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 shrink-0">
+        <div className="flex flex-col gap-2">
+          <h1 className="text-2xl md:text-3xl font-extrabold font-heading text-primary dark:text-cream-100 tracking-tight flex items-center gap-3">
+            Kitchen Display
+            <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5 border ${
+                liveConnected
+                  ? 'bg-green-50 dark:bg-green-500/10 text-green-600 dark:text-green-400 border-green-200 dark:border-green-500/30'
+                  : 'bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-500/30'
+              }`}>
+              <span className={`h-1.5 w-1.5 rounded-full ${liveConnected ? 'bg-green-500 animate-pulse' : 'bg-amber-500'}`} />
+              {liveConnected ? 'Live Sync' : 'Offline'}
+            </span>
+          </h1>
+          <p className="text-primary/70 dark:text-cream-400 font-medium">
+            Monitor dan kelola antrean pesanan secara realtime.
+          </p>
+        </div>
+
+        <div className="flex items-center gap-3">
+          <div className="flex bg-white dark:bg-[#1A2620] rounded-xl p-1 border border-black/5 dark:border-white/5 shadow-sm">
+             <div className="flex flex-col items-center px-4 py-1 border-r border-black/5 dark:border-white/5">
+                <span className="text-[10px] uppercase font-bold text-primary/60 dark:text-cream-400/60 tracking-wider">Baru</span>
+                <span className="text-lg font-black text-blue-600 dark:text-blue-400 leading-none mt-1">{counts.new}</span>
+             </div>
+             <div className="flex flex-col items-center px-4 py-1 border-r border-black/5 dark:border-white/5">
+                <span className="text-[10px] uppercase font-bold text-primary/60 dark:text-cream-400/60 tracking-wider">Proses</span>
+                <span className="text-lg font-black text-amber-600 dark:text-amber-400 leading-none mt-1">{counts.preparing}</span>
+             </div>
+             <div className="flex flex-col items-center px-4 py-1">
+                <span className="text-[10px] uppercase font-bold text-primary/60 dark:text-cream-400/60 tracking-wider">Siap</span>
+                <span className="text-lg font-black text-green-600 dark:text-green-400 leading-none mt-1">{counts.ready}</span>
+             </div>
           </div>
-          <div>
-            <div className="flex items-center gap-3">
-              <h1 className="font-heading text-2xl sm:text-3xl font-extrabold tracking-wide text-white">
-                NEMU <span className="text-[#C89B5C] font-light">Space</span> KDS
-              </h1>
-              <span
-                className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 ${
-                  liveConnected
-                    ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40'
-                    : 'bg-amber-500/20 text-amber-400 border border-amber-500/40'
-                }`}
-              >
-                <span className={`h-2 w-2 rounded-full ${liveConnected ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'}`} />
-                <span>{liveConnected ? 'Real-Time Sync 8.2 Aktif' : 'Offline / Mock Sync Mode'}</span>
+
+          <div className="flex gap-2">
+            <button onClick={testKitchenPing} className="flex h-11 w-11 items-center justify-center rounded-xl bg-white dark:bg-[#1A2620] text-primary/60 dark:text-cream-400/60 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors border border-black/5 dark:border-white/5 shadow-sm" title="Test Ping">
+              <BellRing size={18} />
+            </button>
+            <button onClick={() => setAudioEnabled(!audioEnabled)} className={`flex h-11 w-11 items-center justify-center rounded-xl transition-colors border shadow-sm ${audioEnabled ? 'bg-green-50 dark:bg-green-500/20 text-green-600 dark:text-green-400 border-green-200 dark:border-green-500/30' : 'bg-white dark:bg-[#1A2620] text-primary/40 dark:text-cream-400/40 border-black/5 dark:border-white/5'}`} title={audioEnabled ? 'Mute' : 'Unmute'}>
+              {audioEnabled ? <Volume2 size={18} /> : <VolumeX size={18} />}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Board Container */}
+      <div className="flex-1 min-h-0 overflow-x-auto pb-4 custom-scrollbar">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 h-full min-w-[900px]">
+          
+          {/* COLUMN 1: NEW */}
+          <div className="flex flex-col h-full">
+            <div className="flex items-center gap-3 mb-6 px-1">
+              <div className="w-10 h-10 bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 rounded-xl flex items-center justify-center shadow-sm">
+                <Zap size={20} className="stroke-[2.5]" />
+              </div>
+              <h2 className="text-lg font-bold font-heading text-primary dark:text-cream-100 flex-1">
+                Pesanan Baru
+              </h2>
+              <span className="bg-primary dark:bg-cream-100 text-white dark:text-primary px-2.5 py-0.5 rounded-lg text-sm font-bold shadow-sm">
+                {counts.new}
               </span>
             </div>
-            <p className="text-xs sm:text-sm text-[#E4D9C4]/75 mt-1 font-sans">
-              Kitchen Display System · Timer Keterlambatan Tiket (<strong className="text-amber-400">8.3</strong>) & Sinkronisasi Kasir POS (<strong className="text-[#C89B5C]">8.4</strong>)
-            </p>
-          </div>
-        </div>
+            
+            <div className="flex-1 overflow-y-auto pr-2 flex flex-col gap-4 custom-scrollbar pb-10">
+              {activeTickets.filter((t) => ['pending', 'confirmed'].includes(t.status)).map((ticket) => {
+                const timing = getTicketTiming(ticket.created_timestamp, ticket.created_at);
+                const allItemsDone = ticket.items && ticket.items.length > 0 && ticket.items.every((it) => it.done);
 
-        <div className="flex items-center gap-3 flex-wrap">
-          {/* Status Counter Badges */}
-          <div className="flex gap-2.5 text-xs font-bold bg-[#161412] px-4 py-2.5 rounded-2xl border border-white/15 shadow-inner">
-            <span className="flex items-center gap-1.5 text-blue-400 bg-blue-500/10 px-2.5 py-1 rounded-lg border border-blue-500/20">
-              <Clock size={14} />
-              <span>{counts.new} Baru</span>
-            </span>
-            <span className="flex items-center gap-1.5 text-amber-400 bg-amber-500/10 px-2.5 py-1 rounded-lg border border-amber-500/20">
-              <Timer size={14} />
-              <span>{counts.preparing} Proses</span>
-            </span>
-            <span className="flex items-center gap-1.5 text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-lg border border-emerald-500/20">
-              <CheckCircle size={14} />
-              <span>{counts.ready} Siap Saji</span>
-            </span>
-          </div>
-
-          {/* Test Ping Sound Button */}
-          <button
-            onClick={testKitchenPing}
-            className="flex items-center gap-1.5 rounded-xl border border-[#C89B5C]/50 bg-[#C89B5C]/15 hover:bg-[#C89B5C]/25 px-3.5 py-2.5 text-xs font-bold text-[#C89B5C] transition-all shadow-sm"
-            title="Uji Suara Bell Antrean Dapur"
-          >
-            <BellRing size={15} />
-            <span className="hidden sm:inline">Uji Suara Bell</span>
-          </button>
-
-          {/* Audio Toggle */}
-          <button
-            onClick={() => setAudioEnabled(!audioEnabled)}
-            className={`flex h-11 w-11 items-center justify-center rounded-2xl border transition-all ${
-              audioEnabled
-                ? 'border-emerald-500 bg-emerald-500/20 text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.25)]'
-                : 'border-white/20 bg-white/5 text-white/40 hover:text-white'
-            }`}
-            title={audioEnabled ? 'Suara Bell Dapur Aktif' : 'Suara Bell Dapur Senyap'}
-          >
-            {audioEnabled ? <Volume2 size={20} /> : <VolumeX size={20} />}
-          </button>
-        </div>
-      </div>
-
-      {/* 8.1 Kanban 3-Column Headers */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
-        <div className="rounded-2xl py-3.5 text-xs font-bold uppercase tracking-widest text-white bg-gradient-to-r from-blue-700 to-blue-600 shadow-xl border border-blue-400/40 flex items-center justify-center gap-2">
-          <Clock size={16} />
-          <span>8.1 DITERIMA / TIKET BARU ({counts.new})</span>
-        </div>
-        <div className="rounded-2xl py-3.5 text-xs font-bold uppercase tracking-widest text-white bg-gradient-to-r from-amber-700 to-amber-600 shadow-xl border border-amber-400/40 flex items-center justify-center gap-2">
-          <Timer size={16} />
-          <span>8.1 PROSES RACIK & MASAK ({counts.preparing})</span>
-        </div>
-        <div className="rounded-2xl py-3.5 text-xs font-bold uppercase tracking-widest text-[#1E3D31] bg-gradient-to-r from-[#C89B5C] to-[#e4b574] shadow-xl border border-[#C89B5C] flex items-center justify-center gap-2 font-extrabold">
-          <PackageCheck size={17} />
-          <span>8.1 SIAP SAJI / PICKUP ({counts.ready})</span>
-        </div>
-      </div>
-
-      {/* Ticket Columns Container */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start pb-12">
-        {/* Column 1: New / Pending / Confirmed */}
-        <div className="space-y-5">
-          {activeTickets
-            .filter((t) => ['pending', 'confirmed'].includes(t.status))
-            .map((ticket) => {
-              const timing = getTicketTiming(ticket.created_timestamp, ticket.created_at);
-              const allItemsDone = ticket.items && ticket.items.length > 0 && ticket.items.every((it) => it.done);
-
-              return (
-                <div
-                  key={ticket.id}
-                  className={`rounded-3xl border-2 bg-[#161412] overflow-hidden shadow-2xl transition-all ${timing.borderClass}`}
-                >
-                  <div className={`px-4 py-3.5 flex items-center justify-between ${timing.headerClass}`}>
-                    <div>
-                      <p className="font-mono font-extrabold text-white text-base flex items-center gap-2">
-                        <span>{ticket.order_number}</span>
-                        {ticket.source === 'live' && (
-                          <span className="flex items-center gap-0.5 rounded bg-black/40 px-2 py-0.5 text-[10px] font-bold text-[#C89B5C]">
-                            <Zap size={11} /> POS Live
-                          </span>
-                        )}
-                      </p>
-                      <p className="text-white/90 text-xs font-bold mt-0.5">
-                        {ticket.table_number || 'Takeaway'} • {channelLabel[ticket.order_type] || ticket.order_type}
-                      </p>
+                return (
+                  <div key={ticket.id} className="bg-white dark:bg-[#1A2620] p-5 rounded-2xl border border-black/5 dark:border-white/5 shadow-card-shadow flex flex-col gap-4 group transition-all shrink-0 hover:-translate-y-1 hover:shadow-lg">
+                    {/* Header */}
+                    <div className="flex justify-between items-center mb-4">
+                       <div className="flex items-center gap-2">
+                          <h3 className="text-sm font-black font-heading text-primary/70 dark:text-cream-400/70">
+                            #{ticket.order_number.split('-').pop()}
+                          </h3>
+                          {ticket.source === 'live' && <span className="bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded text-[8px] tracking-widest font-bold uppercase">Live</span>}
+                       </div>
+                       <div className={`px-2.5 py-1 rounded-full text-xs font-bold shadow-sm flex items-center gap-1.5 ${
+                          timing.level === 'critical' ? 'bg-red-500 text-white animate-pulse' : 
+                          timing.level === 'warning' ? 'bg-amber-100 text-amber-700' :
+                          'bg-green-100 text-green-700'
+                       }`}>
+                          <Clock size={12} className={timing.level === 'critical' ? 'animate-spin-slow' : ''} />
+                          {timing.elapsed}
+                       </div>
                     </div>
-                    <div className="flex flex-col items-end gap-1.5">
-                      <span className={`px-2.5 py-1 rounded-xl text-xs font-mono font-bold flex items-center gap-1.5 ${timing.badgeClass}`}>
-                        <Clock size={13} className={timing.level === 'critical' ? 'animate-spin' : ''} />
-                        <span>{timing.elapsedFormatted}</span>
-                      </span>
-                      <span className="text-[10px] opacity-80">{timing.badgeText}</span>
-                    </div>
-                  </div>
 
-                  {/* Customer Info Bar */}
-                  <div className="px-4 py-2 bg-black/40 border-b border-white/10 flex items-center justify-between text-xs text-white/70">
-                    <span>Tamu: <strong className="text-white font-bold">{ticket.customer_name}</strong></span>
-                    <span>Total: <strong className="text-[#C89B5C] font-mono">{ticket.items_count || 1} Item</strong></span>
-                  </div>
-
-                  {/* 8.1 Item List with Checklist Toggles */}
-                  <div className="p-4 space-y-2.5">
-                    <p className="text-[11px] font-bold uppercase tracking-wider text-[#C89B5C] flex items-center gap-1">
-                      <span>Daftar Item & Kematangan (Klik Checklist):</span>
-                    </p>
-                    {ticket.items && ticket.items.length > 0 ? (
-                      ticket.items.map((item) => (
-                        <button
-                          key={item.id}
-                          onClick={() => toggleOrderItemDone(ticket.id, item.id)}
-                          className={`w-full flex items-start gap-3 rounded-2xl p-3 border text-left transition-all ${
-                            item.done
-                              ? 'bg-emerald-950/40 border-emerald-500/50 text-emerald-300 opacity-80'
-                              : 'bg-white/5 border-white/10 text-white hover:border-[#C89B5C]'
-                          }`}
-                        >
-                          <span className="mt-0.5 text-lg shrink-0">
-                            {item.done ? (
-                              <CheckSquare size={20} className="text-emerald-400" />
-                            ) : (
-                              <Square size={20} className="text-white/50" />
-                            )}
+                    {/* Order Info */}
+                    <div className="flex items-center justify-between pb-4 border-b border-black/5 dark:border-white/5 mb-4">
+                        <div className="flex items-center gap-2">
+                          <span className={`px-2 py-0.5 rounded-[4px] text-[10px] font-black tracking-widest uppercase ${
+                            ticket.order_type === 'takeaway' ? 'bg-[#1E3D31] text-accent' : 'bg-accent text-white'
+                          }`}>
+                            {ticket.order_type === 'takeaway' ? 'TAKEAWAY' : 'DINE IN'}
                           </span>
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center justify-between gap-2">
-                              <span className={`text-sm font-bold ${item.done ? 'line-through text-white/60' : 'text-white'}`}>
-                                {item.name}
-                              </span>
-                              <span className="shrink-0 rounded-lg bg-[#C89B5C] text-[#1E3D31] px-2 py-0.5 text-xs font-extrabold font-mono">
-                                {item.qty}x
-                              </span>
-                            </div>
-                            {item.note && (
-                              <p className={`text-xs mt-1 font-sans ${item.done ? 'text-emerald-400/70' : 'text-amber-400 font-medium'}`}>
-                                * Catatan: {item.note}
-                              </p>
-                            )}
-                          </div>
-                        </button>
-                      ))
-                    ) : (
-                      <div className="rounded-xl bg-white/5 p-3 text-xs text-white/70 italic">
-                        Racikan standar minuman / pastry (Tanpa item notes tambahan)
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Action Button */}
-                  <div className="bg-black/50 border-t border-white/10 p-4">
-                    <button
-                      onClick={() => updateOrderStatus(ticket.id, 'preparing')}
-                      className={`w-full flex items-center justify-center gap-2 rounded-2xl py-3.5 text-xs font-bold transition-all shadow-lg ${
-                        allItemsDone
-                          ? 'bg-emerald-600 hover:bg-emerald-500 text-white animate-pulse'
-                          : 'bg-[#1E3D31] text-[#C89B5C] border border-[#C89B5C] hover:bg-[#163026]'
-                      }`}
-                    >
-                      <Play size={16} />
-                      <span>{allItemsDone ? '✨ Semua Checklist Selesai - Mulai Masak' : 'Mulai Masak / Diproses Dapur'}</span>
-                      <ChevronRight size={16} />
-                    </button>
-                  </div>
-                </div>
-              );
-            })}
-
-          {counts.new === 0 && (
-            <div className="rounded-3xl border-2 border-dashed border-white/15 p-12 text-center text-white/30 text-xs font-mono space-y-3 bg-white/[0.01]">
-              <UtensilsCrossed size={34} className="mx-auto text-white/20" />
-              <p>[ KOSONG: TIDAK ADA ANTREAN TIKET BARU ]</p>
-            </div>
-          )}
-        </div>
-
-        {/* Column 2: Preparing */}
-        <div className="space-y-5">
-          {activeTickets
-            .filter((t) => t.status === 'preparing')
-            .map((ticket) => {
-              const timing = getTicketTiming(ticket.created_timestamp, ticket.created_at);
-              const allItemsDone = ticket.items && ticket.items.length > 0 && ticket.items.every((it) => it.done);
-
-              return (
-                <div
-                  key={ticket.id}
-                  className={`rounded-3xl border-2 bg-[#161412] overflow-hidden shadow-2xl transition-all ${timing.borderClass}`}
-                >
-                  <div className={`px-4 py-3.5 flex items-center justify-between bg-amber-700 text-white font-bold border-b border-amber-500`}>
-                    <div>
-                      <p className="font-mono font-extrabold text-white text-base flex items-center gap-2">
-                        <span>{ticket.order_number}</span>
-                        {ticket.source === 'live' && (
-                          <span className="flex items-center gap-0.5 rounded bg-black/40 px-2 py-0.5 text-[10px] font-bold text-amber-300">
-                            <Zap size={11} /> POS Live
-                          </span>
-                        )}
-                      </p>
-                      <p className="text-amber-100 text-xs font-bold mt-0.5">
-                        {ticket.table_number || 'Takeaway'} • {channelLabel[ticket.order_type] || ticket.order_type}
-                      </p>
-                    </div>
-                    <div className="flex flex-col items-end gap-1.5">
-                      <span className={`px-2.5 py-1 rounded-xl text-xs font-mono font-bold flex items-center gap-1.5 ${timing.badgeClass}`}>
-                        <Timer size={13} className="animate-spin" />
-                        <span>{timing.elapsedFormatted}</span>
-                      </span>
-                      <span className="text-[10px] text-amber-200">{timing.badgeText}</span>
-                    </div>
-                  </div>
-
-                  {/* Customer Info Bar */}
-                  <div className="px-4 py-2 bg-black/40 border-b border-white/10 flex items-center justify-between text-xs text-white/70">
-                    <span>Tamu: <strong className="text-white font-bold">{ticket.customer_name}</strong></span>
-                    <span className="text-amber-400 font-bold flex items-center gap-1">
-                      <Flame size={13} /> Sedang Dimasak
-                    </span>
-                  </div>
-
-                  {/* 8.1 Item List with Checklist Toggles */}
-                  <div className="p-4 space-y-2.5">
-                    <p className="text-[11px] font-bold uppercase tracking-wider text-amber-400 flex items-center gap-1">
-                      <span>Proses Seduh / Plating Item (Klik Selesai):</span>
-                    </p>
-                    {ticket.items && ticket.items.length > 0 ? (
-                      ticket.items.map((item) => (
-                        <button
-                          key={item.id}
-                          onClick={() => toggleOrderItemDone(ticket.id, item.id)}
-                          className={`w-full flex items-start gap-3 rounded-2xl p-3 border text-left transition-all ${
-                            item.done
-                              ? 'bg-emerald-950/50 border-emerald-500 text-emerald-300 shadow-inner'
-                              : 'bg-white/5 border-amber-500/30 text-white hover:border-amber-400'
-                          }`}
-                        >
-                          <span className="mt-0.5 text-lg shrink-0">
-                            {item.done ? (
-                              <CheckSquare size={20} className="text-emerald-400" />
-                            ) : (
-                              <Square size={20} className="text-amber-400" />
-                            )}
-                          </span>
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center justify-between gap-2">
-                              <span className={`text-sm font-bold ${item.done ? 'line-through text-white/60' : 'text-white'}`}>
-                                {item.name}
-                              </span>
-                              <span className="shrink-0 rounded-lg bg-amber-500 text-black px-2 py-0.5 text-xs font-extrabold font-mono">
-                                {item.qty}x
-                              </span>
-                            </div>
-                            {item.note && (
-                              <p className={`text-xs mt-1 font-sans ${item.done ? 'text-emerald-400/70' : 'text-amber-300 font-semibold'}`}>
-                                * Catatan: {item.note}
-                              </p>
-                            )}
-                          </div>
-                        </button>
-                      ))
-                    ) : (
-                      <div className="rounded-xl bg-white/5 p-3 text-xs text-white/70 italic">
-                        Racikan standar minuman / pastry sedang diselesaikan...
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Action Button (8.4 Sync Trigger) */}
-                  <div className="bg-black/50 border-t border-white/10 p-4">
-                    <button
-                      onClick={() => updateOrderStatus(ticket.id, 'ready')}
-                      className={`w-full flex items-center justify-center gap-2 rounded-2xl py-3.5 text-xs font-bold transition-all shadow-lg ${
-                        allItemsDone
-                          ? 'bg-[#C89B5C] hover:bg-[#b88c4d] text-[#1E3D31] font-extrabold scale-[1.01]'
-                          : 'bg-amber-600 hover:bg-amber-500 text-white'
-                      }`}
-                    >
-                      <Check size={18} className="stroke-[3]" />
-                      <span>{allItemsDone ? '🌟 Tandai Siap Saji (Kirim Notif ke POS 8.4)' : 'Tandai Siap Saji (Ready)'}</span>
-                    </button>
-                  </div>
-                </div>
-              );
-            })}
-
-          {counts.preparing === 0 && (
-            <div className="rounded-3xl border-2 border-dashed border-white/15 p-12 text-center text-white/30 text-xs font-mono space-y-3 bg-white/[0.01]">
-              <ChefHat size={34} className="mx-auto text-white/20" />
-              <p>[ KOSONG: TIDAK ADA PESANAN SEDANG DIMASAK ]</p>
-            </div>
-          )}
-        </div>
-
-        {/* Column 3: Ready */}
-        <div className="space-y-5">
-          {activeTickets
-            .filter((t) => t.status === 'ready')
-            .map((ticket) => {
-              const timing = getTicketTiming(ticket.created_timestamp, ticket.created_at);
-
-              return (
-                <div
-                  key={ticket.id}
-                  className="rounded-3xl border-2 border-emerald-500 bg-[#161412] overflow-hidden shadow-2xl transition-all hover:border-emerald-400 shadow-emerald-500/10"
-                >
-                  <div className="bg-gradient-to-r from-emerald-700 to-emerald-600 px-4 py-3.5 flex items-center justify-between border-b border-emerald-400/40">
-                    <div>
-                      <p className="font-mono font-extrabold text-white text-base flex items-center gap-2">
-                        <span>{ticket.order_number}</span>
-                        {ticket.source === 'live' && (
-                          <span className="flex items-center gap-0.5 rounded bg-black/40 px-2 py-0.5 text-[10px] font-bold text-emerald-300">
-                            <Zap size={11} /> POS Live
-                          </span>
-                        )}
-                      </p>
-                      <p className="text-emerald-100 text-xs font-bold mt-0.5">
-                        {ticket.table_number || 'Takeaway'} • {channelLabel[ticket.order_type] || ticket.order_type}
-                      </p>
-                    </div>
-                    <div className="flex flex-col items-end gap-1">
-                      <span className="px-3 py-1 rounded-full text-xs font-extrabold bg-white text-emerald-900 flex items-center gap-1.5 shadow">
-                        <PackageCheck size={14} />
-                        <span>SIAP PICKUP</span>
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Customer Info Bar */}
-                  <div className="px-4 py-2.5 bg-emerald-950/30 border-b border-emerald-500/30 flex items-center justify-between text-xs text-emerald-200">
-                    <span>Tamu: <strong className="text-white font-bold">{ticket.customer_name}</strong></span>
-                    <span className="font-mono font-bold">Waktu Total: {timing.elapsedFormatted}</span>
-                  </div>
-
-                  {/* 8.1 Item List */}
-                  <div className="p-4 space-y-2">
-                    <p className="text-[11px] font-bold uppercase tracking-wider text-emerald-400 flex items-center gap-1">
-                      <span>✓ Item Siap Diantar / Dipanggil:</span>
-                    </p>
-                    {ticket.items && ticket.items.length > 0 ? (
-                      ticket.items.map((item) => (
-                        <div
-                          key={item.id}
-                          className="flex items-center justify-between gap-2 rounded-xl bg-white/5 p-2.5 border border-white/10 text-xs font-semibold text-white"
-                        >
-                          <span>✓ {item.name} {item.note ? `(${item.note})` : ''}</span>
-                          <span className="rounded-lg bg-emerald-500/20 text-emerald-300 px-2 py-0.5 font-mono font-bold">
-                            {item.qty}x
-                          </span>
+                          {ticket.order_type !== 'takeaway' && ticket.table_number && ticket.table_number !== 'Takeaway' && (
+                            <span className="text-sm font-extrabold text-primary dark:text-cream-100">
+                              {ticket.table_number === 'Pesanan Kasir' ? 'Walk-in' : `Meja ${ticket.table_number}`}
+                            </span>
+                          )}
                         </div>
-                      ))
-                    ) : (
-                      <div className="rounded-xl bg-white/5 p-3 text-xs text-white/80 font-semibold">
-                        Paket pesanan siap disajikan kepada tamu/pelayan
+                      <div className="text-xs font-bold bg-gray-100 dark:bg-white/10 px-2.5 py-1 rounded-lg text-primary/60 dark:text-cream-400/60">
+                        {ticket.items_count} Item
                       </div>
-                    )}
-                  </div>
+                    </div>
 
-                  {/* Action Button */}
-                  <div className="bg-emerald-950/50 border-t border-emerald-500/30 p-4">
-                    <button
-                      onClick={() => updateOrderStatus(ticket.id, 'completed')}
-                      className="w-full flex items-center justify-center gap-2 rounded-2xl bg-emerald-600 hover:bg-emerald-500 py-3.5 text-xs font-bold text-white transition-all shadow-lg active:scale-95"
-                    >
-                      <CheckCircle size={17} />
-                      <span>Selesai Diantar / Diambil oleh Tamu (Completed)</span>
+                    {/* Items List */}
+                    <div className="flex flex-col gap-2.5 flex-1">
+                       {ticket.items?.map(item => (
+                          <div key={item.id} className="flex items-start gap-3 text-left">
+                             <div className="mt-0.5 shrink-0 text-gray-300 dark:text-gray-600">
+                                <Circle size={18}/>
+                             </div>
+                             <div className="flex-1 min-w-0">
+                               <div className="flex justify-between items-start gap-2">
+                                  <span className="text-[15px] font-bold leading-snug text-primary dark:text-cream-100">{item.name}</span>
+                                  <span className="text-sm font-black text-primary/80 dark:text-cream-400/80 shrink-0 mt-0.5">x{item.qty}</span>
+                               </div>
+                               {item.note && <p className="text-xs text-amber-600 dark:text-amber-400 mt-0.5 font-medium">{item.note}</p>}
+                             </div>
+                          </div>
+                       ))}
+                    </div>
+
+                    {/* Action */}
+                    <button onClick={() => updateOrderStatus(ticket.id, 'preparing')} className="w-full py-3.5 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 mt-2 bg-primary text-accent hover:bg-primary/90 shadow-md">
+                      Mulai Proses
                     </button>
                   </div>
+                );
+              })}
+              {counts.new === 0 && (
+                <div className="h-40 flex flex-col items-center justify-center rounded-2xl text-primary/30 dark:text-cream-400/30">
+                  <UtensilsCrossed size={40} className="mb-3 opacity-50" />
+                  <p className="text-sm font-bold">Belum Ada Tiket Baru</p>
                 </div>
-              );
-            })}
-
-          {counts.ready === 0 && (
-            <div className="rounded-3xl border-2 border-dashed border-white/15 p-12 text-center text-white/30 text-xs font-mono space-y-3 bg-white/[0.01]">
-              <PackageCheck size={34} className="mx-auto text-white/20" />
-              <p>[ KOSONG: BELUM ADA PESANAN SIAP SAJI ]</p>
+              )}
             </div>
-          )}
+          </div>
+
+          {/* COLUMN 2: PREPARING */}
+          <div className="flex flex-col h-full">
+            <div className="flex items-center gap-3 mb-6 px-1">
+              <div className="w-10 h-10 bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 rounded-xl flex items-center justify-center shadow-sm">
+                <ChefHat size={20} className="stroke-[2.5]" />
+              </div>
+              <h2 className="text-lg font-bold font-heading text-primary dark:text-cream-100 flex-1">
+                Sedang Dimasak
+              </h2>
+              <span className="bg-primary dark:bg-cream-100 text-white dark:text-primary px-2.5 py-0.5 rounded-lg text-sm font-bold shadow-sm">
+                {counts.preparing}
+              </span>
+            </div>
+            
+            <div className="flex-1 overflow-y-auto pr-2 flex flex-col gap-4 custom-scrollbar pb-10">
+              {activeTickets.filter((t) => t.status === 'preparing').map((ticket) => {
+                const timing = getTicketTiming(ticket.created_timestamp, ticket.created_at);
+                const allItemsDone = ticket.items && ticket.items.length > 0 && ticket.items.every((it) => it.done);
+
+                return (
+                  <div key={ticket.id} className="bg-white dark:bg-[#1A2620] p-5 rounded-2xl border border-black/5 dark:border-white/5 shadow-card-shadow flex flex-col gap-4 group transition-all shrink-0 hover:-translate-y-1 hover:shadow-lg relative overflow-hidden">
+                    {/* Top edge indicator for processing */}
+                    <div className="absolute top-0 left-0 w-full h-1 bg-amber-400/50" />
+                    
+                    {/* Header */}
+                    <div className="flex justify-between items-center mb-4">
+                       <div className="flex items-center gap-2">
+                          <h3 className="text-sm font-black font-heading text-primary/70 dark:text-cream-400/70">
+                            #{ticket.order_number.split('-').pop()}
+                          </h3>
+                       </div>
+                       <div className={`px-2.5 py-1 rounded-full text-xs font-bold shadow-sm flex items-center gap-1.5 ${
+                          timing.level === 'critical' ? 'bg-red-500 text-white animate-pulse' : 
+                          'bg-amber-100 text-amber-700'
+                       }`}>
+                          <Clock size={12} className={timing.level === 'critical' ? 'animate-spin-slow' : ''} />
+                          {timing.elapsed}
+                       </div>
+                    </div>
+
+                    {/* Order Info */}
+                    <div className="flex items-center justify-between pb-4 border-b border-black/5 dark:border-white/5 mb-4">
+                        <div className="flex items-center gap-2">
+                          <span className={`px-2 py-0.5 rounded-[4px] text-[10px] font-black tracking-widest uppercase ${
+                            ticket.order_type === 'takeaway' ? 'bg-[#1E3D31] text-accent' : 'bg-accent text-white'
+                          }`}>
+                            {ticket.order_type === 'takeaway' ? 'TAKEAWAY' : 'DINE IN'}
+                          </span>
+                          {ticket.order_type !== 'takeaway' && ticket.table_number && ticket.table_number !== 'Takeaway' && (
+                            <span className="text-sm font-extrabold text-primary dark:text-cream-100">
+                              {ticket.table_number === 'Pesanan Kasir' ? 'Walk-in' : `Meja ${ticket.table_number}`}
+                            </span>
+                          )}
+                        </div>
+                      <div className="text-xs font-bold bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 px-2.5 py-1 rounded-lg">
+                        Proses {ticket.items_count} Item
+                      </div>
+                    </div>
+
+                    {/* Items List */}
+                    <div className="flex flex-col gap-2.5 flex-1">
+                       {ticket.items?.map(item => (
+                          <button key={item.id} onClick={() => toggleOrderItemDone(ticket.id, item.id)} className={`flex items-start gap-3 group text-left transition-all ${item.done ? 'opacity-40' : 'hover:opacity-80'}`}>
+                             <div className={`mt-0.5 shrink-0 transition-colors ${item.done ? 'text-green-500' : 'text-gray-300 dark:text-gray-600 group-hover:text-gray-400'}`}>
+                                {item.done ? <CheckCircle2 size={18} className="fill-green-100 dark:fill-green-900/40" /> : <Circle size={18}/>}
+                             </div>
+                             <div className="flex-1 min-w-0">
+                               <div className="flex justify-between items-start gap-2">
+                                  <span className={`text-[15px] font-bold leading-snug ${item.done ? 'line-through text-primary/40' : 'text-primary dark:text-cream-100'}`}>{item.name}</span>
+                                  <span className="text-sm font-black text-primary/80 dark:text-cream-400/80 shrink-0 mt-0.5">x{item.qty}</span>
+                               </div>
+                               {item.note && <p className="text-xs text-amber-600 dark:text-amber-400 mt-0.5 font-medium">{item.note}</p>}
+                             </div>
+                          </button>
+                       ))}
+                    </div>
+
+                    {/* Action */}
+                    <button onClick={() => updateOrderStatus(ticket.id, 'ready')} className={`w-full py-3.5 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 mt-2 ${
+                        allItemsDone 
+                          ? 'bg-accent text-primary hover:bg-[#b88c4d] shadow-md' 
+                          : 'bg-gray-100 dark:bg-black/30 text-primary/50 dark:text-cream-400/50 hover:bg-gray-200 dark:hover:bg-white/10 border border-black/5 dark:border-white/5'
+                      }`}>
+                      {allItemsDone ? <Check size={18} className="stroke-[3]" /> : null}
+                      {allItemsDone ? 'Kirim ke POS (Siap)' : 'Tandai Siap Saji'}
+                    </button>
+                  </div>
+                );
+              })}
+              {counts.preparing === 0 && (
+                <div className="h-40 flex flex-col items-center justify-center rounded-2xl text-primary/30 dark:text-cream-400/30">
+                  <ChefHat size={40} className="mb-3 opacity-50" />
+                  <p className="text-sm font-bold">Dapur Kosong</p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* COLUMN 3: READY */}
+          <div className="flex flex-col h-full">
+            <div className="flex items-center gap-3 mb-6 px-1">
+              <div className="w-10 h-10 bg-green-50 dark:bg-green-500/10 text-green-600 dark:text-green-400 rounded-xl flex items-center justify-center shadow-sm">
+                <PackageCheck size={20} className="stroke-[2.5]" />
+              </div>
+              <h2 className="text-lg font-bold font-heading text-primary dark:text-cream-100 flex-1">
+                Siap Saji
+              </h2>
+              <span className="bg-primary dark:bg-cream-100 text-white dark:text-primary px-2.5 py-0.5 rounded-lg text-sm font-bold shadow-sm">
+                {counts.ready}
+              </span>
+            </div>
+            
+            <div className="flex-1 overflow-y-auto pr-2 flex flex-col gap-4 custom-scrollbar pb-10">
+              {activeTickets.filter((t) => t.status === 'ready').map((ticket) => {
+                const timing = getTicketTiming(ticket.created_timestamp, ticket.created_at);
+
+                return (
+                  <div key={ticket.id} className="bg-white dark:bg-[#1A2620] p-5 rounded-2xl border border-green-200 dark:border-green-500/30 shadow-card-shadow flex flex-col gap-4 group transition-all shrink-0 hover:-translate-y-1 hover:shadow-lg relative overflow-hidden">
+                    <div className="absolute top-0 left-0 w-full h-1 bg-green-500/50" />
+                    
+                    {/* Header */}
+                    <div className="flex justify-between items-center mb-4">
+                       <div className="flex items-center gap-2">
+                          <h3 className="text-sm font-black font-heading text-primary/70 dark:text-cream-400/70">
+                            #{ticket.order_number.split('-').pop()}
+                          </h3>
+                       </div>
+                       <div className="px-2.5 py-1 rounded-full text-xs font-bold shadow-sm flex items-center gap-1.5 bg-green-100 text-green-700">
+                          <Clock size={12} />
+                          {timing.elapsed}
+                       </div>
+                    </div>
+
+                    {/* Order Info */}
+                    <div className="flex items-center justify-between pb-4 border-b border-black/5 dark:border-white/5 mb-4">
+                        <div className="flex items-center gap-2">
+                          <span className={`px-2 py-0.5 rounded-[4px] text-[10px] font-black tracking-widest uppercase ${
+                            ticket.order_type === 'takeaway' ? 'bg-[#1E3D31] text-accent' : 'bg-accent text-white'
+                          }`}>
+                            {ticket.order_type === 'takeaway' ? 'TAKEAWAY' : 'DINE IN'}
+                          </span>
+                          {ticket.order_type !== 'takeaway' && ticket.table_number && ticket.table_number !== 'Takeaway' && (
+                            <span className="text-sm font-extrabold text-primary dark:text-cream-100">
+                              {ticket.table_number === 'Pesanan Kasir' ? 'Walk-in' : `Meja ${ticket.table_number}`}
+                            </span>
+                          )}
+                        </div>
+                      <div className="text-xs font-bold bg-green-50 dark:bg-green-500/10 text-green-600 dark:text-green-400 px-2.5 py-1 rounded-lg">
+                        Pick-up ({ticket.items_count})
+                      </div>
+                    </div>
+
+                    {/* Items List */}
+                    <div className="flex flex-col gap-2.5 flex-1">
+                       {ticket.items?.map(item => (
+                          <div key={item.id} className="flex items-start gap-3 text-left">
+                             <div className="mt-0.5 shrink-0 text-green-500">
+                                <CheckCircle2 size={18} className="fill-green-100 dark:fill-green-900/40" />
+                             </div>
+                             <div className="flex-1 min-w-0 flex justify-between items-start gap-2">
+                                <span className="text-[15px] font-bold leading-snug text-primary/70 dark:text-cream-400/70">{item.name}</span>
+                                <span className="text-sm font-black text-primary/60 dark:text-cream-400/60 shrink-0 mt-0.5">x{item.qty}</span>
+                             </div>
+                          </div>
+                       ))}
+                    </div>
+
+                    {/* Action */}
+                    <button onClick={() => updateOrderStatus(ticket.id, 'completed')} className="w-full py-3.5 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 mt-2 bg-green-600 text-white hover:bg-green-700 shadow-md">
+                      <CheckCircle2 size={18} className="stroke-[3]" />
+                      Selesai Diantar / Pick-up
+                    </button>
+                  </div>
+                );
+              })}
+              {counts.ready === 0 && (
+                <div className="h-40 flex flex-col items-center justify-center rounded-2xl text-primary/30 dark:text-cream-400/30">
+                  <PackageCheck size={40} className="mb-3 opacity-50" />
+                  <p className="text-sm font-bold">Semua Pesanan Diambil</p>
+                </div>
+              )}
+            </div>
+          </div>
+
         </div>
       </div>
     </div>

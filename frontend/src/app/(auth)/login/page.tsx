@@ -265,6 +265,41 @@ export default function LoginPage() {
               </button>
             </div>
           </form>
+
+          {/* Quick Login Section for Development/Testing */}
+          <div className="mt-8 pt-6 border-t border-gray-100 dark:border-gray-800">
+            <p className="text-[10px] text-center text-gray-400 mb-3 font-bold uppercase tracking-widest">Akses Cepat (Demo)</p>
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                onClick={() => { setEmail('owner@nemuspace.id'); setPassword('password'); setErrorMessage(''); setStatus('default'); }}
+                className="py-2 px-2 text-xs font-semibold rounded-lg bg-gray-50 hover:bg-[#E4D9C4]/30 dark:bg-[#1A2620] dark:hover:bg-[#1E3D31] text-[#1E3D31] dark:text-gray-300 transition-all border border-transparent hover:border-[#C89B5C]/50"
+              >
+                Owner
+              </button>
+              <button
+                type="button"
+                onClick={() => { setEmail('admin@nemuspace.id'); setPassword('password'); setErrorMessage(''); setStatus('default'); }}
+                className="py-2 px-2 text-xs font-semibold rounded-lg bg-gray-50 hover:bg-[#E4D9C4]/30 dark:bg-[#1A2620] dark:hover:bg-[#1E3D31] text-[#1E3D31] dark:text-gray-300 transition-all border border-transparent hover:border-[#C89B5C]/50"
+              >
+                Admin
+              </button>
+              <button
+                type="button"
+                onClick={() => { setEmail('kasir@nemuspace.id'); setPassword('password'); setErrorMessage(''); setStatus('default'); }}
+                className="py-2 px-2 text-xs font-semibold rounded-lg bg-gray-50 hover:bg-[#E4D9C4]/30 dark:bg-[#1A2620] dark:hover:bg-[#1E3D31] text-[#1E3D31] dark:text-gray-300 transition-all border border-transparent hover:border-[#C89B5C]/50"
+              >
+                Kasir
+              </button>
+              <button
+                type="button"
+                onClick={() => { setEmail('dapur@nemuspace.id'); setPassword('password'); setErrorMessage(''); setStatus('default'); }}
+                className="py-2 px-2 text-xs font-semibold rounded-lg bg-gray-50 hover:bg-[#E4D9C4]/30 dark:bg-[#1A2620] dark:hover:bg-[#1E3D31] text-[#1E3D31] dark:text-gray-300 transition-all border border-transparent hover:border-[#C89B5C]/50"
+              >
+                Dapur / Barista
+              </button>
+            </div>
+          </div>
         </motion.div>
       </div>
     </div>
