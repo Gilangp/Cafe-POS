@@ -16,10 +16,15 @@ const nextConfig = {
   // Proxy semua request /api/v1/* ke Laravel backend
   // Ini menghilangkan CORS karena browser hanya melihat localhost:3000
   async rewrites() {
+    // Gunakan URL dari Vercel/Ngrok jika ada, jika tidak fallback ke localhost
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL 
+      ? process.env.NEXT_PUBLIC_API_URL.replace(/\/api\/?$/, '') 
+      : 'http://localhost:8000';
+
     return [
       {
         source: '/api/v1/:path*',
-        destination: 'http://localhost:8000/api/v1/:path*',
+        destination: `${baseUrl}/api/v1/:path*`,
       },
     ];
   },
