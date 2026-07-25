@@ -40,7 +40,7 @@ export function CustomerHeader() {
             </div>
             <div>
               <span className="font-serif text-xl font-bold tracking-wider text-white group-hover:text-[#BA935D] transition-colors">
-                Velvra
+                NEMU Space
               </span>
               <p className="text-[9px] uppercase tracking-[0.25em] text-[#BA935D]/80 -mt-1 font-sans">
                 Artisan Coffee Bar

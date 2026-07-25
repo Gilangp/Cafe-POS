@@ -23,7 +23,7 @@ export function CustomerLayout({ children }: { children: React.ReactNode }) {
                 <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#BA935D]/20 border border-[#BA935D]/40">
                   <Coffee size={18} className="text-[#BA935D]" />
                 </div>
-                <span className="font-serif text-2xl font-bold tracking-wide">Velvra</span>
+                <span className="font-serif text-2xl font-bold tracking-wide">NEMU Space</span>
               </div>
               <p className="text-sm text-white/70 leading-relaxed">
                 Where Every Sip Tells a Story. Kami menghadirkan pengalaman artisan coffee kelas dunia dengan pelayanan digital terintegrasi.
@@ -86,7 +86,7 @@ export function CustomerLayout({ children }: { children: React.ReactNode }) {
                 </li>
                 <li className="flex items-center gap-3">
                   <Mail size={15} className="text-[#BA935D]" />
-                  <span>concierge@velvra.id</span>
+                  <span>hello@nemuspace.id</span>
                 </li>
               </ul>
               <div className="mt-5 rounded-xl bg-white/5 border border-white/10 p-4">
@@ -97,7 +97,7 @@ export function CustomerLayout({ children }: { children: React.ReactNode }) {
           </div>
 
           <div className="border-t border-white/10 pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-white/40 gap-4">
-            <p>© 2026 Velvra Coffee Platform. All rights reserved.</p>
+            <p>© 2026 NEMU Space. All rights reserved.</p>
             <div className="flex gap-6">
               <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
               <a href="#" className="hover:text-white transition-colors">Terms of Service</a>

@@ -66,13 +66,9 @@ export default function LoginPage() {
         document.cookie = `auth_token=${token}; path=/; max-age=${60 * 60 * 24 * 7}`; // 7 hari
         
 
-        // Redirect berdasarkan role
+        // Redirect ke dashboard terpadu
         setTimeout(() => {
-          const roleLower = userRole.toLowerCase();
-          if (roleLower === 'kasir') window.location.href = '/dashboard/cashier/pos';
-          else if (roleLower === 'dapur_barista') window.location.href = '/dashboard/admin/kds';
-          else if (roleLower === 'owner') window.location.href = '/dashboard/owner';
-          else window.location.href = '/dashboard/admin';
+          window.location.href = '/dashboard';
         }, 800);
       } else {
         setStatus('error');

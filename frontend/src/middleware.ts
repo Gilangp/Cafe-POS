@@ -1,4 +1,4 @@
-﻿import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
 const PUBLIC_ROUTES = ['/', '/menu', '/gallery', '/article', '/reservation', '/contact', '/promotion'];
 const AUTH_ROUTES = ['/login', '/forgot-password'];
@@ -15,7 +15,7 @@ export function middleware(request: NextRequest) {
 
   // If already logged in and trying to access auth pages, redirect to dashboard
   if (AUTH_ROUTES.some((r) => pathname.startsWith(r)) && token) {
-    return NextResponse.redirect(new URL('/dashboard/admin', request.url));
+    return NextResponse.redirect(new URL('/dashboard', request.url));
   }
 
   return NextResponse.next();
