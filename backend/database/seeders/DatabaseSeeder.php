@@ -11,6 +11,9 @@ use App\Models\Setting;
 use App\Models\SocialMedia;
 use App\Models\Table;
 use App\Models\User;
+use App\Models\Transaction;
+use App\Models\TransactionItem;
+use App\Models\Reservation;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -278,6 +281,77 @@ class DatabaseSeeder extends Seeder
 
         foreach ($faqs as $f) {
             Faq::create($f);
+        }
+
+        // 10. Seed Dummy Transactions & Reservations (Past 30 Days) for Dashboard
+        $kasir_id = $kasir->id;
+        
+        $payment_methods = ['tunai', 'qris', 'kartu'];
+        $startDate = now()->subDays(30);
+
+        // Fetch menus for transactions
+        $menuList = Menu::all();
+        
+        for ($i = 0; $i < 60; $i++) {
+            // Generate random date within last 30 days
+            $randomDate = $startDate->copy()->addDays(rand(0, 30))->addHours(rand(8, 22));
+            
+            // Create Transaction
+            $transaction = Transaction::create([
+                'invoice_number' => 'INV-' . $randomDate->format('Ymd') . '-' . strtoupper(Str::random(4)),
+                'cashier_id' => $kasir_id,
+                'subtotal' => 0, // Will calculate below
+                'discount' => 0,
+                'total' => 0,
+                'payment_method' => $payment_methods[array_rand($payment_methods)],
+                'status' => 'selesai',
+                'created_at' => $randomDate,
+                'updated_at' => $randomDate,
+            ]);
+
+            $subtotal = 0;
+            // Add 1 to 4 random items per transaction
+            $numItems = rand(1, 4);
+            for ($j = 0; $j < $numItems; $j++) {
+                $menu = $menuList->random();
+                $qty = rand(1, 3);
+                $itemSubtotal = $menu->price * $qty;
+                $subtotal += $itemSubtotal;
+
+                TransactionItem::create([
+                    'transaction_id' => $transaction->id,
+                    'menu_id' => $menu->id,
+                    'menu_name_snapshot' => $menu->name,
+                    'price_snapshot' => $menu->price,
+                    'quantity' => $qty,
+                    'subtotal' => $itemSubtotal,
+                    'created_at' => $randomDate,
+                    'updated_at' => $randomDate,
+                ]);
+            }
+            
+            $transaction->update([
+                'subtotal' => $subtotal,
+                'total' => $subtotal, // No discount for simplicity
+            ]);
+        }
+
+        // Add today's and future reservations
+        for ($k = 0; $k < 10; $k++) {
+            $isToday = $k < 4; // 4 reservations for today
+            $resDate = $isToday ? now() : now()->addDays(rand(1, 7));
+            $resTime = str_pad(rand(10, 20), 2, '0', STR_PAD_LEFT) . ':00:00';
+            
+            Reservation::create([
+                'customer_name' => 'Pelanggan ' . ($k + 1),
+                'customer_email' => 'pelanggan' . ($k + 1) . '@email.com',
+                'customer_phone' => '081234567' . rand(100, 999),
+                'reservation_date' => $resDate->toDateString(),
+                'reservation_time' => $resTime,
+                'party_size' => rand(2, 6),
+                'table_id' => rand(1, 10),
+                'status' => 'menunggu_konfirmasi',
+            ]);
         }
     }
 }
