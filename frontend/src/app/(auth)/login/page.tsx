@@ -63,7 +63,7 @@ export default function LoginPage() {
         }
 
         // Set cookie untuk Next.js Middleware
-        document.cookie = `auth_token=${token}; path=/; max-age=${60 * 60 * 24 * 7}`; // 7 hari
+        document.cookie = `auth_token=${token}; path=/; max-age=${60 * 60 * 12}`; // 12 jam
         
 
         // Redirect ke dashboard terpadu

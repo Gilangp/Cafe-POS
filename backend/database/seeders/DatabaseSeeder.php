@@ -14,6 +14,10 @@ use App\Models\User;
 use App\Models\Transaction;
 use App\Models\TransactionItem;
 use App\Models\Reservation;
+use App\Models\InventoryCategory;
+use App\Models\Supplier;
+use App\Models\Inventory;
+use App\Models\MenuIngredient;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -32,7 +36,7 @@ class DatabaseSeeder extends Seeder
         $owner = User::create([
             'name' => 'Owner NEMU Space',
             'email' => 'owner@nemuspace.id',
-            'password' => 'password',
+            'password' => 'password', // Mutator akan otomatis melakukan hash
             'phone' => '081111111111',
             'is_active' => true,
         ]);
@@ -122,130 +126,211 @@ class DatabaseSeeder extends Seeder
             'display_order' => 2,
             'is_active' => true,
         ]);
-        HeroBanner::create([
-            'title' => 'Pastries & Culinary Delights',
-            'subtitle' => 'Lengkapi momen ngopi Anda dengan kreasi pastry hangat segar dari oven dapur kami setiap pagi.',
-            'image' => '/images/hero/banner-3.jpg',
-            'button_text' => 'Tentang Kami',
-            'button_link' => '#about',
-            'display_order' => 3,
-            'is_active' => true,
+
+        // 6. Seed Inventory Categories & Suppliers
+        $invCatKopi = InventoryCategory::create(['name' => 'Biji Kopi']);
+        $invCatSusu = InventoryCategory::create(['name' => 'Susu & Kreamer']);
+        $invCatSirup = InventoryCategory::create(['name' => 'Sirup & Gula']);
+        $invCatTeh = InventoryCategory::create(['name' => 'Teh & Bubuk']);
+        $invCatBahanMakanan = InventoryCategory::create(['name' => 'Bahan Makanan']);
+        $invCatPackaging = InventoryCategory::create(['name' => 'Packaging']);
+
+        $supplierLokal = Supplier::create([
+            'name' => 'PT Kopi Nusantara Raya',
+            'phone' => '081234567890',
+            'address' => 'Gudang Kopi Jakarta'
+        ]);
+        $supplierSusu = Supplier::create([
+            'name' => 'CV Susu Segar Indonesia',
+            'phone' => '081234567891',
+            'address' => 'Pabrik Susu Bandung'
+        ]);
+        $supplierPackaging = Supplier::create([
+            'name' => 'Bintang Packaging',
+            'phone' => '081234567892',
+            'address' => 'Jakarta Barat'
         ]);
 
-        // 6. Seed Categories
-        $catCoffee = Category::create(['name' => 'Coffee Curations', 'display_order' => 1]);
-        $catNonCoffee = Category::create(['name' => 'Non-Coffee Beverages', 'display_order' => 2]);
-        $catSnacks = Category::create(['name' => 'Artisan Pastries & Snacks', 'display_order' => 3]);
-        $catMain = Category::create(['name' => 'Main Courses', 'display_order' => 4]);
+        // 7. Seed Inventories (Bahan Baku)
+        $invKopiArabica = Inventory::create([
+            'category_id' => $invCatKopi->id,
+            'supplier_id' => $supplierLokal->id,
+            'name' => 'Biji Kopi Arabica Gayo (Roast)',
+            'stock_quantity' => 50000, // in grams
+            'unit' => 'gram',
+            'minimum_stock' => 5000,
+        ]);
+        $invKopiRobusta = Inventory::create([
+            'category_id' => $invCatKopi->id,
+            'supplier_id' => $supplierLokal->id,
+            'name' => 'Biji Kopi Robusta Temanggung',
+            'stock_quantity' => 20000, // in grams
+            'unit' => 'gram',
+            'minimum_stock' => 3000,
+        ]);
+        $invSusuUHT = Inventory::create([
+            'category_id' => $invCatSusu->id,
+            'supplier_id' => $supplierSusu->id,
+            'name' => 'Susu Cair UHT Full Cream',
+            'stock_quantity' => 50000, // in ml
+            'unit' => 'ml',
+            'minimum_stock' => 5000,
+        ]);
+        $invGulaAren = Inventory::create([
+            'category_id' => $invCatSirup->id,
+            'supplier_id' => $supplierLokal->id,
+            'name' => 'Sirup Gula Aren Asli',
+            'stock_quantity' => 10000, // in ml
+            'unit' => 'ml',
+            'minimum_stock' => 2000,
+        ]);
+        $invTehMelati = Inventory::create([
+            'category_id' => $invCatTeh->id,
+            'supplier_id' => $supplierLokal->id,
+            'name' => 'Teh Daun Melati',
+            'stock_quantity' => 5000, // in gram
+            'unit' => 'gram',
+            'minimum_stock' => 1000,
+        ]);
+        $invBeras = Inventory::create([
+            'category_id' => $invCatBahanMakanan->id,
+            'supplier_id' => $supplierLokal->id,
+            'name' => 'Beras Putih Premium',
+            'stock_quantity' => 50000, // in gram
+            'unit' => 'gram',
+            'minimum_stock' => 10000,
+        ]);
+        $invTelur = Inventory::create([
+            'category_id' => $invCatBahanMakanan->id,
+            'supplier_id' => $supplierLokal->id,
+            'name' => 'Telur Ayam Horn',
+            'stock_quantity' => 500, // in pcs
+            'unit' => 'pcs',
+            'minimum_stock' => 50,
+        ]);
+        $invAyam = Inventory::create([
+            'category_id' => $invCatBahanMakanan->id,
+            'supplier_id' => $supplierLokal->id,
+            'name' => 'Daging Ayam Potong',
+            'stock_quantity' => 20000, // in gram
+            'unit' => 'gram',
+            'minimum_stock' => 5000,
+        ]);
+        $invCupEs = Inventory::create([
+            'category_id' => $invCatPackaging->id,
+            'supplier_id' => $supplierPackaging->id,
+            'name' => 'Gelas Plastik Es 16oz',
+            'stock_quantity' => 1000, // in pcs
+            'unit' => 'pcs',
+            'minimum_stock' => 200,
+        ]);
+        $invKardusMakan = Inventory::create([
+            'category_id' => $invCatPackaging->id,
+            'supplier_id' => $supplierPackaging->id,
+            'name' => 'Kotak Makan Kertas Kraft',
+            'stock_quantity' => 500, // in pcs
+            'unit' => 'pcs',
+            'minimum_stock' => 100,
+        ]);
 
-        // 7. Seed 10 Master Menus
-        $menus = [
-            [
-                'category_id' => $catCoffee->id,
-                'name' => 'Nemu Signature Aren Latte',
-                'description' => 'Espresso house blend 100% Arabica dengan susu segar creamy dan gula aren asli beraroma karamel.',
-                'price' => 35000,
-                'image' => '/images/menu/aren-latte.jpg',
-                'status' => 'tersedia',
-                'is_best_seller' => true,
-            ],
-            [
-                'category_id' => $catCoffee->id,
-                'name' => 'Caramel Macchiato Cloud',
-                'description' => 'Layered vanilla milk dengan espresso shot dan foamy cloud topping berlapis saus karamel renyah.',
-                'price' => 42000,
-                'image' => '/images/menu/caramel-macchiato.jpg',
-                'status' => 'tersedia',
-                'is_best_seller' => true,
-            ],
-            [
-                'category_id' => $catCoffee->id,
-                'name' => 'Artisan Manual Brew (V60)',
-                'description' => 'Pilihan beans single origin musiman dengan notes buah segar dan kejernihan rasa maksimal.',
-                'price' => 38000,
-                'image' => '/images/menu/v60.jpg',
-                'status' => 'tersedia',
-                'is_best_seller' => false,
-            ],
-            [
-                'category_id' => $catNonCoffee->id,
-                'name' => 'Matcha Cloud Latte',
-                'description' => 'Ceremonial grade Uji Matcha dari Kyoto dipadukan dengan oat milk dan lapisan sea salt cold foam.',
-                'price' => 45000,
-                'image' => '/images/menu/matcha-latte.jpg',
-                'status' => 'tersedia',
-                'is_best_seller' => true,
-            ],
-            [
-                'category_id' => $catNonCoffee->id,
-                'name' => 'Belgian Dark Chocolate',
-                'description' => '70% Dark cocoa pure melt dengan tekstur kental pekat yang kaya rasa dan tidak terlalu manis.',
-                'price' => 40000,
-                'image' => '/images/menu/dark-chocolate.jpg',
-                'status' => 'tersedia',
-                'is_best_seller' => false,
-            ],
-            [
-                'category_id' => $catNonCoffee->id,
-                'name' => 'Lychee Breeze Spring Tea',
-                'description' => 'Teh melati seduh dingin dengan buah leci utuh segar dan sentuhan mint alami pelepas dahaga.',
-                'price' => 32000,
-                'image' => '/images/menu/lychee-tea.jpg',
-                'status' => 'tersedia',
-                'is_best_seller' => false,
-            ],
-            [
-                'category_id' => $catSnacks->id,
-                'name' => 'Butter Croissant Artisan',
-                'description' => 'French butter croissant flaky dengan tekstur renyah di luar dan lembut berlapis di dalam.',
-                'price' => 28000,
-                'image' => '/images/menu/butter-croissant.jpg',
-                'status' => 'tersedia',
-                'is_best_seller' => true,
-            ],
-            [
-                'category_id' => $catSnacks->id,
-                'name' => 'Truffle Fries with Parmesan',
-                'description' => 'Kentang goreng renyah bertabur minyak truffle harum dan parutan keju Parmigiano-Reggiano.',
-                'price' => 38000,
-                'image' => '/images/menu/truffle-fries.jpg',
-                'status' => 'tersedia',
-                'is_best_seller' => false,
-            ],
-            [
-                'category_id' => $catMain->id,
-                'name' => 'Nemu Creamy Carbonara',
-                'description' => 'Pasta spaghetti al dente dengan saus creamy kuning telur, smoked beef bacon, dan black pepper.',
-                'price' => 58000,
-                'image' => '/images/menu/carbonara.jpg',
-                'status' => 'tersedia',
-                'is_best_seller' => true,
-            ],
-            [
-                'category_id' => $catMain->id,
-                'name' => 'Wagyu Beef Rice Bowl',
-                'description' => 'Irisan daging Wagyu saus yakiniku manis gurih di atas nasi hangat pulen dengan onsen egg.',
-                'price' => 65000,
-                'image' => '/images/menu/wagyu-bowl.jpg',
-                'status' => 'tersedia',
-                'is_best_seller' => false,
-            ],
-        ];
+        // 8. Seed Categories Menu
+        $catKopi = Category::create(['name' => 'Kopi Nusantara', 'display_order' => 1]);
+        $catNonKopi = Category::create(['name' => 'Minuman Segar', 'display_order' => 2]);
+        $catCamilan = Category::create(['name' => 'Camilan Tradisional', 'display_order' => 3]);
+        $catMakan = Category::create(['name' => 'Makanan Utama', 'display_order' => 4]);
 
-        foreach ($menus as $m) {
-            Menu::create([
-                'category_id' => $m['category_id'],
-                'name' => $m['name'],
-                'slug' => Str::slug($m['name']),
-                'description' => $m['description'],
-                'price' => $m['price'],
-                'image' => $m['image'],
-                'status' => $m['status'],
-                'is_best_seller' => $m['is_best_seller'],
-            ]);
-        }
+        // 9. Seed Menus Indonesia Lokal
+        $mKopiAren = Menu::create([
+            'category_id' => $catKopi->id,
+            'name' => 'Es Kopi Susu Gula Aren',
+            'slug' => 'es-kopi-susu-gula-aren',
+            'description' => 'Paduan espresso Arabica Gayo, susu segar creamy, dan manisnya gula aren lokal asli.',
+            'price' => 25000,
+            'image' => '/images/menu/kopi-aren.jpg',
+            'status' => 'tersedia',
+            'is_best_seller' => true,
+        ]);
+        MenuIngredient::create(['menu_id' => $mKopiAren->id, 'inventory_id' => $invKopiArabica->id, 'quantity_used' => 18]);
+        MenuIngredient::create(['menu_id' => $mKopiAren->id, 'inventory_id' => $invSusuUHT->id, 'quantity_used' => 120]);
+        MenuIngredient::create(['menu_id' => $mKopiAren->id, 'inventory_id' => $invGulaAren->id, 'quantity_used' => 20]);
+        MenuIngredient::create(['menu_id' => $mKopiAren->id, 'inventory_id' => $invCupEs->id, 'quantity_used' => 1]);
 
-        // 8. Seed 10 Physical Tables
+        $mKopiTubruk = Menu::create([
+            'category_id' => $catKopi->id,
+            'name' => 'Kopi Hitam Tubruk',
+            'slug' => 'kopi-hitam-tubruk',
+            'description' => 'Kopi hitam seduh tradisional dengan ampas. Menggunakan biji Robusta Temanggung pilihan.',
+            'price' => 18000,
+            'image' => '/images/menu/kopi-tubruk.jpg',
+            'status' => 'tersedia',
+            'is_best_seller' => false,
+        ]);
+        MenuIngredient::create(['menu_id' => $mKopiTubruk->id, 'inventory_id' => $invKopiRobusta->id, 'quantity_used' => 15]);
+
+        $mEsTeh = Menu::create([
+            'category_id' => $catNonKopi->id,
+            'name' => 'Es Teh Manis Melati',
+            'slug' => 'es-teh-manis-melati',
+            'description' => 'Teh seduh daun melati asli yang harum dan menyegarkan dahaga.',
+            'price' => 15000,
+            'image' => '/images/menu/es-teh.jpg',
+            'status' => 'tersedia',
+            'is_best_seller' => true,
+        ]);
+        MenuIngredient::create(['menu_id' => $mEsTeh->id, 'inventory_id' => $invTehMelati->id, 'quantity_used' => 5]);
+        MenuIngredient::create(['menu_id' => $mEsTeh->id, 'inventory_id' => $invCupEs->id, 'quantity_used' => 1]);
+
+        $mNasiGoreng = Menu::create([
+            'category_id' => $catMakan->id,
+            'name' => 'Nasi Goreng Spesial NEMU',
+            'slug' => 'nasi-goreng-spesial',
+            'description' => 'Nasi goreng bumbu rempah dengan topping telur mata sapi dan potongan ayam bakar.',
+            'price' => 45000,
+            'image' => '/images/menu/nasi-goreng.jpg',
+            'status' => 'tersedia',
+            'is_best_seller' => true,
+        ]);
+        MenuIngredient::create(['menu_id' => $mNasiGoreng->id, 'inventory_id' => $invBeras->id, 'quantity_used' => 150]);
+        MenuIngredient::create(['menu_id' => $mNasiGoreng->id, 'inventory_id' => $invTelur->id, 'quantity_used' => 1]);
+        MenuIngredient::create(['menu_id' => $mNasiGoreng->id, 'inventory_id' => $invAyam->id, 'quantity_used' => 50]);
+
+        $mAyamBakar = Menu::create([
+            'category_id' => $catMakan->id,
+            'name' => 'Nasi Ayam Bakar Madu',
+            'slug' => 'nasi-ayam-bakar',
+            'description' => 'Ayam bakar olesan madu lezat disajikan dengan nasi putih hangat dan sambal terasi.',
+            'price' => 42000,
+            'image' => '/images/menu/ayam-bakar.jpg',
+            'status' => 'tersedia',
+            'is_best_seller' => false,
+        ]);
+        MenuIngredient::create(['menu_id' => $mAyamBakar->id, 'inventory_id' => $invBeras->id, 'quantity_used' => 150]);
+        MenuIngredient::create(['menu_id' => $mAyamBakar->id, 'inventory_id' => $invAyam->id, 'quantity_used' => 150]);
+
+        $mPisgor = Menu::create([
+            'category_id' => $catCamilan->id,
+            'name' => 'Pisang Goreng Keju Susu',
+            'slug' => 'pisang-goreng-keju',
+            'description' => 'Pisang kepok manis digoreng krispi dengan taburan keju parut dan kental manis.',
+            'price' => 22000,
+            'image' => '/images/menu/pisgor.jpg',
+            'status' => 'tersedia',
+            'is_best_seller' => true,
+        ]);
+        MenuIngredient::create(['menu_id' => $mPisgor->id, 'inventory_id' => $invSusuUHT->id, 'quantity_used' => 20]); // assuming milk is used
+        
+        $mSingkong = Menu::create([
+            'category_id' => $catCamilan->id,
+            'name' => 'Singkong Goreng Merekah',
+            'slug' => 'singkong-goreng',
+            'description' => 'Singkong empuk merekah dengan bumbu gurih ketumbar dan bawang putih.',
+            'price' => 18000,
+            'image' => '/images/menu/singkong.jpg',
+            'status' => 'tersedia',
+            'is_best_seller' => false,
+        ]);
+
+        // 10. Seed 10 Physical Tables
         for ($i = 1; $i <= 10; $i++) {
             $num = str_pad($i, 2, '0', STR_PAD_LEFT);
             $cap = ($i <= 4) ? 2 : (($i <= 8) ? 4 : 6);
@@ -256,26 +341,17 @@ class DatabaseSeeder extends Seeder
             ]);
         }
 
-        // 9. Seed FAQs
+        // 11. Seed FAQs
         $faqs = [
             [
-                'question' => 'Apakah perlu melakukan reservasi sebelum datang ke NEMU Space?',
-                'answer' => 'Anda bisa datang langsung (walk-in) kapan saja. Namun untuk akhir pekan atau rombongan lebih dari 4 orang, kami sangat menyarankan reservasi terlebih dahulu melalui halaman Reservasi.',
+                'question' => 'Apakah NEMU Space buka 24 jam?',
+                'answer' => 'Saat ini kami buka setiap hari mulai pukul 08:00 hingga 23:00 WIB.',
                 'display_order' => 1,
             ],
             [
-                'question' => 'Apakah NEMU Space menyediakan fasilitas Wi-Fi dan colokan listrik untuk bekerja?',
-                'answer' => 'Tentu! Kami menyediakan Wi-Fi fiber optic berkecepatan tinggi gratis dan colokan listrik di hampir setiap meja untuk mendukung kenyamanan bekerja dan belajar Anda.',
-            ],
-            [
-                'question' => 'Apakah NEMU Space ramah hewan peliharaan (pet-friendly)?',
-                'answer' => 'Ya, area semi-outdoor kami terbuka untuk hewan peliharaan (pet-friendly). Kami mohon agar anabul tetap menggunakan leash demi kenyamanan bersama.',
-                'display_order' => 3,
-            ],
-            [
-                'question' => 'Bagaimana ketersediaan area parkir di NEMU Space?',
-                'answer' => 'Kami memiliki area parkir pribadi yang cukup luas untuk mobil maupun sepeda motor, lengkap dengan petugas keamanan yang menjaga selama jam operasional.',
-                'display_order' => 4,
+                'question' => 'Apakah tersedia koneksi internet (Wi-Fi)?',
+                'answer' => 'Ya, kami menyediakan Wi-Fi berkecepatan tinggi gratis bagi seluruh pelanggan yang menikmati hidangan kami.',
+                'display_order' => 2,
             ],
         ];
 
@@ -283,24 +359,19 @@ class DatabaseSeeder extends Seeder
             Faq::create($f);
         }
 
-        // 10. Seed Dummy Transactions & Reservations (Past 30 Days) for Dashboard
+        // 12. Seed Dummy Transactions & Reservations (Past 30 Days) for Dashboard
         $kasir_id = $kasir->id;
-        
         $payment_methods = ['tunai', 'qris', 'kartu'];
         $startDate = now()->subDays(30);
-
-        // Fetch menus for transactions
         $menuList = Menu::all();
         
         for ($i = 0; $i < 60; $i++) {
-            // Generate random date within last 30 days
             $randomDate = $startDate->copy()->addDays(rand(0, 30))->addHours(rand(8, 22));
             
-            // Create Transaction
             $transaction = Transaction::create([
                 'invoice_number' => 'INV-' . $randomDate->format('Ymd') . '-' . strtoupper(Str::random(4)),
                 'cashier_id' => $kasir_id,
-                'subtotal' => 0, // Will calculate below
+                'subtotal' => 0, 
                 'discount' => 0,
                 'total' => 0,
                 'payment_method' => $payment_methods[array_rand($payment_methods)],
@@ -310,7 +381,6 @@ class DatabaseSeeder extends Seeder
             ]);
 
             $subtotal = 0;
-            // Add 1 to 4 random items per transaction
             $numItems = rand(1, 4);
             for ($j = 0; $j < $numItems; $j++) {
                 $menu = $menuList->random();
@@ -332,13 +402,13 @@ class DatabaseSeeder extends Seeder
             
             $transaction->update([
                 'subtotal' => $subtotal,
-                'total' => $subtotal, // No discount for simplicity
+                'total' => $subtotal, 
             ]);
         }
 
         // Add today's and future reservations
         for ($k = 0; $k < 10; $k++) {
-            $isToday = $k < 4; // 4 reservations for today
+            $isToday = $k < 4; 
             $resDate = $isToday ? now() : now()->addDays(rand(1, 7));
             $resTime = str_pad(rand(10, 20), 2, '0', STR_PAD_LEFT) . ':00:00';
             

@@ -20,4 +20,14 @@ class MenuIngredient extends Pivot
     protected $casts = [
         'quantity_used' => 'decimal:2',
     ];
+
+    public function inventory()
+    {
+        return $this->belongsTo(Inventory::class, 'inventory_id');
+    }
+
+    public function menu()
+    {
+        return $this->belongsTo(Menu::class, 'menu_id');
+    }
 }

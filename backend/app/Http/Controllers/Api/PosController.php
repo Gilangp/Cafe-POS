@@ -104,7 +104,7 @@ class PosController extends Controller
     public function createOrder(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'payment_method' => 'required|in:tunai,qris,debit,kredit',
+            'payment_method' => 'required|in:tunai,qris,kartu',
             'discount' => 'nullable|numeric|min:0',
             'items' => 'required|array|min:1',
             'items.*.menu_id' => 'required|uuid|exists:menus,id',
@@ -175,7 +175,7 @@ class PosController extends Controller
                     'menu_name_snapshot' => $menu->name,
                     'quantity' => $qty,
                     'note' => $data['note'],
-                    'item_status' => 'menunggu',
+                    'item_status' => 'diterima',
                 ]);
 
                 // Auto-deduct raw material inventory based on menu ingredients
@@ -189,7 +189,7 @@ class PosController extends Controller
 
                         InventoryLog::create([
                             'inventory_id' => $invItem->id,
-                            'type' => 'stock_out',
+                            'type' => 'keluar',
                             'quantity' => $deductAmount,
                             'reference_type' => Transaction::class,
                             'reference_id' => $transaction->id,
@@ -256,7 +256,7 @@ class PosController extends Controller
 
                         InventoryLog::create([
                             'inventory_id' => $invItem->id,
-                            'type' => 'stock_in',
+                            'type' => 'masuk',
                             'quantity' => $restoreAmount,
                             'reference_type' => Transaction::class,
                             'reference_id' => $transaction->id,
@@ -296,8 +296,7 @@ class PosController extends Controller
                 'payment_methods' => [
                     'tunai' => $completedTransactions->where('payment_method', 'tunai')->sum('total'),
                     'qris' => $completedTransactions->where('payment_method', 'qris')->sum('total'),
-                    'debit' => $completedTransactions->where('payment_method', 'debit')->sum('total'),
-                    'kredit' => $completedTransactions->where('payment_method', 'kredit')->sum('total'),
+                    'kartu' => $completedTransactions->where('payment_method', 'kartu')->sum('total'),
                 ],
                 'cancelled_transactions_count' => $cancelledTransactions->count(),
             ],
