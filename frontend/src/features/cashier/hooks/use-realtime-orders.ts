@@ -116,7 +116,10 @@ export function useRealtimeOrders() {
           knownTicketIds.current = new Set(mapped.map(m => m.id));
         }
 
-        setOrders(mapped);
+        // Update state ONLY if no mutation occurred while we were fetching
+        if (Date.now() >= mutationLock.current) {
+          setOrders(mapped);
+        }
         setLiveConnected(true);
       }
     } catch (err: any) {
@@ -155,12 +158,9 @@ export function useRealtimeOrders() {
 
     try {
       await api.patch(`/kds/tickets/${id}/status`, { status: laravelStatus });
-      // Segarkan data agar akurat dari server
-      mutationLock.current = 0; // Unlock early
-      fetchTickets(false);
+      // Removed immediate fetchTickets(false) and mutationLock clear to prevent race conditions
     } catch (err) {
       console.error('Gagal update status tiket:', err);
-      mutationLock.current = 0;
       // Removed immediate fetchTickets(false) to prevent jumping
     }
   };
@@ -191,7 +191,9 @@ export function useRealtimeOrders() {
         return {
           ...order,
           items: newItems,
-          status: (allFinished && order.status === 'preparing') ? 'ready' : order.status
+          // We intentionally do NOT auto-change the ticket status to 'ready' here.
+          // The user must explicitly click the "Tandai Siap Saji" button.
+          status: order.status
         };
       })
     );
@@ -199,11 +201,9 @@ export function useRealtimeOrders() {
     const laravelItemStatus = currentItemDone ? 'selesai' : 'diproses';
     try {
       await api.patch(`/kds/tickets/${orderId}/items/${itemId}/status`, { item_status: laravelItemStatus });
-      mutationLock.current = 0;
-      fetchTickets(false);
+      // Removed mutationLock.current = 0 to prevent race conditions
     } catch (err) {
       console.error('Gagal update status item:', err);
-      mutationLock.current = 0;
       // Removed immediate fetchTickets(false) to prevent jumping
     }
   };

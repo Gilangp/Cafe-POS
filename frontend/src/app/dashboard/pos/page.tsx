@@ -38,6 +38,7 @@ export default function PosPage() {
   
   const [orderType, setOrderType] = useState<'dine_in' | 'takeaway' | null>(null);
   const [assignedTable, setAssignedTable] = useState('');
+  const [customerName, setCustomerName] = useState('');
 
   const cart = useCartStore();
 
@@ -96,6 +97,12 @@ export default function PosPage() {
       return;
     }
 
+    if (!customerName.trim()) {
+      setError('Nama Pelanggan wajib diisi!');
+      setTimeout(() => setError(''), 4000);
+      return;
+    }
+
     if (cart.paymentMethod === 'tunai' && (Number(cashGiven) < cart.getTotal())) {
       setError('Nominal uang tunai tidak mencukupi.');
       return;
@@ -121,6 +128,7 @@ export default function PosPage() {
         discount: cart.discount,
         order_type: finalOrderType,
         table_number: finalOrderType === 'takeaway' ? null : (assignedTable.trim() || null),
+        customer_name: customerName.trim() || null,
         items: cart.items.map(i => ({
           menu_id: i.menu_id,
           quantity: i.quantity,
@@ -139,6 +147,7 @@ export default function PosPage() {
       setShowQrisModal(false);
       setOrderType(null);
       setAssignedTable('');
+      setCustomerName('');
       
     } catch (err: any) {
       setError(err?.response?.data?.message || 'Gagal memproses pesanan.');
@@ -279,17 +288,28 @@ export default function PosPage() {
              </div>
              
              {orderType === 'dine_in' && (
-               <div className="flex items-center gap-2 border-l border-gray-200 dark:border-white/10 pl-3 ml-1 w-24">
+               <div className="flex items-center gap-2 border-l border-gray-200 dark:border-white/10 pl-3 ml-1 w-20">
                  <MapPin size={14} className="text-gray-400 shrink-0" />
                  <input 
                    value={assignedTable}
                    onChange={(e) => setAssignedTable(e.target.value)}
-                   placeholder="No. Meja"
+                   placeholder="Meja"
                    className="bg-transparent border-none focus:outline-none text-xs font-bold text-primary dark:text-white w-full placeholder-gray-400"
                  />
                </div>
              )}
           </div>
+          
+          {orderType && (
+            <div className="mt-2 flex items-center gap-2 bg-white dark:bg-[#1A2620] border border-gray-200 dark:border-white/10 p-2 rounded-xl">
+              <input 
+                value={customerName}
+                onChange={(e) => setCustomerName(e.target.value)}
+                placeholder="Nama Pelanggan"
+                className="bg-transparent border-none focus:outline-none text-xs font-bold text-primary dark:text-white w-full placeholder-gray-400 px-2"
+              />
+            </div>
+          )}
         </div>
 
         {/* Cart Items */}
@@ -553,6 +573,9 @@ export default function PosPage() {
                   <div className="flex justify-between"><span>No. Struk</span><span>{completedTransaction.invoice_number}</span></div>
                   <div className="flex justify-between"><span>Tanggal</span><span>{new Date(completedTransaction.created_at).toLocaleString('id-ID')}</span></div>
                   <div className="flex justify-between"><span>Kasir</span><span>{completedTransaction.cashier?.name || 'Kasir'}</span></div>
+                  {completedTransaction.customer_name && completedTransaction.customer_name !== 'Pelanggan' && (
+                    <div className="flex justify-between"><span>Pelanggan</span><span>{completedTransaction.customer_name}</span></div>
+                  )}
                 </div>
 
                 <div className="space-y-3 mb-4">

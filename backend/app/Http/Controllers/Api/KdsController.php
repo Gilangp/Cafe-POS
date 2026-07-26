@@ -112,19 +112,8 @@ class KdsController extends Controller
         $item->item_status = $validated['item_status'];
         $item->save();
 
-        // Check if all items in the ticket are finished ('selesai'), auto-advance ticket status to 'siap'
+        // Removed auto-advance logic so cashier/KDS explicitly clicks the Ready button
         $ticket = OrderTicket::with('items')->findOrFail($ticketId);
-        $allFinished = $ticket->items->every(fn($i) => in_array($i->item_status, ['selesai', 'dibatalkan']));
-
-        if ($allFinished && in_array($ticket->status, ['diterima', 'diproses'])) {
-            $ticket->status = 'siap';
-            $ticket->ready_at = $ticket->ready_at ?? now();
-            $ticket->save();
-        } elseif ($ticket->status === 'diterima' && $validated['item_status'] === 'diproses') {
-            $ticket->status = 'diproses';
-            $ticket->processed_at = $ticket->processed_at ?? now();
-            $ticket->save();
-        }
 
         return response()->json([
             'success' => true,

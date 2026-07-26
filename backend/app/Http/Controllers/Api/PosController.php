@@ -208,7 +208,7 @@ class PosController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Transaksi POS berhasil diproses dan tiket dapur telah diterbitkan.',
-                'data' => $transaction->load(['items', 'orderTicket.items']),
+                'data' => $transaction->load(['items', 'orderTicket.items', 'cashier:id,name']),
                 'meta' => null,
             ], 201);
         });

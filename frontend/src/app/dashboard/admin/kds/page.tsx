@@ -189,11 +189,13 @@ export default function KdsPage() {
                           }`}>
                             {ticket.order_type === 'takeaway' ? 'TAKEAWAY' : 'DINE IN'}
                           </span>
-                          {ticket.order_type !== 'takeaway' && ticket.table_number && ticket.table_number !== 'Takeaway' && (
-                            <span className="text-sm font-extrabold text-primary dark:text-cream-100">
-                              {ticket.table_number === 'Pesanan Kasir' ? 'Walk-in' : `Meja ${ticket.table_number}`}
-                            </span>
-                          )}
+                          <span className="text-sm font-extrabold text-primary dark:text-cream-100">
+                            {ticket.customer_name && ticket.customer_name !== 'Pelanggan' 
+                              ? `${ticket.customer_name} ${ticket.table_number && ticket.table_number !== 'Pesanan Kasir' && ticket.table_number !== 'Takeaway' ? `(M.${ticket.table_number})` : ''}`
+                              : (ticket.table_number && ticket.table_number !== 'Pesanan Kasir' && ticket.table_number !== 'Takeaway' 
+                                  ? `Meja ${ticket.table_number}` 
+                                  : 'Walk-in')}
+                          </span>
                         </div>
                       <div className="text-xs font-bold bg-gray-100 dark:bg-white/10 px-2.5 py-1 rounded-lg text-primary/60 dark:text-cream-400/60">
                         {ticket.items_count} Item
@@ -241,7 +243,7 @@ export default function KdsPage() {
                 <ChefHat size={20} className="stroke-[2.5]" />
               </div>
               <h2 className="text-lg font-bold font-heading text-primary dark:text-cream-100 flex-1">
-                Sedang Dimasak
+                Sedang Diproses
               </h2>
               <span className="bg-primary dark:bg-cream-100 text-white dark:text-primary px-2.5 py-0.5 rounded-lg text-sm font-bold shadow-sm">
                 {counts.preparing}
@@ -282,11 +284,13 @@ export default function KdsPage() {
                           }`}>
                             {ticket.order_type === 'takeaway' ? 'TAKEAWAY' : 'DINE IN'}
                           </span>
-                          {ticket.order_type !== 'takeaway' && ticket.table_number && ticket.table_number !== 'Takeaway' && (
-                            <span className="text-sm font-extrabold text-primary dark:text-cream-100">
-                              {ticket.table_number === 'Pesanan Kasir' ? 'Walk-in' : `Meja ${ticket.table_number}`}
-                            </span>
-                          )}
+                          <span className="text-sm font-extrabold text-primary dark:text-cream-100">
+                            {ticket.customer_name && ticket.customer_name !== 'Pelanggan' 
+                              ? `${ticket.customer_name} ${ticket.table_number && ticket.table_number !== 'Pesanan Kasir' && ticket.table_number !== 'Takeaway' ? `(M.${ticket.table_number})` : ''}`
+                              : (ticket.table_number && ticket.table_number !== 'Pesanan Kasir' && ticket.table_number !== 'Takeaway' 
+                                  ? `Meja ${ticket.table_number}` 
+                                  : 'Walk-in')}
+                          </span>
                         </div>
                       <div className="text-xs font-bold bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 px-2.5 py-1 rounded-lg">
                         Proses {ticket.items_count} Item
@@ -312,13 +316,16 @@ export default function KdsPage() {
                     </div>
 
                     {/* Action */}
-                    <button onClick={() => updateOrderStatus(ticket.id, 'ready')} className={`w-full py-3.5 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 mt-2 ${
+                    <button 
+                      onClick={() => updateOrderStatus(ticket.id, 'ready')} 
+                      disabled={!allItemsDone}
+                      className={`w-full py-3.5 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 mt-2 ${
                         allItemsDone 
-                          ? 'bg-accent text-primary hover:bg-[#b88c4d] shadow-md' 
-                          : 'bg-gray-100 dark:bg-black/30 text-primary/50 dark:text-cream-400/50 hover:bg-gray-200 dark:hover:bg-white/10 border border-black/5 dark:border-white/5'
+                          ? 'bg-accent text-primary hover:bg-[#b88c4d] shadow-md cursor-pointer' 
+                          : 'bg-gray-100 dark:bg-black/30 text-primary/40 dark:text-cream-400/40 border border-black/5 dark:border-white/5 cursor-not-allowed'
                       }`}>
                       {allItemsDone ? <Check size={18} className="stroke-[3]" /> : null}
-                      {allItemsDone ? 'Kirim ke POS (Siap)' : 'Tandai Siap Saji'}
+                      {allItemsDone ? 'Pesanan Siap' : 'Centang Semua Item Dulu'}
                     </button>
                   </div>
                 );
@@ -339,7 +346,7 @@ export default function KdsPage() {
                 <PackageCheck size={20} className="stroke-[2.5]" />
               </div>
               <h2 className="text-lg font-bold font-heading text-primary dark:text-cream-100 flex-1">
-                Siap Saji
+                Pesanan Siap
               </h2>
               <span className="bg-primary dark:bg-cream-100 text-white dark:text-primary px-2.5 py-0.5 rounded-lg text-sm font-bold shadow-sm">
                 {counts.ready}
@@ -375,11 +382,13 @@ export default function KdsPage() {
                           }`}>
                             {ticket.order_type === 'takeaway' ? 'TAKEAWAY' : 'DINE IN'}
                           </span>
-                          {ticket.order_type !== 'takeaway' && ticket.table_number && ticket.table_number !== 'Takeaway' && (
-                            <span className="text-sm font-extrabold text-primary dark:text-cream-100">
-                              {ticket.table_number === 'Pesanan Kasir' ? 'Walk-in' : `Meja ${ticket.table_number}`}
-                            </span>
-                          )}
+                          <span className="text-sm font-extrabold text-primary dark:text-cream-100">
+                            {ticket.customer_name && ticket.customer_name !== 'Pelanggan' 
+                              ? `${ticket.customer_name} ${ticket.table_number && ticket.table_number !== 'Pesanan Kasir' && ticket.table_number !== 'Takeaway' ? `(M.${ticket.table_number})` : ''}`
+                              : (ticket.table_number && ticket.table_number !== 'Pesanan Kasir' && ticket.table_number !== 'Takeaway' 
+                                  ? `Meja ${ticket.table_number}` 
+                                  : 'Walk-in')}
+                          </span>
                         </div>
                       <div className="text-xs font-bold bg-green-50 dark:bg-green-500/10 text-green-600 dark:text-green-400 px-2.5 py-1 rounded-lg">
                         Pick-up ({ticket.items_count})
