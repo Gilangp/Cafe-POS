@@ -42,9 +42,9 @@ function getTicketTiming(timestamp?: number, fallbackText?: string) {
     elapsed = `${minutes < 10 ? '0' : ''}${minutes}:${remSec < 10 ? '0' : ''}${remSec}`;
   }
   
-  if (minutes >= 10) return { elapsed, level: 'critical', color: 'text-red-600', bg: 'bg-red-50 dark:bg-red-500/20', pulse: true };
-  if (minutes >= 5) return { elapsed, level: 'warning', color: 'text-amber-600', bg: 'bg-amber-50 dark:bg-amber-500/20', pulse: false };
-  return { elapsed, level: 'normal', color: 'text-green-600', bg: 'bg-green-50 dark:bg-green-500/20', pulse: false };
+  if (minutes >= 10) return { elapsed, level: 'critical', color: 'text-red-600', bg: 'bg-red-500 text-white shadow-sm animate-pulse', pulse: true };
+  if (minutes >= 5) return { elapsed, level: 'warning', color: 'text-accent', bg: 'bg-accent/10 text-accent font-bold border border-accent/20', pulse: false };
+  return { elapsed, level: 'normal', color: 'text-primary', bg: 'bg-gray-100 dark:bg-white/10 text-primary dark:text-cream-100', pulse: false };
 }
 
 export default function KdsPage() {
@@ -97,12 +97,12 @@ export default function KdsPage() {
         <div className="flex flex-col gap-2">
           <h1 className="text-2xl md:text-3xl font-extrabold font-heading text-primary dark:text-cream-100 tracking-tight flex items-center gap-3">
             Kitchen Display
-            <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5 border ${
+            <span className={`px-2.5 py-1 leading-none rounded-full text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5 border h-fit mt-1 ${
                 liveConnected
-                  ? 'bg-green-50 dark:bg-green-500/10 text-green-600 dark:text-green-400 border-green-200 dark:border-green-500/30'
-                  : 'bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-500/30'
+                  ? 'bg-accent/10 text-accent border-accent/30'
+                  : 'bg-red-500/10 text-red-500 border-red-500/30'
               }`}>
-              <span className={`h-1.5 w-1.5 rounded-full ${liveConnected ? 'bg-green-500 animate-pulse' : 'bg-amber-500'}`} />
+              <span className={`h-1.5 w-1.5 rounded-full shrink-0 ${liveConnected ? 'bg-accent animate-pulse' : 'bg-red-500'}`} />
               {liveConnected ? 'Live Sync' : 'Offline'}
             </span>
           </h1>
@@ -115,15 +115,15 @@ export default function KdsPage() {
           <div className="flex bg-white dark:bg-[#1A2620] rounded-xl p-1 border border-black/5 dark:border-white/5 shadow-sm">
              <div className="flex flex-col items-center px-4 py-1 border-r border-black/5 dark:border-white/5">
                 <span className="text-[10px] uppercase font-bold text-primary/60 dark:text-cream-400/60 tracking-wider">Baru</span>
-                <span className="text-lg font-black text-blue-600 dark:text-blue-400 leading-none mt-1">{counts.new}</span>
+                <span className="text-lg font-black text-primary dark:text-cream-100 leading-none mt-1">{counts.new}</span>
              </div>
              <div className="flex flex-col items-center px-4 py-1 border-r border-black/5 dark:border-white/5">
                 <span className="text-[10px] uppercase font-bold text-primary/60 dark:text-cream-400/60 tracking-wider">Proses</span>
-                <span className="text-lg font-black text-amber-600 dark:text-amber-400 leading-none mt-1">{counts.preparing}</span>
+                <span className="text-lg font-black text-accent leading-none mt-1">{counts.preparing}</span>
              </div>
              <div className="flex flex-col items-center px-4 py-1">
                 <span className="text-[10px] uppercase font-bold text-primary/60 dark:text-cream-400/60 tracking-wider">Siap</span>
-                <span className="text-lg font-black text-green-600 dark:text-green-400 leading-none mt-1">{counts.ready}</span>
+                <span className="text-lg font-black text-primary dark:text-cream-100 leading-none mt-1">{counts.ready}</span>
              </div>
           </div>
 
@@ -131,7 +131,7 @@ export default function KdsPage() {
             <button onClick={testKitchenPing} className="flex h-11 w-11 items-center justify-center rounded-xl bg-white dark:bg-[#1A2620] text-primary/60 dark:text-cream-400/60 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors border border-black/5 dark:border-white/5 shadow-sm" title="Test Ping">
               <BellRing size={18} />
             </button>
-            <button onClick={() => setAudioEnabled(!audioEnabled)} className={`flex h-11 w-11 items-center justify-center rounded-xl transition-colors border shadow-sm ${audioEnabled ? 'bg-green-50 dark:bg-green-500/20 text-green-600 dark:text-green-400 border-green-200 dark:border-green-500/30' : 'bg-white dark:bg-[#1A2620] text-primary/40 dark:text-cream-400/40 border-black/5 dark:border-white/5'}`} title={audioEnabled ? 'Mute' : 'Unmute'}>
+            <button onClick={() => setAudioEnabled(!audioEnabled)} className={`flex h-11 w-11 items-center justify-center rounded-xl transition-colors border shadow-sm ${audioEnabled ? 'bg-accent/10 text-accent border-accent/30' : 'bg-white dark:bg-[#1A2620] text-primary/40 dark:text-cream-400/40 border-black/5 dark:border-white/5'}`} title={audioEnabled ? 'Mute' : 'Unmute'}>
               {audioEnabled ? <Volume2 size={18} /> : <VolumeX size={18} />}
             </button>
           </div>
@@ -140,18 +140,18 @@ export default function KdsPage() {
 
       {/* Main Board Container */}
       <div className="flex-1 min-h-0 overflow-x-auto pb-4 custom-scrollbar">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 h-full min-w-[900px]">
+        <div className="flex lg:grid lg:grid-cols-3 gap-6 lg:gap-8 h-full min-w-max lg:min-w-0 px-1">
           
           {/* COLUMN 1: NEW */}
-          <div className="flex flex-col h-full">
+          <div className="w-[85vw] sm:w-[350px] lg:w-auto flex flex-col h-full shrink-0">
             <div className="flex items-center gap-3 mb-6 px-1">
-              <div className="w-10 h-10 bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 rounded-xl flex items-center justify-center shadow-sm">
+              <div className="w-10 h-10 bg-primary text-accent rounded-xl flex items-center justify-center shadow-sm">
                 <Zap size={20} className="stroke-[2.5]" />
               </div>
               <h2 className="text-lg font-bold font-heading text-primary dark:text-cream-100 flex-1">
                 Pesanan Baru
               </h2>
-              <span className="bg-primary dark:bg-cream-100 text-white dark:text-primary px-2.5 py-0.5 rounded-lg text-sm font-bold shadow-sm">
+              <span className="bg-primary text-accent px-2.5 py-0.5 rounded-lg text-sm font-bold shadow-sm">
                 {counts.new}
               </span>
             </div>
@@ -171,11 +171,7 @@ export default function KdsPage() {
                           </h3>
                           {ticket.source === 'live' && <span className="bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded text-[8px] tracking-widest font-bold uppercase">Live</span>}
                        </div>
-                       <div className={`px-2.5 py-1 rounded-full text-xs font-bold shadow-sm flex items-center gap-1.5 ${
-                          timing.level === 'critical' ? 'bg-red-500 text-white animate-pulse' : 
-                          timing.level === 'warning' ? 'bg-amber-100 text-amber-700' :
-                          'bg-green-100 text-green-700'
-                       }`}>
+                       <div className={`px-2.5 py-1 rounded-full text-xs font-bold flex items-center gap-1.5 ${timing.bg}`}>
                           <Clock size={12} className={timing.level === 'critical' ? 'animate-spin-slow' : ''} />
                           {timing.elapsed}
                        </div>
@@ -237,15 +233,15 @@ export default function KdsPage() {
           </div>
 
           {/* COLUMN 2: PREPARING */}
-          <div className="flex flex-col h-full">
+          <div className="w-[85vw] sm:w-[350px] lg:w-auto flex flex-col h-full shrink-0">
             <div className="flex items-center gap-3 mb-6 px-1">
-              <div className="w-10 h-10 bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 rounded-xl flex items-center justify-center shadow-sm">
+              <div className="w-10 h-10 bg-accent text-primary rounded-xl flex items-center justify-center shadow-sm">
                 <ChefHat size={20} className="stroke-[2.5]" />
               </div>
               <h2 className="text-lg font-bold font-heading text-primary dark:text-cream-100 flex-1">
                 Sedang Diproses
               </h2>
-              <span className="bg-primary dark:bg-cream-100 text-white dark:text-primary px-2.5 py-0.5 rounded-lg text-sm font-bold shadow-sm">
+              <span className="bg-accent text-primary px-2.5 py-0.5 rounded-lg text-sm font-bold shadow-sm">
                 {counts.preparing}
               </span>
             </div>
@@ -258,7 +254,7 @@ export default function KdsPage() {
                 return (
                   <div key={ticket.id} className="bg-white dark:bg-[#1A2620] p-5 rounded-2xl border border-black/5 dark:border-white/5 shadow-card-shadow flex flex-col gap-4 group transition-all shrink-0 hover:-translate-y-1 hover:shadow-lg relative overflow-hidden">
                     {/* Top edge indicator for processing */}
-                    <div className="absolute top-0 left-0 w-full h-1 bg-amber-400/50" />
+                    <div className="absolute top-0 left-0 w-full h-1 bg-accent/70" />
                     
                     {/* Header */}
                     <div className="flex justify-between items-center mb-4">
@@ -267,10 +263,7 @@ export default function KdsPage() {
                             #{ticket.order_number.split('-').pop()}
                           </h3>
                        </div>
-                       <div className={`px-2.5 py-1 rounded-full text-xs font-bold shadow-sm flex items-center gap-1.5 ${
-                          timing.level === 'critical' ? 'bg-red-500 text-white animate-pulse' : 
-                          'bg-amber-100 text-amber-700'
-                       }`}>
+                       <div className={`px-2.5 py-1 rounded-full text-xs font-bold flex items-center gap-1.5 ${timing.bg}`}>
                           <Clock size={12} className={timing.level === 'critical' ? 'animate-spin-slow' : ''} />
                           {timing.elapsed}
                        </div>
@@ -292,7 +285,7 @@ export default function KdsPage() {
                                   : 'Walk-in')}
                           </span>
                         </div>
-                      <div className="text-xs font-bold bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 px-2.5 py-1 rounded-lg">
+                      <div className="text-xs font-bold bg-accent/10 text-accent px-2.5 py-1 rounded-lg">
                         Proses {ticket.items_count} Item
                       </div>
                     </div>
@@ -301,8 +294,8 @@ export default function KdsPage() {
                     <div className="flex flex-col gap-2.5 flex-1">
                        {ticket.items?.map(item => (
                           <button key={item.id} onClick={() => toggleOrderItemDone(ticket.id, item.id)} className={`flex items-start gap-3 group text-left transition-all ${item.done ? 'opacity-40' : 'hover:opacity-80'}`}>
-                             <div className={`mt-0.5 shrink-0 transition-colors ${item.done ? 'text-green-500' : 'text-gray-300 dark:text-gray-600 group-hover:text-gray-400'}`}>
-                                {item.done ? <CheckCircle2 size={18} className="fill-green-100 dark:fill-green-900/40" /> : <Circle size={18}/>}
+                             <div className={`mt-0.5 shrink-0 transition-colors ${item.done ? 'text-accent' : 'text-gray-300 dark:text-gray-600 group-hover:text-gray-400'}`}>
+                                {item.done ? <CheckCircle2 size={18} className="fill-accent/20" /> : <Circle size={18}/>}
                              </div>
                              <div className="flex-1 min-w-0">
                                <div className="flex justify-between items-start gap-2">
@@ -340,15 +333,15 @@ export default function KdsPage() {
           </div>
 
           {/* COLUMN 3: READY */}
-          <div className="flex flex-col h-full">
+          <div className="w-[85vw] sm:w-[350px] lg:w-auto flex flex-col h-full shrink-0">
             <div className="flex items-center gap-3 mb-6 px-1">
-              <div className="w-10 h-10 bg-green-50 dark:bg-green-500/10 text-green-600 dark:text-green-400 rounded-xl flex items-center justify-center shadow-sm">
+              <div className="w-10 h-10 bg-primary text-cream-100 rounded-xl flex items-center justify-center shadow-sm">
                 <PackageCheck size={20} className="stroke-[2.5]" />
               </div>
               <h2 className="text-lg font-bold font-heading text-primary dark:text-cream-100 flex-1">
                 Pesanan Siap
               </h2>
-              <span className="bg-primary dark:bg-cream-100 text-white dark:text-primary px-2.5 py-0.5 rounded-lg text-sm font-bold shadow-sm">
+              <span className="bg-primary text-accent px-2.5 py-0.5 rounded-lg text-sm font-bold shadow-sm">
                 {counts.ready}
               </span>
             </div>
@@ -358,8 +351,8 @@ export default function KdsPage() {
                 const timing = getTicketTiming(ticket.created_timestamp, ticket.created_at);
 
                 return (
-                  <div key={ticket.id} className="bg-white dark:bg-[#1A2620] p-5 rounded-2xl border border-green-200 dark:border-green-500/30 shadow-card-shadow flex flex-col gap-4 group transition-all shrink-0 hover:-translate-y-1 hover:shadow-lg relative overflow-hidden">
-                    <div className="absolute top-0 left-0 w-full h-1 bg-green-500/50" />
+                  <div key={ticket.id} className="bg-white dark:bg-[#1A2620] p-5 rounded-2xl border border-primary/20 shadow-card-shadow flex flex-col gap-4 group transition-all shrink-0 hover:-translate-y-1 hover:shadow-lg relative overflow-hidden">
+                    <div className="absolute top-0 left-0 w-full h-1 bg-primary" />
                     
                     {/* Header */}
                     <div className="flex justify-between items-center mb-4">
@@ -368,7 +361,7 @@ export default function KdsPage() {
                             #{ticket.order_number.split('-').pop()}
                           </h3>
                        </div>
-                       <div className="px-2.5 py-1 rounded-full text-xs font-bold shadow-sm flex items-center gap-1.5 bg-green-100 text-green-700">
+                       <div className={`px-2.5 py-1 rounded-full text-xs font-bold flex items-center gap-1.5 ${timing.bg}`}>
                           <Clock size={12} />
                           {timing.elapsed}
                        </div>
@@ -390,7 +383,7 @@ export default function KdsPage() {
                                   : 'Walk-in')}
                           </span>
                         </div>
-                      <div className="text-xs font-bold bg-green-50 dark:bg-green-500/10 text-green-600 dark:text-green-400 px-2.5 py-1 rounded-lg">
+                      <div className="text-xs font-bold bg-primary/5 dark:bg-white/5 text-primary dark:text-cream-100 px-2.5 py-1 rounded-lg">
                         Pick-up ({ticket.items_count})
                       </div>
                     </div>
@@ -399,8 +392,8 @@ export default function KdsPage() {
                     <div className="flex flex-col gap-2.5 flex-1">
                        {ticket.items?.map(item => (
                           <div key={item.id} className="flex items-start gap-3 text-left">
-                             <div className="mt-0.5 shrink-0 text-green-500">
-                                <CheckCircle2 size={18} className="fill-green-100 dark:fill-green-900/40" />
+                             <div className="mt-0.5 shrink-0 text-primary">
+                                <CheckCircle2 size={18} className="fill-primary/10" />
                              </div>
                              <div className="flex-1 min-w-0 flex justify-between items-start gap-2">
                                 <span className="text-[15px] font-bold leading-snug text-primary/70 dark:text-cream-400/70">{item.name}</span>
@@ -411,7 +404,7 @@ export default function KdsPage() {
                     </div>
 
                     {/* Action */}
-                    <button onClick={() => updateOrderStatus(ticket.id, 'completed')} className="w-full py-3.5 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 mt-2 bg-green-600 text-white hover:bg-green-700 shadow-md">
+                    <button onClick={() => updateOrderStatus(ticket.id, 'completed')} className="w-full py-3.5 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 mt-2 bg-primary text-cream-100 hover:bg-primary/90 shadow-md">
                       <CheckCircle2 size={18} className="stroke-[3]" />
                       Selesai Diantar / Pick-up
                     </button>
