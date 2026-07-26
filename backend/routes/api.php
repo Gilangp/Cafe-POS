@@ -97,6 +97,7 @@ Route::prefix('v1')->group(function () {
             Route::delete('about-us/{aboutUs}', [App\Http\Controllers\Api\AdminSettingController::class, 'destroyAboutUs']);
 
             // Table Reservations Management
+            Route::get('reservations/tables', [App\Http\Controllers\Api\AdminReservationController::class, 'tables']);
             Route::patch('reservations/{reservation}/status', [App\Http\Controllers\Api\AdminReservationController::class, 'updateStatus']);
             Route::apiResource('reservations', App\Http\Controllers\Api\AdminReservationController::class);
 

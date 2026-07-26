@@ -40,15 +40,16 @@ class PublicReservationController extends Controller
         }
 
         $reservation = Reservation::create([
+            'reservation_code' => 'NEMU-' . strtoupper(substr(uniqid(), -5)),
             'table_id' => $tableId,
-            'name' => $validated['name'],
-            'phone' => $validated['phone'],
+            'customer_name' => $validated['name'],
+            'customer_phone' => $validated['phone'],
             'reservation_date' => $validated['reservation_date'],
             'reservation_time' => $validated['reservation_time'],
-            'guest_count' => $validated['guest_count'],
+            'party_size' => $validated['guest_count'],
             'purpose' => $validated['purpose'] ?? 'Santai / Berkumpul',
             'notes' => $validated['notes'] ?? null,
-            'status' => 'menunggu',
+            'status' => 'menunggu_konfirmasi',
         ]);
 
         return response()->json([
@@ -66,20 +67,19 @@ class PublicReservationController extends Controller
     {
         $request->validate([
             'phone' => 'required|string',
-            'date' => 'required|date',
+            'code' => 'required|string',
         ]);
 
         $reservations = Reservation::with('table')
-            ->where('phone', $request->phone)
-            ->whereDate('reservation_date', $request->date)
-            ->latest()
-            ->get();
+            ->where('customer_phone', $request->phone)
+            ->where('reservation_code', strtoupper($request->code))
+            ->first();
 
-        if ($reservations->isEmpty()) {
+        if (!$reservations) {
             return response()->json([
                 'success' => false,
-                'message' => 'Tidak ditemukan reservasi dengan nomor HP dan tanggal tersebut.',
-                'data' => [],
+                'message' => 'Tidak ditemukan reservasi dengan nomor HP dan kode tersebut.',
+                'data' => null,
                 'meta' => null,
             ], 404);
         }
@@ -88,9 +88,7 @@ class PublicReservationController extends Controller
             'success' => true,
             'message' => 'Status reservasi ditemukan.',
             'data' => $reservations,
-            'meta' => [
-                'total' => $reservations->count(),
-            ],
+            'meta' => null,
         ]);
     }
 }

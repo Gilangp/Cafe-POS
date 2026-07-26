@@ -132,18 +132,18 @@ export default function ReservasiPage() {
 
       if (res.data?.success || res.data) {
         setCreatedReservation(res.data?.data || {
-          id: `RES-${Math.floor(1000 + Math.random() * 9000)}`,
-          name,
-          phone,
+          reservation_code: `RES-${Math.floor(1000 + Math.random() * 9000)}`,
+          customer_name: name,
+          customer_phone: phone,
         });
         setIsSuccess(true);
       }
     } catch (err: any) {
       // Fallback
       setCreatedReservation({
-        id: `RES-${Math.floor(1000 + Math.random() * 9000)}`,
-        name,
-        phone,
+        reservation_code: `RES-${Math.floor(1000 + Math.random() * 9000)}`,
+        customer_name: name,
+        customer_phone: phone,
       });
       setIsSuccess(true);
     } finally {
@@ -167,7 +167,7 @@ export default function ReservasiPage() {
     setHasSearched(true);
     
     try {
-      const res = await api.fetch<any>(`/reservations/check-status?phone=${encodeURIComponent(checkPhone)}&code=${encodeURIComponent(checkCode)}`);
+      const res = await api.fetch<any>(`/reservations/check?phone=${encodeURIComponent(checkPhone)}&code=${encodeURIComponent(checkCode)}`);
       if (res.success && res.data) {
         setCheckResult(res.data);
       } else {
@@ -177,12 +177,12 @@ export default function ReservasiPage() {
       // Fallback for UI if API is not fully ready
       if (checkCode.startsWith('RES-') || checkCode.startsWith('NEMU-')) {
           setCheckResult({
-            id: checkCode,
-            name: 'Pelanggan',
-            phone: checkPhone,
+            reservation_code: checkCode,
+            customer_name: 'Pelanggan',
+            customer_phone: checkPhone,
             reservation_date: today,
             reservation_time: '19:00',
-            guest_count: 2,
+            party_size: 2,
             purpose: 'Nongkrong',
             status: 'Menunggu Konfirmasi',
             table: null,
@@ -329,7 +329,7 @@ export default function ReservasiPage() {
                     <div className="max-w-sm mx-auto rounded-2xl bg-[#FAF3E7] dark:bg-[#1A2620] p-6 border border-[#E4D9C4] dark:border-[#33413A]">
                       <p className="text-[10px] uppercase tracking-widest text-[#5C5348] dark:text-[#B8A99A] font-bold mb-1">Kode Reservasi Anda</p>
                       <p className="font-mono text-2xl font-bold text-[#1E3D31] dark:text-[#C89B5C] tracking-wider">
-                        {createdReservation.id}
+                        {createdReservation.reservation_code}
                       </p>
                       <p className="text-xs text-[#5C5348] dark:text-[#B8A99A] mt-2">Simpan kode ini untuk mengecek status reservasi Anda.</p>
                     </div>
@@ -345,8 +345,8 @@ export default function ReservasiPage() {
                       </Button>
                       <Button
                         onClick={() => {
-                          setCheckCode(createdReservation.id);
-                          setCheckPhone(createdReservation.phone);
+                          setCheckCode(createdReservation.reservation_code);
+                          setCheckPhone(createdReservation.customer_phone);
                           setActiveTab('check');
                           setIsSuccess(false);
                         }}
@@ -666,8 +666,8 @@ export default function ReservasiPage() {
                         <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 border-b border-[#E4D9C4] dark:border-[#33413A] pb-6">
                           <div>
                             <p className="text-[10px] uppercase tracking-widest text-[#5C5348] dark:text-[#B8A99A] font-bold mb-1">Kode Reservasi</p>
-                            <p className="font-mono text-xl font-bold text-[#1E3D31] dark:text-[#F5EFE6]">
-                              {checkResult.id}
+                            <p className="font-mono text-xl font-bold tracking-widest text-[#1E3D31] dark:text-[#F5EFE6]">
+                              {checkResult.reservation_code}
                             </p>
                           </div>
                           <div>
@@ -678,21 +678,21 @@ export default function ReservasiPage() {
                         <div className="grid grid-cols-2 gap-y-6 gap-x-4">
                           <div>
                             <p className="text-[10px] uppercase tracking-widest text-[#5C5348] dark:text-[#B8A99A] font-bold mb-1">Nama</p>
-                            <p className="text-sm font-semibold text-[#1E3D31] dark:text-[#F5EFE6]">{checkResult.name}</p>
+                            <p className="text-sm font-semibold text-[#1E3D31] dark:text-[#F5EFE6]">{checkResult.customer_name}</p>
                           </div>
                            <div>
                             <p className="text-[10px] uppercase tracking-widest text-[#5C5348] dark:text-[#B8A99A] font-bold mb-1">Nomor WhatsApp</p>
-                            <p className="text-sm font-semibold text-[#1E3D31] dark:text-[#F5EFE6]">{checkResult.phone}</p>
+                            <p className="text-sm font-semibold text-[#1E3D31] dark:text-[#F5EFE6]">{checkResult.customer_phone}</p>
                           </div>
                           <div>
                             <p className="text-[10px] uppercase tracking-widest text-[#5C5348] dark:text-[#B8A99A] font-bold mb-1">Tanggal & Jam</p>
                             <p className="text-sm font-semibold text-[#1E3D31] dark:text-[#F5EFE6]">
-                              {checkResult.reservation_date} • {checkResult.reservation_time} WIB
+                              {new Date(checkResult.reservation_date).toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })} • {checkResult.reservation_time?.slice(0, 5)} WIB
                             </p>
                           </div>
                           <div>
                             <p className="text-[10px] uppercase tracking-widest text-[#5C5348] dark:text-[#B8A99A] font-bold mb-1">Jumlah Orang</p>
-                            <p className="text-sm font-semibold text-[#1E3D31] dark:text-[#F5EFE6]">{checkResult.guest_count} Orang</p>
+                            <p className="text-sm font-semibold text-[#1E3D31] dark:text-[#F5EFE6]">{checkResult.party_size} Orang</p>
                           </div>
                           <div>
                             <p className="text-[10px] uppercase tracking-widest text-[#5C5348] dark:text-[#B8A99A] font-bold mb-1">Keperluan</p>

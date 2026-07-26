@@ -11,13 +11,24 @@ class Reservation extends Model
 {
     use HasFactory, HasUuids;
 
+    protected static function boot()
+    {
+        parent::boot();
+        static::creating(function ($model) {
+            if (empty($model->reservation_code)) {
+                $model->reservation_code = 'NEMU-' . strtoupper(substr(uniqid(), -5));
+            }
+        });
+    }
+
     protected $fillable = [
+        'reservation_code',
         'table_id',
-        'name',
-        'phone',
+        'customer_name',
+        'customer_phone',
         'reservation_date',
         'reservation_time',
-        'guest_count',
+        'party_size',
         'purpose',
         'notes',
         'status',
@@ -25,7 +36,7 @@ class Reservation extends Model
 
     protected $casts = [
         'reservation_date' => 'date',
-        'guest_count' => 'integer',
+        'party_size' => 'integer',
         'status' => 'string',
     ];
 
