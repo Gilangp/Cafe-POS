@@ -169,8 +169,75 @@ export default function PosPage() {
   return (
     <div className="flex flex-col lg:flex-row h-full gap-6">
       
-      {/* LEFT: MENU CATALOG */}
-      <div className="lg:w-[70%] flex-1 flex flex-col min-h-0 bg-white dark:bg-[#1A2620] rounded-2xl shadow-card-shadow border border-black/5 dark:border-white/5 overflow-hidden">
+      {/* Print Styles for Thermal Printer */}
+      <style dangerouslySetInnerHTML={{__html: `
+        @media print {
+          /* Sembunyikan elemen dashboard (sidebar, header, dsb) */
+          aside, header, nav {
+            display: none !important;
+          }
+          
+          /* Sembunyikan semua elemen di halaman POS kecuali modal receipt */
+          .pos-content-left, .pos-content-right {
+            display: none !important;
+          }
+
+          /* Reset semua layout wrapper agar tingginya auto (menghilangkan sisa space kosong) */
+          *, body, html {
+            height: auto !important;
+            min-height: 0 !important;
+            max-height: none !important;
+          }
+
+          /* Tampilkan modal receipt di pojok kiri atas seperti dokumen biasa */
+          .receipt-modal-overlay {
+            position: static !important;
+            background: white !important;
+            padding: 0 !important;
+            display: block !important;
+          }
+          
+          .receipt-modal-content {
+            box-shadow: none !important;
+            max-width: 100% !important;
+            width: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+          }
+
+          #receipt-area {
+            overflow: visible !important;
+            padding: 0 2mm !important; /* Jarak aman 2mm di sisi kiri dan kanan */
+            color: black !important;
+            max-height: none !important;
+            width: 100% !important; 
+            max-width: 100% !important; 
+            margin: 0 !important;
+            box-sizing: border-box !important;
+          }
+
+          /* Perkecil semua teks dan jarak khusus untuk 58mm printer */
+          #receipt-area h2 { font-size: 14px !important; line-height: 1.2 !important; margin-bottom: 2px !important; }
+          #receipt-area .text-xs, #receipt-area .text-sm { font-size: 10px !important; line-height: 1.2 !important; }
+          #receipt-area .text-lg { font-size: 12px !important; }
+          #receipt-area .text-xl { font-size: 14px !important; }
+          
+          /* Perkecil padding dan margin bawaan Tailwind */
+          #receipt-area .mb-6 { margin-bottom: 3mm !important; }
+          #receipt-area .mb-4 { margin-bottom: 2mm !important; }
+          #receipt-area .py-3 { padding-top: 2mm !important; padding-bottom: 2mm !important; }
+          #receipt-area .pt-3 { padding-top: 2mm !important; }
+          #receipt-area .mt-2 { margin-top: 1mm !important; }
+          #receipt-area .mt-8 { margin-top: 4mm !important; }
+
+          @page {
+            margin: 0;
+            size: auto; /* Memaksa browser mengikuti tinggi konten jika didukung driver */
+          }
+        }
+      `}} />
+
+      <div className="pos-content-left lg:w-[70%] flex-1 flex flex-col min-h-0 bg-white dark:bg-[#1A2620] rounded-2xl shadow-card-shadow border border-black/5 dark:border-white/5 overflow-hidden">
         
         {/* Top Bar: Search & Categories */}
         <div className="p-4 border-b border-black/5 dark:border-white/5 space-y-4">
@@ -255,8 +322,7 @@ export default function PosPage() {
       </div>
 
 
-      {/* RIGHT: CART PANEL */}
-      <div className="w-full lg:w-[30%] flex flex-col min-h-0 bg-white dark:bg-[#1A2620] rounded-2xl shadow-card-shadow border border-black/5 dark:border-white/5 shrink-0">
+      <div className="pos-content-right w-full lg:w-[30%] flex flex-col min-h-0 bg-white dark:bg-[#1A2620] rounded-2xl shadow-card-shadow border border-black/5 dark:border-white/5 shrink-0">
         
         {/* Cart Header */}
         <div className="p-4 border-b border-black/5 dark:border-white/5 flex items-center justify-between bg-primary text-white rounded-t-2xl">
@@ -543,13 +609,13 @@ export default function PosPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm print:bg-white print:p-0 print:block"
+            className="receipt-modal-overlay fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
           >
             <motion.div
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="bg-white rounded-2xl shadow-2xl w-full max-w-sm max-h-[90vh] overflow-hidden flex flex-col print:shadow-none print:max-w-full print:w-full print:max-h-none"
+              className="receipt-modal-content bg-white rounded-2xl shadow-2xl w-full max-w-sm max-h-[90vh] overflow-hidden flex flex-col"
             >
               <div className="p-4 border-b flex justify-between items-center print:hidden bg-gray-50">
                 <h3 className="font-bold text-gray-800">Transaksi Sukses!</h3>
