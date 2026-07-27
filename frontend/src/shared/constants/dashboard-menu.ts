@@ -33,6 +33,7 @@ export const DASHBOARD_MENU: MenuItem[] = [
       { title: 'Riwayat Pesanan', icon: ClipboardList, href: '/dashboard/admin/orders', roles: ['owner', 'admin', 'kasir', 'multi_role'] },
       { title: 'Reservasi', icon: CalendarCheck, href: '/dashboard/admin/reservations', roles: ['owner', 'admin', 'kasir', 'multi_role'] },
       { title: 'Menu', icon: Utensils, href: '/dashboard/admin/menu', roles: ['owner', 'admin'] },
+      { title: 'Kategori & Varian', icon: Tags, href: '/dashboard/admin/categories', roles: ['owner', 'admin'] },
       { title: 'Inventory', icon: Package, href: '/dashboard/admin/inventory', roles: ['owner', 'admin', 'multi_role'] },
     ]
   },

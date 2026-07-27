@@ -18,6 +18,9 @@ use App\Models\InventoryCategory;
 use App\Models\Supplier;
 use App\Models\Inventory;
 use App\Models\MenuIngredient;
+use App\Models\VariantGroup;
+use App\Models\VariantOption;
+use App\Models\MenuVariantGroup;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -157,6 +160,7 @@ class DatabaseSeeder extends Seeder
             'supplier_id' => $supplierLokal->id,
             'name' => 'Biji Kopi Arabica Gayo (Roast)',
             'stock_quantity' => 50000, // in grams
+            'unit_price' => 200, // 200/gram -> 200rb/kg
             'unit' => 'gram',
             'minimum_stock' => 5000,
         ]);
@@ -165,6 +169,7 @@ class DatabaseSeeder extends Seeder
             'supplier_id' => $supplierLokal->id,
             'name' => 'Biji Kopi Robusta Temanggung',
             'stock_quantity' => 20000, // in grams
+            'unit_price' => 120, // 120/gram -> 120rb/kg
             'unit' => 'gram',
             'minimum_stock' => 3000,
         ]);
@@ -173,6 +178,7 @@ class DatabaseSeeder extends Seeder
             'supplier_id' => $supplierSusu->id,
             'name' => 'Susu Cair UHT Full Cream',
             'stock_quantity' => 50000, // in ml
+            'unit_price' => 20, // 20/ml -> 20rb/liter
             'unit' => 'ml',
             'minimum_stock' => 5000,
         ]);
@@ -181,6 +187,7 @@ class DatabaseSeeder extends Seeder
             'supplier_id' => $supplierLokal->id,
             'name' => 'Sirup Gula Aren Asli',
             'stock_quantity' => 10000, // in ml
+            'unit_price' => 50, // 50/ml -> 50rb/liter
             'unit' => 'ml',
             'minimum_stock' => 2000,
         ]);
@@ -189,6 +196,7 @@ class DatabaseSeeder extends Seeder
             'supplier_id' => $supplierLokal->id,
             'name' => 'Teh Daun Melati',
             'stock_quantity' => 5000, // in gram
+            'unit_price' => 150, // 150/gram -> 150rb/kg
             'unit' => 'gram',
             'minimum_stock' => 1000,
         ]);
@@ -197,6 +205,7 @@ class DatabaseSeeder extends Seeder
             'supplier_id' => $supplierLokal->id,
             'name' => 'Beras Putih Premium',
             'stock_quantity' => 50000, // in gram
+            'unit_price' => 16, // 16/gram -> 16rb/kg
             'unit' => 'gram',
             'minimum_stock' => 10000,
         ]);
@@ -205,6 +214,7 @@ class DatabaseSeeder extends Seeder
             'supplier_id' => $supplierLokal->id,
             'name' => 'Telur Ayam Horn',
             'stock_quantity' => 500, // in pcs
+            'unit_price' => 2500, // 2500/pcs
             'unit' => 'pcs',
             'minimum_stock' => 50,
         ]);
@@ -213,6 +223,7 @@ class DatabaseSeeder extends Seeder
             'supplier_id' => $supplierLokal->id,
             'name' => 'Daging Ayam Potong',
             'stock_quantity' => 20000, // in gram
+            'unit_price' => 45, // 45/gram -> 45rb/kg
             'unit' => 'gram',
             'minimum_stock' => 5000,
         ]);
@@ -221,6 +232,7 @@ class DatabaseSeeder extends Seeder
             'supplier_id' => $supplierPackaging->id,
             'name' => 'Gelas Plastik Es 16oz',
             'stock_quantity' => 1000, // in pcs
+            'unit_price' => 1200, // 1200/pcs
             'unit' => 'pcs',
             'minimum_stock' => 200,
         ]);
@@ -229,106 +241,36 @@ class DatabaseSeeder extends Seeder
             'supplier_id' => $supplierPackaging->id,
             'name' => 'Kotak Makan Kertas Kraft',
             'stock_quantity' => 500, // in pcs
+            'unit_price' => 1500, // 1500/pcs
             'unit' => 'pcs',
             'minimum_stock' => 100,
         ]);
 
-        // 8. Seed Categories Menu
-        $catKopi = Category::create(['name' => 'Kopi Nusantara', 'display_order' => 1]);
-        $catNonKopi = Category::create(['name' => 'Minuman Segar', 'display_order' => 2]);
-        $catCamilan = Category::create(['name' => 'Camilan Tradisional', 'display_order' => 3]);
-        $catMakan = Category::create(['name' => 'Makanan Utama', 'display_order' => 4]);
 
-        // 9. Seed Menus Indonesia Lokal
-        $mKopiAren = Menu::create([
-            'category_id' => $catKopi->id,
-            'name' => 'Es Kopi Susu Gula Aren',
-            'slug' => 'es-kopi-susu-gula-aren',
-            'description' => 'Paduan espresso Arabica Gayo, susu segar creamy, dan manisnya gula aren lokal asli.',
-            'price' => 25000,
-            'image' => '/images/menu/kopi-aren.jpg',
-            'status' => 'tersedia',
-            'is_best_seller' => true,
-        ]);
-        MenuIngredient::create(['menu_id' => $mKopiAren->id, 'inventory_id' => $invKopiArabica->id, 'quantity_used' => 18]);
-        MenuIngredient::create(['menu_id' => $mKopiAren->id, 'inventory_id' => $invSusuUHT->id, 'quantity_used' => 120]);
-        MenuIngredient::create(['menu_id' => $mKopiAren->id, 'inventory_id' => $invGulaAren->id, 'quantity_used' => 20]);
-        MenuIngredient::create(['menu_id' => $mKopiAren->id, 'inventory_id' => $invCupEs->id, 'quantity_used' => 1]);
 
-        $mKopiTubruk = Menu::create([
-            'category_id' => $catKopi->id,
-            'name' => 'Kopi Hitam Tubruk',
-            'slug' => 'kopi-hitam-tubruk',
-            'description' => 'Kopi hitam seduh tradisional dengan ampas. Menggunakan biji Robusta Temanggung pilihan.',
-            'price' => 18000,
-            'image' => '/images/menu/kopi-tubruk.jpg',
-            'status' => 'tersedia',
-            'is_best_seller' => false,
-        ]);
-        MenuIngredient::create(['menu_id' => $mKopiTubruk->id, 'inventory_id' => $invKopiRobusta->id, 'quantity_used' => 15]);
+        // 9.5 Seed Variants & Link to Menus
+        $vgSuhu = VariantGroup::create(['name' => 'Temperature', 'type' => 'single']);
+        VariantOption::create(['variant_group_id' => $vgSuhu->id, 'name' => 'Hot', 'additional_price' => 0]);
+        VariantOption::create(['variant_group_id' => $vgSuhu->id, 'name' => 'Iced', 'additional_price' => 0]);
 
-        $mEsTeh = Menu::create([
-            'category_id' => $catNonKopi->id,
-            'name' => 'Es Teh Manis Melati',
-            'slug' => 'es-teh-manis-melati',
-            'description' => 'Teh seduh daun melati asli yang harum dan menyegarkan dahaga.',
-            'price' => 15000,
-            'image' => '/images/menu/es-teh.jpg',
-            'status' => 'tersedia',
-            'is_best_seller' => true,
-        ]);
-        MenuIngredient::create(['menu_id' => $mEsTeh->id, 'inventory_id' => $invTehMelati->id, 'quantity_used' => 5]);
-        MenuIngredient::create(['menu_id' => $mEsTeh->id, 'inventory_id' => $invCupEs->id, 'quantity_used' => 1]);
+        $vgGula = VariantGroup::create(['name' => 'Level Gula', 'type' => 'single']);
+        VariantOption::create(['variant_group_id' => $vgGula->id, 'name' => 'Normal Sugar (100%)', 'additional_price' => 0]);
+        VariantOption::create(['variant_group_id' => $vgGula->id, 'name' => 'Less Sugar (50%)', 'additional_price' => 0]);
+        VariantOption::create(['variant_group_id' => $vgGula->id, 'name' => 'No Sugar (0%)', 'additional_price' => 0]);
 
-        $mNasiGoreng = Menu::create([
-            'category_id' => $catMakan->id,
-            'name' => 'Nasi Goreng Spesial NEMU',
-            'slug' => 'nasi-goreng-spesial',
-            'description' => 'Nasi goreng bumbu rempah dengan topping telur mata sapi dan potongan ayam bakar.',
-            'price' => 45000,
-            'image' => '/images/menu/nasi-goreng.jpg',
-            'status' => 'tersedia',
-            'is_best_seller' => true,
-        ]);
-        MenuIngredient::create(['menu_id' => $mNasiGoreng->id, 'inventory_id' => $invBeras->id, 'quantity_used' => 150]);
-        MenuIngredient::create(['menu_id' => $mNasiGoreng->id, 'inventory_id' => $invTelur->id, 'quantity_used' => 1]);
-        MenuIngredient::create(['menu_id' => $mNasiGoreng->id, 'inventory_id' => $invAyam->id, 'quantity_used' => 50]);
+        $vgEs = VariantGroup::create(['name' => 'Level Es', 'type' => 'single']);
+        VariantOption::create(['variant_group_id' => $vgEs->id, 'name' => 'Normal Ice', 'additional_price' => 0]);
+        VariantOption::create(['variant_group_id' => $vgEs->id, 'name' => 'Less Ice', 'additional_price' => 0]);
+        VariantOption::create(['variant_group_id' => $vgEs->id, 'name' => 'No Ice', 'additional_price' => 0]);
 
-        $mAyamBakar = Menu::create([
-            'category_id' => $catMakan->id,
-            'name' => 'Nasi Ayam Bakar Madu',
-            'slug' => 'nasi-ayam-bakar',
-            'description' => 'Ayam bakar olesan madu lezat disajikan dengan nasi putih hangat dan sambal terasi.',
-            'price' => 42000,
-            'image' => '/images/menu/ayam-bakar.jpg',
-            'status' => 'tersedia',
-            'is_best_seller' => false,
-        ]);
-        MenuIngredient::create(['menu_id' => $mAyamBakar->id, 'inventory_id' => $invBeras->id, 'quantity_used' => 150]);
-        MenuIngredient::create(['menu_id' => $mAyamBakar->id, 'inventory_id' => $invAyam->id, 'quantity_used' => 150]);
+        $vgAddon = VariantGroup::create(['name' => 'Tambahan (Add-ons)', 'type' => 'multiple']);
+        VariantOption::create(['variant_group_id' => $vgAddon->id, 'name' => 'Extra Espresso Shot', 'additional_price' => 5000, 'inventory_item_id' => $invKopiArabica->id, 'inventory_action' => 'add', 'inventory_action_value' => 10]);
+        VariantOption::create(['variant_group_id' => $vgAddon->id, 'name' => 'Boba', 'additional_price' => 4000]);
 
-        $mPisgor = Menu::create([
-            'category_id' => $catCamilan->id,
-            'name' => 'Pisang Goreng Keju Susu',
-            'slug' => 'pisang-goreng-keju',
-            'description' => 'Pisang kepok manis digoreng krispi dengan taburan keju parut dan kental manis.',
-            'price' => 22000,
-            'image' => '/images/menu/pisgor.jpg',
-            'status' => 'tersedia',
-            'is_best_seller' => true,
-        ]);
-        MenuIngredient::create(['menu_id' => $mPisgor->id, 'inventory_id' => $invSusuUHT->id, 'quantity_used' => 20]); // assuming milk is used
-        
-        $mSingkong = Menu::create([
-            'category_id' => $catCamilan->id,
-            'name' => 'Singkong Goreng Merekah',
-            'slug' => 'singkong-goreng',
-            'description' => 'Singkong empuk merekah dengan bumbu gurih ketumbar dan bawang putih.',
-            'price' => 18000,
-            'image' => '/images/menu/singkong.jpg',
-            'status' => 'tersedia',
-            'is_best_seller' => false,
-        ]);        // 10. Seed 10 Physical Tables
+        // 9. Call Full Menu Seeder
+        $this->call(FullMenuSeeder::class);
+
+        // 10. Seed 10 Physical Tables
         $tables = [];
         for ($i = 1; $i <= 10; $i++) {
             $num = str_pad($i, 2, '0', STR_PAD_LEFT);

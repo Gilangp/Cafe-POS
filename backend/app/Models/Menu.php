@@ -44,6 +44,7 @@ class Menu extends Model
     public function ingredients(): BelongsToMany
     {
         return $this->belongsToMany(Inventory::class, 'menu_ingredients')
+            ->using(MenuIngredient::class)
             ->withPivot('quantity_used')
             ->withTimestamps();
     }
@@ -56,5 +57,12 @@ class Menu extends Model
     public function transactionItems(): HasMany
     {
         return $this->hasMany(TransactionItem::class, 'menu_id');
+    }
+
+    public function variantGroups(): BelongsToMany
+    {
+        return $this->belongsToMany(VariantGroup::class, 'menu_variant_groups')
+            ->withPivot('is_required')
+            ->withTimestamps();
     }
 }

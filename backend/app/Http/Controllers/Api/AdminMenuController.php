@@ -12,7 +12,7 @@ class AdminMenuController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
-        $query = Menu::with('category')->withTrashed();
+        $query = Menu::with(['category', 'ingredients', 'variantGroups'])->withTrashed();
 
         if ($request->filled('category_id')) {
             $query->where('category_id', $request->category_id);
@@ -35,17 +35,39 @@ class AdminMenuController extends Controller
             'image' => 'nullable|string',
             'status' => 'required|in:tersedia,tidak_tersedia',
             'is_best_seller' => 'boolean',
+            'ingredients' => 'nullable|array',
+            'ingredients.*.inventory_id' => 'required_with:ingredients|uuid|exists:inventories,id',
+            'ingredients.*.quantity_used' => 'required_with:ingredients|numeric|min:0.01',
+            'variant_groups' => 'nullable|array',
+            'variant_groups.*.variant_group_id' => 'required_with:variant_groups|uuid|exists:variant_groups,id',
+            'variant_groups.*.is_required' => 'boolean',
         ]);
 
         $validated['slug'] = Str::slug($validated['name']) . '-' . substr(uniqid(), -4);
         $menu = Menu::create($validated);
 
-        return response()->json(['success' => true, 'message' => 'Menu berhasil dibuat.', 'data' => $menu->load('category'), 'meta' => null], 201);
+        if ($request->has('ingredients')) {
+            $syncData = [];
+            foreach ($request->ingredients as $ing) {
+                $syncData[$ing['inventory_id']] = ['quantity_used' => $ing['quantity_used']];
+            }
+            $menu->ingredients()->sync($syncData);
+        }
+
+        if ($request->has('variant_groups')) {
+            $syncData = [];
+            foreach ($request->variant_groups as $vg) {
+                $syncData[$vg['variant_group_id']] = ['is_required' => $vg['is_required'] ?? false];
+            }
+            $menu->variantGroups()->sync($syncData);
+        }
+
+        return response()->json(['success' => true, 'message' => 'Menu berhasil dibuat.', 'data' => $menu->load(['category', 'ingredients', 'variantGroups']), 'meta' => null], 201);
     }
 
     public function show(string $id): JsonResponse
     {
-        $menu = Menu::with(['category', 'promotions', 'ingredients'])->withTrashed()->findOrFail($id);
+        $menu = Menu::with(['category', 'promotions', 'ingredients', 'variantGroups'])->withTrashed()->findOrFail($id);
         return response()->json(['success' => true, 'message' => 'Detail menu.', 'data' => $menu, 'meta' => null]);
     }
 
@@ -61,6 +83,12 @@ class AdminMenuController extends Controller
             'image' => 'nullable|string',
             'status' => 'sometimes|required|in:tersedia,tidak_tersedia',
             'is_best_seller' => 'boolean',
+            'ingredients' => 'nullable|array',
+            'ingredients.*.inventory_id' => 'required_with:ingredients|uuid|exists:inventories,id',
+            'ingredients.*.quantity_used' => 'required_with:ingredients|numeric|min:0.01',
+            'variant_groups' => 'nullable|array',
+            'variant_groups.*.variant_group_id' => 'required_with:variant_groups|uuid|exists:variant_groups,id',
+            'variant_groups.*.is_required' => 'boolean',
         ]);
 
         if (isset($validated['name']) && $validated['name'] !== $menu->name) {
@@ -68,7 +96,24 @@ class AdminMenuController extends Controller
         }
 
         $menu->update($validated);
-        return response()->json(['success' => true, 'message' => 'Menu berhasil diperbarui.', 'data' => $menu->load('category'), 'meta' => null]);
+
+        if ($request->has('ingredients')) {
+            $syncData = [];
+            foreach ($request->ingredients as $ing) {
+                $syncData[$ing['inventory_id']] = ['quantity_used' => $ing['quantity_used']];
+            }
+            $menu->ingredients()->sync($syncData);
+        }
+
+        if ($request->has('variant_groups')) {
+            $syncData = [];
+            foreach ($request->variant_groups as $vg) {
+                $syncData[$vg['variant_group_id']] = ['is_required' => $vg['is_required'] ?? false];
+            }
+            $menu->variantGroups()->sync($syncData);
+        }
+
+        return response()->json(['success' => true, 'message' => 'Menu berhasil diperbarui.', 'data' => $menu->load(['category', 'ingredients', 'variantGroups']), 'meta' => null]);
     }
 
     public function destroy(string $id): JsonResponse

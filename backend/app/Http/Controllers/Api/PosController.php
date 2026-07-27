@@ -11,6 +11,8 @@ use App\Models\OrderTicketItem;
 use App\Models\Reservation;
 use App\Models\Transaction;
 use App\Models\TransactionItem;
+use App\Models\TransactionItemVariant;
+use App\Models\VariantOption;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -24,7 +26,7 @@ class PosController extends Controller
     {
         $menus = Menu::with(['category', 'promotions' => function ($q) {
             $q->where('status', 'aktif');
-        }, 'menuIngredients.inventory'])
+        }, 'menuIngredients.inventory', 'variantGroups.options'])
             ->where('status', 'tersedia')
             ->orderBy('name')
             ->get();
@@ -113,21 +115,45 @@ class PosController extends Controller
             'items.*.menu_id' => 'required|uuid|exists:menus,id',
             'items.*.quantity' => 'required|integer|min:1',
             'items.*.note' => 'nullable|string|max:255',
+            'items.*.variants' => 'nullable|array',
+            'items.*.variants.*' => 'required|uuid|exists:variant_options,id',
         ]);
 
         return DB::transaction(function () use ($validated, $request) {
             $subtotal = 0;
             $itemsData = [];
 
-            // Pre-fetch all requested menus
+            // Pre-fetch all requested menus and variants
             $menuIds = collect($validated['items'])->pluck('menu_id')->unique();
             $menus = Menu::with('menuIngredients')->whereIn('id', $menuIds)->get()->keyBy('id');
+
+            $variantIds = [];
+            foreach ($validated['items'] as $itemRequest) {
+                if (!empty($itemRequest['variants'])) {
+                    $variantIds = array_merge($variantIds, $itemRequest['variants']);
+                }
+            }
+            $variantOptions = VariantOption::whereIn('id', $variantIds)->get()->keyBy('id');
 
             foreach ($validated['items'] as $itemRequest) {
                 $menu = $menus[$itemRequest['menu_id']] ?? null;
                 if (!$menu) continue;
 
                 $itemSubtotal = (float)$menu->price * (int)$itemRequest['quantity'];
+                
+                $itemVariants = [];
+                $variantsSubtotal = 0;
+                if (!empty($itemRequest['variants'])) {
+                    foreach ($itemRequest['variants'] as $vId) {
+                        $vOpt = $variantOptions[$vId] ?? null;
+                        if ($vOpt) {
+                            $variantsSubtotal += (float)$vOpt->additional_price;
+                            $itemVariants[] = $vOpt;
+                        }
+                    }
+                }
+
+                $itemSubtotal += ($variantsSubtotal * (int)$itemRequest['quantity']);
                 $subtotal += $itemSubtotal;
 
                 $itemsData[] = [
@@ -135,6 +161,7 @@ class PosController extends Controller
                     'quantity' => (int)$itemRequest['quantity'],
                     'note' => $itemRequest['note'] ?? null,
                     'subtotal' => $itemSubtotal,
+                    'variants' => $itemVariants,
                 ];
             }
 
@@ -166,7 +193,7 @@ class PosController extends Controller
                 $menu = $data['menu'];
                 $qty = $data['quantity'];
 
-                TransactionItem::create([
+                $transactionItem = TransactionItem::create([
                     'transaction_id' => $transaction->id,
                     'menu_id' => $menu->id,
                     'menu_name_snapshot' => $menu->name,
@@ -176,20 +203,56 @@ class PosController extends Controller
                     'subtotal' => $data['subtotal'],
                 ]);
 
+                $ticketNote = $data['note'];
+
+                foreach ($data['variants'] as $vOpt) {
+                    TransactionItemVariant::create([
+                        'transaction_item_id' => $transactionItem->id,
+                        'variant_option_id' => $vOpt->id,
+                        'option_name_snapshot' => $vOpt->name,
+                        'additional_price_snapshot' => $vOpt->additional_price,
+                    ]);
+                    $ticketNote = ($ticketNote ? $ticketNote . ', ' : '') . $vOpt->name;
+                }
+
                 OrderTicketItem::create([
                     'order_ticket_id' => $ticket->id,
                     'menu_name_snapshot' => $menu->name,
                     'quantity' => $qty,
-                    'note' => $data['note'],
+                    'note' => $ticketNote,
                     'item_status' => 'menunggu',
                 ]);
 
-                // Auto-deduct raw material inventory based on menu ingredients
+                // Auto-deduct raw material inventory based on menu ingredients and variants
+                $ingredientDeductions = [];
                 foreach ($menu->menuIngredients as $ingredient) {
-                    $deductAmount = (float)$ingredient->quantity_used * $qty;
-                    $invItem = Inventory::find($ingredient->inventory_id);
+                    $ingredientDeductions[$ingredient->inventory_id] = (float)$ingredient->quantity_used;
+                }
 
-                    if ($invItem && $deductAmount > 0) {
+                foreach ($data['variants'] as $vOpt) {
+                    $vInvId = $vOpt->inventory_item_id;
+                    $vAction = $vOpt->inventory_action;
+                    $vValue = (float)$vOpt->inventory_action_value;
+                    
+                    if ($vInvId && $vAction !== 'none') {
+                        if ($vAction === 'add') {
+                            $ingredientDeductions[$vInvId] = ($ingredientDeductions[$vInvId] ?? 0) + $vValue;
+                        } elseif ($vAction === 'subtract') {
+                            $ingredientDeductions[$vInvId] = max(0, ($ingredientDeductions[$vInvId] ?? 0) - $vValue);
+                        } elseif ($vAction === 'multiply') {
+                            $ingredientDeductions[$vInvId] = ($ingredientDeductions[$vInvId] ?? 0) * $vValue;
+                        } elseif ($vAction === 'swap') {
+                            $ingredientDeductions[$vInvId] = $vValue;
+                        }
+                    }
+                }
+
+                foreach ($ingredientDeductions as $invId => $baseQty) {
+                    $deductAmount = $baseQty * $qty;
+                    if ($deductAmount <= 0) continue;
+
+                    $invItem = Inventory::find($invId);
+                    if ($invItem) {
                         $invItem->stock_quantity -= $deductAmount;
                         $invItem->save();
 
@@ -223,7 +286,7 @@ class PosController extends Controller
             'void_reason' => 'required|string|max:255',
         ]);
 
-        $transaction = Transaction::with(['items', 'orderTicket'])->findOrFail($id);
+        $transaction = Transaction::with(['items.variants.variantOption', 'orderTicket'])->findOrFail($id);
 
         if ($transaction->status === 'dibatalkan') {
             return response()->json([
@@ -252,11 +315,38 @@ class PosController extends Controller
                 $menu = $menus[$item->menu_id] ?? null;
                 if (!$menu) continue;
 
+                $ingredientDeductions = [];
                 foreach ($menu->menuIngredients as $ingredient) {
-                    $restoreAmount = (float)$ingredient->quantity_used * (int)$item->quantity;
-                    $invItem = Inventory::find($ingredient->inventory_id);
+                    $ingredientDeductions[$ingredient->inventory_id] = (float)$ingredient->quantity_used;
+                }
 
-                    if ($invItem && $restoreAmount > 0) {
+                foreach ($item->variants as $variant) {
+                    if ($variant->variantOption) {
+                        $vOpt = $variant->variantOption;
+                        $vInvId = $vOpt->inventory_item_id;
+                        $vAction = $vOpt->inventory_action;
+                        $vValue = (float)$vOpt->inventory_action_value;
+                        
+                        if ($vInvId && $vAction !== 'none') {
+                            if ($vAction === 'add') {
+                                $ingredientDeductions[$vInvId] = ($ingredientDeductions[$vInvId] ?? 0) + $vValue;
+                            } elseif ($vAction === 'subtract') {
+                                $ingredientDeductions[$vInvId] = max(0, ($ingredientDeductions[$vInvId] ?? 0) - $vValue);
+                            } elseif ($vAction === 'multiply') {
+                                $ingredientDeductions[$vInvId] = ($ingredientDeductions[$vInvId] ?? 0) * $vValue;
+                            } elseif ($vAction === 'swap') {
+                                $ingredientDeductions[$vInvId] = $vValue;
+                            }
+                        }
+                    }
+                }
+
+                foreach ($ingredientDeductions as $invId => $baseQty) {
+                    $restoreAmount = $baseQty * (int)$item->quantity;
+                    if ($restoreAmount <= 0) continue;
+
+                    $invItem = Inventory::find($invId);
+                    if ($invItem) {
                         $invItem->stock_quantity += $restoreAmount;
                         $invItem->save();
 

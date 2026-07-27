@@ -72,6 +72,7 @@ Route::prefix('v1')->group(function () {
             Route::post('menus/{id}/restore', [App\Http\Controllers\Api\AdminMenuController::class, 'restore']);
             Route::apiResource('menus', App\Http\Controllers\Api\AdminMenuController::class);
             Route::apiResource('categories', App\Http\Controllers\Api\AdminCategoryController::class);
+            Route::apiResource('variants', App\Http\Controllers\Api\AdminVariantController::class);
 
             // Promotions
             Route::apiResource('promotions', App\Http\Controllers\Api\AdminPromotionController::class);

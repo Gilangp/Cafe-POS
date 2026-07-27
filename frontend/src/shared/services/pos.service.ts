@@ -6,15 +6,33 @@ export interface PosCategory {
   display_order: number;
 }
 
+export interface VariantOption {
+  id: string;
+  variant_group_id: string;
+  name: string;
+  additional_price: string;
+}
+
+export interface VariantGroup {
+  id: string;
+  name: string;
+  type: 'single' | 'multiple';
+  options: VariantOption[];
+  pivot?: {
+    is_required: boolean;
+  };
+}
+
 export interface PosMenu {
   id: string;
   category_id: string;
   name: string;
   description: string;
-  price: number;
+  price: string;
   image: string | null;
   status: string;
   category?: PosCategory;
+  variant_groups?: VariantGroup[];
 }
 
 export interface CartItem {
@@ -25,6 +43,7 @@ export interface CartItem {
   quantity: number;
   note: string;
   image: string | null;
+  variants?: string[];
 }
 
 export interface OrderPayload {
@@ -37,6 +56,7 @@ export interface OrderPayload {
     menu_id: string;
     quantity: number;
     note?: string;
+    variants?: string[];
   }[];
 }
 

@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class TransactionItem extends Model
 {
@@ -35,5 +36,10 @@ class TransactionItem extends Model
     public function menu(): BelongsTo
     {
         return $this->belongsTo(Menu::class, 'menu_id');
+    }
+
+    public function variants(): HasMany
+    {
+        return $this->hasMany(TransactionItemVariant::class, 'transaction_item_id');
     }
 }

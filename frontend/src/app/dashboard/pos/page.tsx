@@ -40,6 +40,9 @@ export default function PosPage() {
   const [assignedTable, setAssignedTable] = useState('');
   const [customerName, setCustomerName] = useState('');
 
+  const [selectedMenuForVariants, setSelectedMenuForVariants] = useState<PosMenu | null>(null);
+  const [selectedVariants, setSelectedVariants] = useState<Record<string, any>>({});
+
   const cart = useCartStore();
 
   useEffect(() => {
@@ -132,7 +135,8 @@ export default function PosPage() {
         items: cart.items.map(i => ({
           menu_id: i.menu_id,
           quantity: i.quantity,
-          note: i.note
+          note: i.note,
+          variants: i.variants || []
         }))
       };
 
@@ -167,7 +171,7 @@ export default function PosPage() {
   }
 
   return (
-    <div className="flex flex-col lg:flex-row h-full gap-6">
+    <div className="flex flex-col lg:flex-row h-auto lg:h-[calc(100vh-80px)] lg:min-h-[650px] gap-6">
       
       {/* Print Styles for Thermal Printer */}
       <style dangerouslySetInnerHTML={{__html: `
@@ -257,7 +261,7 @@ export default function PosPage() {
               <button
                 key={cat}
                 onClick={() => setSelectedCategory(cat)}
-                className={`px-4 py-2 rounded-lg whitespace-nowrap text-sm font-semibold transition-colors ${
+                className={`px-4 py-2 rounded-lg whitespace-nowrap text-sm font-semibold transition-colors shrink-0 ${
                   selectedCategory === cat 
                   ? 'bg-primary dark:bg-accent text-white dark:text-primary shadow-md' 
                   : 'bg-gray-50 dark:bg-white/5 text-primary/70 dark:text-cream-400 hover:bg-gray-200 dark:hover:bg-white/10'
@@ -278,14 +282,21 @@ export default function PosPage() {
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 key={menu.id}
-                onClick={() => cart.addItem({
-                  menu_id: menu.id,
-                  name: menu.name,
-                  price: menu.price,
-                  quantity: 1,
-                  note: '',
-                  image: menu.image
-                })}
+                onClick={() => {
+                  if (menu.variant_groups && menu.variant_groups.length > 0) {
+                    setSelectedMenuForVariants(menu);
+                    setSelectedVariants({});
+                  } else {
+                    cart.addItem({
+                      menu_id: menu.id,
+                      name: menu.name,
+                      price: Number(menu.price),
+                      quantity: 1,
+                      note: '',
+                      image: menu.image
+                    });
+                  }
+                }}
                 className="bg-white dark:bg-[#2A3F33] border border-black/5 dark:border-white/5 rounded-2xl overflow-hidden cursor-pointer hover:border-accent/50 hover:shadow-lg transition-all group flex flex-col"
               >
                 <div className="aspect-square bg-gray-100 dark:bg-black/40 relative overflow-hidden">
@@ -302,12 +313,12 @@ export default function PosPage() {
                 </div>
                 <div className="p-3 flex-1 flex flex-col justify-between">
                   <div>
-                    <h3 className="text-sm font-bold text-primary dark:text-white leading-tight mb-1 line-clamp-2">
+                    <h3 className="text-sm font-bold text-primary dark:text-white leading-tight mb-1 truncate">
                       {menu.name}
                     </h3>
                   </div>
                   <div className="mt-2 text-accent font-bold text-sm">
-                    {formatCurrency(menu.price)}
+                    {formatCurrency(Number(menu.price))}
                   </div>
                 </div>
               </motion.div>
@@ -322,7 +333,7 @@ export default function PosPage() {
       </div>
 
 
-      <div className="pos-content-right w-full lg:w-[30%] flex flex-col min-h-0 bg-white dark:bg-[#1A2620] rounded-2xl shadow-card-shadow border border-black/5 dark:border-white/5 shrink-0">
+      <div className="pos-content-right w-full lg:w-[30%] flex flex-col min-h-0 bg-white dark:bg-[#1A2620] rounded-2xl shadow-card-shadow border border-black/5 dark:border-white/5 shrink-0 overflow-hidden">
         
         {/* Cart Header */}
         <div className="p-4 border-b border-black/5 dark:border-white/5 flex items-center justify-between bg-primary text-white rounded-t-2xl">
@@ -378,8 +389,8 @@ export default function PosPage() {
           )}
         </div>
 
-        {/* Cart Items */}
-        <div className="flex-1 overflow-y-auto p-4 custom-scrollbar space-y-4">
+        {/* Cart Items List */}
+        <div className="flex-1 overflow-y-auto p-4 custom-scrollbar space-y-4 min-h-0">
           <AnimatePresence>
             {cart.items.length === 0 ? (
               <div className="h-full flex flex-col items-center justify-center text-gray-400 space-y-4 opacity-50">
@@ -443,7 +454,7 @@ export default function PosPage() {
         </div>
 
         {/* Cart Summary & Checkout */}
-        <div className="p-4 border-t border-black/5 dark:border-white/5 bg-gray-50 dark:bg-[#1A2620] rounded-b-2xl space-y-4">
+        <div className="p-3 border-t border-black/5 dark:border-white/5 bg-gray-50 dark:bg-[#1A2620] rounded-b-2xl space-y-3 shrink-0">
           
           <div className="flex gap-2">
             {[
@@ -456,7 +467,7 @@ export default function PosPage() {
                 <button
                   key={method.id}
                   onClick={() => cart.setPaymentMethod(method.id as any)}
-                  className={`flex-1 flex flex-col items-center justify-center gap-1 py-2 border rounded-xl transition-all ${
+                  className={`flex-1 flex flex-col items-center justify-center gap-1 py-1.5 border rounded-xl transition-all ${
                     isActive 
                     ? 'border-accent bg-accent/10 text-accent font-bold shadow-sm' 
                     : 'border-gray-200 dark:border-white/10 text-gray-500 hover:bg-white dark:hover:bg-white/5'
@@ -469,7 +480,7 @@ export default function PosPage() {
             })}
           </div>
 
-          <div className="space-y-2 text-sm font-semibold">
+          <div className="space-y-1.5 text-sm font-semibold">
             <div className="flex justify-between text-gray-500">
               <span>Subtotal</span>
               <span>{formatCurrency(cart.getSubtotal())}</span>
@@ -480,21 +491,21 @@ export default function PosPage() {
                 <span>-{formatCurrency(cart.discount)}</span>
               </div>
             )}
-            <div className="flex justify-between text-lg font-bold text-primary dark:text-white pt-2 border-t border-black/5 dark:border-white/10">
+            <div className="flex justify-between text-base font-bold text-primary dark:text-white pt-1.5 border-t border-black/5 dark:border-white/10">
               <span>Total</span>
               <span className="text-accent">{formatCurrency(cart.getTotal())}</span>
             </div>
           </div>
 
           {cart.paymentMethod === 'tunai' && (
-            <div className="pt-3 border-t border-black/5 dark:border-white/10 space-y-3">
-              <div className="bg-white dark:bg-black/20 rounded-xl border border-gray-200 dark:border-white/10 p-3 focus-within:border-accent focus-within:ring-1 focus-within:ring-accent transition-all">
-                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1 block">Tunai Diterima</label>
+            <div className="pt-2 border-t border-black/5 dark:border-white/10 space-y-2">
+              <div className="bg-white dark:bg-black/20 rounded-xl border border-gray-200 dark:border-white/10 p-2 focus-within:border-accent focus-within:ring-1 focus-within:ring-accent transition-all">
+                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-0.5 block">Tunai Diterima</label>
                 <div className="flex items-center gap-2">
-                  <span className="text-lg font-semibold text-gray-400">Rp</span>
+                  <span className="text-base font-semibold text-gray-400">Rp</span>
                   <input 
                     type="text" 
-                    className="w-full bg-transparent text-right text-xl font-bold text-primary dark:text-white focus:outline-none placeholder-gray-300"
+                    className="w-full bg-transparent text-right text-lg font-bold text-primary dark:text-white focus:outline-none placeholder-gray-300"
                     value={cashGiven !== '' ? new Intl.NumberFormat('id-ID').format(cashGiven) : ''}
                     onChange={(e) => {
                       const val = e.target.value.replace(/\D/g, '');
@@ -505,8 +516,8 @@ export default function PosPage() {
                 </div>
               </div>
               <div className="flex justify-between items-center px-1">
-                <span className="text-sm font-bold text-gray-500">KEMBALIAN</span>
-                <span className="text-lg font-bold text-primary dark:text-white">
+                <span className="text-xs font-bold text-gray-500">KEMBALIAN</span>
+                <span className="text-base font-bold text-primary dark:text-white">
                   {formatCurrency(Math.max(0, (Number(cashGiven) || 0) - cart.getTotal()))}
                 </span>
               </div>
@@ -532,7 +543,7 @@ export default function PosPage() {
               isProcessing || 
               (cart.paymentMethod === 'tunai' && (Number(cashGiven) < cart.getTotal()))
             }
-            className={`w-full flex items-center justify-center gap-2 py-4 rounded-xl font-bold transition-all active:scale-[0.98] ${
+            className={`w-full flex items-center justify-center gap-2 py-3 rounded-xl font-bold transition-all active:scale-[0.98] shrink-0 ${
               cart.items.length === 0 || isProcessing || (cart.paymentMethod === 'tunai' && (Number(cashGiven) < cart.getTotal()))
                 ? 'bg-gray-200 text-gray-400 shadow-none cursor-not-allowed dark:bg-white/5 dark:text-white/20'
                 : 'bg-gradient-to-r from-[#C89B5C] to-[#b88c4d] text-[#1E3D31] shadow-[0_4px_14px_0_rgba(200,155,92,0.39)] hover:shadow-[0_6px_20px_rgba(200,155,92,0.23)]'
@@ -549,6 +560,175 @@ export default function PosPage() {
           </button>
         </div>
       </div>
+
+      {/* VARIANT MODAL */}
+      <AnimatePresence>
+        {selectedMenuForVariants && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-md"
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 20 }}
+              className="bg-white dark:bg-[#1A2620] rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh] border border-black/5 dark:border-white/10"
+            >
+              {/* Header with gradient & optional image context */}
+              <div className="relative p-6 border-b border-gray-100 dark:border-white/10 bg-gradient-to-r from-gray-50 to-white dark:from-[#1A2620] dark:to-[#2A3F33] flex justify-between items-start shrink-0">
+                <div className="flex gap-4 items-center min-w-0 flex-1 pr-12">
+                  <div className="w-16 h-16 rounded-2xl bg-gray-200 dark:bg-black/40 overflow-hidden shrink-0 shadow-inner">
+                    {selectedMenuForVariants.image ? (
+                      <img src={selectedMenuForVariants.image} alt={selectedMenuForVariants.name} className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center"><Coffee size={28} className="text-gray-400 dark:text-white/30"/></div>
+                    )}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <h3 className="font-heading font-black text-xl text-primary dark:text-white leading-tight mb-1 truncate">
+                      {selectedMenuForVariants.name}
+                    </h3>
+                    <p className="text-accent font-bold text-sm truncate">
+                      Mulai dari {formatCurrency(Number(selectedMenuForVariants.price))}
+                    </p>
+                  </div>
+                </div>
+                <button 
+                  onClick={() => setSelectedMenuForVariants(null)}
+                  className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-200/50 hover:bg-gray-200 dark:bg-white/5 dark:hover:bg-white/10 text-gray-500 dark:text-gray-300 transition-colors absolute top-4 right-4"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+              
+              <div className="p-6 overflow-y-auto custom-scrollbar flex-1 space-y-8 bg-gray-50/50 dark:bg-transparent">
+                {selectedMenuForVariants.variant_groups?.map(group => (
+                  <div key={group.id} className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <h4 className="font-bold text-base text-primary dark:text-white flex items-center gap-2">
+                        {group.name} 
+                      </h4>
+                      {group.pivot?.is_required ? (
+                        <span className="text-[10px] font-black tracking-wider uppercase text-red-500 bg-red-50 dark:bg-red-500/10 px-2 py-1 rounded-md border border-red-100 dark:border-red-500/20">Wajib</span>
+                      ) : (
+                        <span className="text-[10px] font-bold tracking-wider uppercase text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-white/5 px-2 py-1 rounded-md">Opsional</span>
+                      )}
+                    </div>
+                    
+                    <div className="flex flex-wrap gap-2.5">
+                      {group.options.map(opt => {
+                        const isSelected = group.type === 'single' 
+                          ? selectedVariants[group.id]?.id === opt.id
+                          : selectedVariants[group.id]?.some((v: any) => v.id === opt.id);
+                          
+                        return (
+                          <button
+                            key={opt.id}
+                            onClick={() => {
+                              setSelectedVariants(prev => {
+                                const newVars = { ...prev };
+                                if (group.type === 'single') {
+                                  newVars[group.id] = opt;
+                                } else {
+                                  const current = Array.isArray(newVars[group.id]) ? newVars[group.id] : [];
+                                  if (isSelected) {
+                                    newVars[group.id] = current.filter((v: any) => v.id !== opt.id);
+                                  } else {
+                                    newVars[group.id] = [...current, opt];
+                                  }
+                                }
+                                return newVars;
+                              });
+                            }}
+                            className={`flex items-center whitespace-nowrap gap-2 px-4 py-2.5 rounded-full text-sm font-bold transition-all duration-200 border-2 ${
+                              isSelected 
+                                ? 'border-accent bg-accent/10 text-primary dark:text-accent shadow-[0_0_15px_rgba(200,155,92,0.15)]' 
+                                : 'border-gray-200 dark:border-white/10 bg-white dark:bg-[#2A3F33] text-gray-600 dark:text-gray-300 hover:border-gray-300 dark:hover:border-white/20 hover:shadow-sm'
+                            }`}
+                          >
+                            <span>{opt.name}</span>
+                            {Number(opt.additional_price) > 0 && (
+                              <span className={`text-xs ${isSelected ? 'text-accent font-black' : 'text-gray-400 font-semibold'}`}>
+                                +{formatCurrency(Number(opt.additional_price))}
+                              </span>
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
+              </div>
+              
+              <div className="p-6 border-t border-gray-100 dark:border-white/10 bg-white dark:bg-[#1A2620] shrink-0">
+                <button
+                  onClick={() => {
+                    let isValid = true;
+                    selectedMenuForVariants.variant_groups?.forEach(g => {
+                      if (g.pivot?.is_required) {
+                        if (g.type === 'single' && !selectedVariants[g.id]) isValid = false;
+                        if (g.type === 'multiple' && (!selectedVariants[g.id] || selectedVariants[g.id].length === 0)) isValid = false;
+                      }
+                    });
+                    
+                    if (!isValid) {
+                      alert('Silakan lengkapi semua varian yang wajib dipilih!');
+                      return;
+                    }
+                    
+                    let extraPrice = 0;
+                    const notes: string[] = [];
+                    const variantIds: string[] = [];
+                    Object.values(selectedVariants).forEach(val => {
+                      if (Array.isArray(val)) {
+                        val.forEach(v => {
+                          extraPrice += Number(v.additional_price);
+                          notes.push(v.name);
+                          variantIds.push(v.id);
+                        });
+                      } else {
+                        extraPrice += Number(val.additional_price);
+                        notes.push(val.name);
+                        variantIds.push(val.id);
+                      }
+                    });
+                    
+                    cart.addItem({
+                      menu_id: selectedMenuForVariants.id,
+                      name: selectedMenuForVariants.name,
+                      price: Number(selectedMenuForVariants.price) + extraPrice,
+                      quantity: 1,
+                      note: notes.join(', '),
+                      image: selectedMenuForVariants.image,
+                      variants: variantIds
+                    });
+                    
+                    setSelectedMenuForVariants(null);
+                  }}
+                  className="w-full py-4 rounded-2xl bg-gradient-to-r from-[#C89B5C] to-[#b88c4d] text-[#1E3D31] font-black text-base transition-all active:scale-[0.98] shadow-[0_4px_14px_0_rgba(200,155,92,0.39)] hover:shadow-[0_6px_20px_rgba(200,155,92,0.23)] flex items-center justify-between px-6"
+                >
+                  <span>TAMBAH KE KERANJANG</span>
+                  <span className="bg-black/10 px-3 py-1 rounded-lg">
+                    {(() => {
+                        let extraPrice = 0;
+                        Object.values(selectedVariants).forEach(val => {
+                          if (Array.isArray(val)) {
+                            val.forEach(v => { extraPrice += Number(v.additional_price); });
+                          } else {
+                            extraPrice += Number(val.additional_price);
+                          }
+                        });
+                        return formatCurrency(Number(selectedMenuForVariants.price) + extraPrice);
+                    })()}
+                  </span>
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* QRIS MODAL SIMULATION */}
       <AnimatePresence>

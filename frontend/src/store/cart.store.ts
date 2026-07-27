@@ -26,9 +26,9 @@ export const useCartStore = create<CartState>((set, get) => ({
 
   addItem: (item) => {
     set((state) => {
-      // Check if item with same menu_id AND same note exists
+      // Check if item with same menu_id, same note, and same variants exists
       const existingItemIndex = state.items.findIndex(
-        (i) => i.menu_id === item.menu_id && i.note === item.note
+        (i) => i.menu_id === item.menu_id && i.note === item.note && JSON.stringify(i.variants || []) === JSON.stringify(item.variants || [])
       );
 
       if (existingItemIndex > -1) {

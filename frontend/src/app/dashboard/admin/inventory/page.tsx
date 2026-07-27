@@ -251,7 +251,7 @@ export default function InventoryPage() {
       : 0;
 
   return (
-    <div className="space-y-6 -m-6 lg:-m-8 p-6 lg:p-8 selection:bg-[#C89B5C]/30">
+    <div className="space-y-6 -m-6 lg:-m-8 p-6 lg:p-8 selection:bg-accent/30">
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-200 dark:border-white/10 pb-6">
         <div>
@@ -264,7 +264,7 @@ export default function InventoryPage() {
  Terhubung API Live
               </span>
             ) : (
-              <span className="rounded-full bg-[#1E3D31] text-[#C89B5C] px-3.5 py-1 text-xs font-bold shadow-sm">
+              <span className="rounded-full bg-primary text-accent px-3.5 py-1 text-xs font-bold shadow-sm">
                 Mode Offline / BOM Deduct
               </span>
             )}
@@ -279,7 +279,7 @@ export default function InventoryPage() {
             <button
               onClick={() => setActiveTab('stock')}
               className={`flex items-center gap-1.5 rounded-xl px-4 py-2 text-xs font-bold transition-all ${
-                activeTab === 'stock' ? 'bg-[#1E3D31] text-[#C89B5C] shadow-sm' : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+                activeTab === 'stock' ? 'bg-primary text-accent shadow-sm' : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
               }`}
             >
               <Package size={14} />
@@ -288,7 +288,7 @@ export default function InventoryPage() {
             <button
               onClick={() => setActiveTab('history')}
               className={`flex items-center gap-1.5 rounded-xl px-4 py-2 text-xs font-bold transition-all ${
-                activeTab === 'history' ? 'bg-[#1E3D31] text-[#C89B5C] shadow-sm' : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+                activeTab === 'history' ? 'bg-primary text-accent shadow-sm' : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
               }`}
             >
               <History size={14} />
@@ -299,7 +299,7 @@ export default function InventoryPage() {
           <PermissionGuard permission="inventory.create">
             <button
               onClick={() => setIsModalOpen(true)}
-              className="flex items-center gap-2 rounded-2xl bg-[#1E3D31] px-5 py-2.5 text-xs font-bold text-[#C89B5C] hover:bg-[#163026] transition-colors shadow-md active:scale-95 shrink-0"
+              className="flex items-center gap-2 rounded-2xl bg-primary px-5 py-2.5 text-xs font-bold text-accent hover:bg-primary-hover transition-colors shadow-md active:scale-95 shrink-0"
             >
               <Plus size={16} /> Tambah Item Bahan
             </button>
@@ -342,7 +342,7 @@ export default function InventoryPage() {
 
       {/* Alert Summary Cards */}
       <div className="grid gap-4 sm:grid-cols-3">
-        <div className="flex items-center gap-4 rounded-3xl bg-white dark:bg-[#1A2620] border border-gray-200 dark:border-white/10 p-5 shadow-sm">
+        <div className="flex items-center gap-4 rounded-3xl bg-white dark:bg-dark-card border border-gray-200 dark:border-white/10 p-5 shadow-sm">
           <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-red-500/15 border border-red-500/30 text-red-600 dark:text-red-400">
             <AlertTriangle size={22} />
           </div>
@@ -351,7 +351,7 @@ export default function InventoryPage() {
             <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mt-0.5">Stok Kritis (Bawah Min.)</p>
           </div>
         </div>
-        <div className="flex items-center gap-4 rounded-3xl bg-white dark:bg-[#1A2620] border border-gray-200 dark:border-white/10 p-5 shadow-sm">
+        <div className="flex items-center gap-4 rounded-3xl bg-white dark:bg-dark-card border border-gray-200 dark:border-white/10 p-5 shadow-sm">
           <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-amber-500/15 border border-amber-500/30 text-amber-600 dark:text-amber-400">
             <TrendingDown size={22} />
           </div>
@@ -360,8 +360,8 @@ export default function InventoryPage() {
             <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mt-0.5">Hampir Habis (Perhatian)</p>
           </div>
         </div>
-        <div className="flex items-center gap-4 rounded-3xl bg-white dark:bg-[#1A2620] border border-gray-200 dark:border-white/10 p-5 shadow-sm">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#1E3D31] text-[#C89B5C]">
+        <div className="flex items-center gap-4 rounded-3xl bg-white dark:bg-dark-card border border-gray-200 dark:border-white/10 p-5 shadow-sm">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-primary text-accent">
             <Package size={22} />
           </div>
           <div>
@@ -382,14 +382,14 @@ export default function InventoryPage() {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Cari nama bahan baku atau SKU..."
-                className="w-full rounded-2xl border border-gray-200 dark:border-white/15 bg-white dark:bg-black/35 py-2.5 pl-10 pr-4 text-xs font-medium focus:border-[#C89B5C] focus:outline-none"
+                className="w-full rounded-2xl border border-gray-200 dark:border-white/15 bg-white dark:bg-black/35 py-2.5 pl-10 pr-4 text-xs font-medium focus:border-accent focus:outline-none"
               />
             </div>
             <div className="relative">
               <select
                 value={categoryFilter}
                 onChange={(e) => setCategoryFilter(e.target.value)}
-                className="appearance-none rounded-2xl border border-gray-200 dark:border-white/15 bg-white dark:bg-black/35 py-2.5 pl-4 pr-10 text-xs text-gray-700 dark:text-gray-200 font-bold focus:border-[#C89B5C] focus:outline-none"
+                className="appearance-none rounded-2xl border border-gray-200 dark:border-white/15 bg-white dark:bg-black/35 py-2.5 pl-4 pr-10 text-xs text-gray-700 dark:text-gray-200 font-bold focus:border-accent focus:outline-none"
               >
                 {categories.map((c) => (
                   <option key={c} value={c}>
@@ -402,133 +402,99 @@ export default function InventoryPage() {
           </div>
 
           {loading ? (
-            <div className="flex flex-col items-center justify-center py-20 text-gray-400 bg-white dark:bg-[#1A2620] rounded-3xl border border-gray-200 dark:border-white/10">
-              <Loader2 size={36} className="animate-spin mb-3 text-[#C89B5C]" />
+            <div className="flex flex-col items-center justify-center py-20 text-gray-400 bg-white dark:bg-dark-card rounded-3xl border border-gray-200 dark:border-white/10">
+              <Loader2 size={36} className="animate-spin mb-3 text-accent" />
               <p className="text-xs font-bold">Memuat data persediaan & level stok...</p>
             </div>
           ) : (
-            <div className="rounded-3xl bg-white dark:bg-[#1A2620] border border-gray-200 dark:border-white/10 shadow-sm overflow-hidden">
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="bg-gray-50 dark:bg-black/30 text-left text-[11px] uppercase tracking-wider text-gray-400 border-b border-gray-100 dark:border-white/10">
-                      <th className="px-6 py-4">Nama Bahan / SKU</th>
-                      <th className="px-6 py-4">Kategori</th>
-                      <th className="px-6 py-4">Stok Aktual (9.4)</th>
-                      <th className="px-6 py-4 w-44">Indikator Batas Minimum</th>
-                      <th className="px-6 py-4">Min. Stok</th>
-                      <th className="px-6 py-4">Harga/Satuan</th>
-                      <th className="px-6 py-4 text-center">Aksi Mutasi / Stock Opname</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-100 dark:divide-white/5 text-xs">
-                    {filtered.map((item) => {
-                      const level = stockLevel(item);
-                      return (
-                        <tr key={item.id} className="hover:bg-gray-50/60 dark:hover:bg-white/5 transition-colors">
-                          <td className="px-6 py-4">
-                            <div className="flex items-center gap-2.5">
-                              {level.label.includes('Kritis') && <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-red-500 animate-pulse shadow-sm" />}
-                              {level.label === 'Hampir Habis' && <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-amber-400" />}
-                              <div>
-                                <p className="font-bold text-gray-900 dark:text-white text-sm leading-tight">{item.name}</p>
-                                {item.sku && <p className="text-[10px] font-mono text-gray-400 mt-0.5">SKU: {item.sku}</p>}
-                              </div>
-                            </div>
-                          </td>
-                          <td className="px-6 py-4">
-                            <span className="text-xs font-bold text-[#C89B5C] uppercase tracking-wider">{item.category}</span>
-                          </td>
-                          <td className="px-6 py-4">
-                            <span
-                              className={`text-sm font-extrabold font-mono ${
-                                level.label.includes('Kritis')
-                                  ? 'text-red-600 dark:text-red-400'
-                                  : level.label === 'Hampir Habis'
-                                  ? 'text-amber-600 dark:text-amber-400'
-                                  : 'text-gray-900 dark:text-white'
-                              }`}
-                            >
-                              {item.stock.toLocaleString('id-ID')} {item.unit}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {filtered.map((item) => {
+                const level = stockLevel(item);
+                return (
+                  <div key={item.id} className="group relative bg-white dark:bg-dark-card rounded-3xl border border-gray-200 dark:border-white/10 p-5 shadow-sm hover:shadow-glow hover:border-accent/40 transition-all flex flex-col h-full animate-fadeIn">
+                    <div className="flex justify-between items-start mb-4">
+                      <div>
+                        <span className="inline-block px-2.5 py-1 rounded-lg bg-primary/10 dark:bg-accent/10 text-primary dark:text-accent text-[10px] font-extrabold uppercase tracking-wider mb-2">
+                          {item.category}
+                        </span>
+                        <h3 className="font-heading text-base font-bold text-gray-900 dark:text-white leading-tight line-clamp-2">{item.name}</h3>
+                        {item.sku && <p className="text-xs font-mono text-gray-400 mt-1">SKU: {item.sku}</p>}
+                      </div>
+                      {level.label.includes('Kritis') && (
+                        <div className="h-3 w-3 shrink-0 rounded-full bg-red-500 animate-pulse shadow-[0_0_10px_rgba(239,68,68,0.6)]" />
+                      )}
+                    </div>
+                    
+                    <div className="mt-auto pt-4 border-t border-gray-100 dark:border-white/5 space-y-4">
+                      <div className="flex justify-between items-end">
+                        <div>
+                          <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wider mb-1">Stok Saat Ini</p>
+                          <div className="flex items-baseline gap-1.5">
+                            <span className={`text-2xl font-extrabold font-mono ${level.label.includes('Kritis') ? 'text-red-500' : level.label === 'Hampir Habis' ? 'text-amber-500' : 'text-gray-900 dark:text-white'}`}>
+                              {item.stock.toLocaleString('id-ID')}
                             </span>
-                          </td>
-                          <td className="px-6 py-4">
-                            <div className="flex items-center gap-2">
-                              <div className="flex-1 h-2 rounded-full bg-gray-100 dark:bg-black/50 overflow-hidden">
-                                <div className={`h-full rounded-full transition-all ${level.color}`} style={{ width: `${level.pct}%` }} />
-                              </div>
-                              <span
-                                className={`text-[10px] font-extrabold shrink-0 ${
-                                  level.label.includes('Kritis')
-                                    ? 'text-red-600 dark:text-red-400'
-                                    : level.label === 'Hampir Habis'
-                                    ? 'text-amber-600 dark:text-amber-400'
-                                    : 'text-emerald-600 dark:text-emerald-400'
-                                }`}
-                              >
-                                {level.label}
-                              </span>
-                            </div>
-                          </td>
-                          <td className="px-6 py-4 font-mono text-gray-500 dark:text-gray-400 font-semibold">
-                            {item.threshold} {item.unit}
-                          </td>
-                          <td className="px-6 py-4 font-mono font-bold text-gray-900 dark:text-white">{fmt(item.cost)}</td>
-                          <td className="px-6 py-4">
-                            <div className="flex items-center justify-center gap-1.5 flex-wrap">
-                              {/* 9.4 Stock In Button */}
-                              <PermissionGuard permission="inventory.adjust">
-                                <button
-                                  onClick={() => handleOpenMovementModal(item, 'STOCK_IN')}
-                                  title="Pencatatan Barang Masuk (Stock In 9.4)"
-                                  className="flex items-center gap-1 h-8 px-3 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-[11px] font-bold text-emerald-700 dark:text-emerald-300 hover:bg-emerald-500/25 transition-colors shadow-sm"
-                                >
-                                  <ArrowDownLeft size={13} className="text-emerald-600 dark:text-emerald-400" />
-                                  <span>+ Stock In</span>
-                                </button>
-                              </PermissionGuard>
+                            <span className="text-xs font-bold text-gray-500">{item.unit}</span>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wider mb-1">Min. Stok</p>
+                          <p className="text-sm font-mono font-bold text-gray-400">{item.threshold} {item.unit}</p>
+                        </div>
+                      </div>
 
-                              {/* 9.4 Stock Out / Waste Button */}
-                              <PermissionGuard permission="inventory.adjust">
-                                <button
-                                  onClick={() => handleOpenMovementModal(item, 'STOCK_OUT_WASTE')}
-                                  title="Pencatatan Barang Keluar / Waste (Stock Out 9.4)"
-                                  className="flex items-center gap-1 h-8 px-3 rounded-xl bg-amber-500/15 border border-amber-500/30 text-[11px] font-bold text-amber-800 dark:text-amber-300 hover:bg-amber-500/25 transition-colors shadow-sm"
-                                >
-                                  <ArrowUpRight size={13} className="text-amber-600 dark:text-amber-400" />
-                                  <span>- Out/Waste</span>
-                                </button>
-                              </PermissionGuard>
+                      <div className="space-y-1.5">
+                        <div className="flex justify-between text-[10px] font-bold">
+                          <span className={level.label.includes('Kritis') ? 'text-red-500' : level.label === 'Hampir Habis' ? 'text-amber-500' : 'text-emerald-500'}>{level.label}</span>
+                          <span className="text-gray-400 font-mono">{Math.round(level.pct)}%</span>
+                        </div>
+                        <div className="h-1.5 w-full rounded-full bg-gray-100 dark:bg-black/50 overflow-hidden">
+                          <div className={`h-full rounded-full transition-all ${level.color}`} style={{ width: `${level.pct}%` }} />
+                        </div>
+                      </div>
 
-                              {/* Cycle Count Stock Opname */}
-                              <PermissionGuard permission="inventory.adjust">
-                                <button
-                                  onClick={() => handleOpenCycleCount(item)}
-                                  title="Stock Opname / Cycle Count Audit"
-                                  className="flex items-center gap-1 h-8 px-3 rounded-xl border border-gray-200 dark:border-white/15 bg-white dark:bg-white/5 text-[11px] font-bold text-gray-700 dark:text-gray-300 hover:border-[#C89B5C] hover:text-[#C89B5C] transition-colors"
-                                >
-                                  <ClipboardCheck size={13} />
-                                  <span>Opname</span>
-                                </button>
-                              </PermissionGuard>
+                      <div className="grid grid-cols-2 gap-2 pt-2 border-t border-gray-100 dark:border-white/5">
+                        <PermissionGuard permission="inventory.adjust">
+                          <button
+                            onClick={() => handleOpenMovementModal(item, 'STOCK_IN')}
+                            className="flex flex-col items-center justify-center gap-1 py-2 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20 transition-colors"
+                          >
+                            <ArrowDownLeft size={16} />
+                            <span className="text-[10px] font-bold">Stock In</span>
+                          </button>
+                        </PermissionGuard>
+                        <PermissionGuard permission="inventory.adjust">
+                          <button
+                            onClick={() => handleOpenMovementModal(item, 'STOCK_OUT_WASTE')}
+                            className="flex flex-col items-center justify-center gap-1 py-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-700 dark:text-amber-400 border border-amber-500/20 transition-colors"
+                          >
+                            <ArrowUpRight size={16} />
+                            <span className="text-[10px] font-bold">Waste/Out</span>
+                          </button>
+                        </PermissionGuard>
+                      </div>
 
-                              <PermissionGuard permission="inventory.delete">
-                                <button
-                                  onClick={() => handleDeleteItem(item.id, item.name)}
-                                  title="Hapus Bahan Baku"
-                                  className="flex h-8 w-8 items-center justify-center rounded-xl border border-red-200 dark:border-red-900/40 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors"
-                                >
-                                  <Trash2 size={14} />
-                                </button>
-                              </PermissionGuard>
-                            </div>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
+                      <div className="flex items-center gap-2">
+                        <PermissionGuard permission="inventory.adjust">
+                          <button
+                            onClick={() => handleOpenCycleCount(item)}
+                            className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-gray-50 dark:bg-white/5 text-gray-600 dark:text-gray-300 hover:bg-primary hover:text-accent transition-colors text-xs font-bold border border-transparent hover:border-accent/30"
+                          >
+                            <ClipboardCheck size={14} /> Opname Fisik
+                          </button>
+                        </PermissionGuard>
+                        <PermissionGuard permission="inventory.delete">
+                          <button
+                            onClick={() => handleDeleteItem(item.id, item.name)}
+                            className="w-11 h-11 flex shrink-0 items-center justify-center rounded-xl bg-red-50 dark:bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-colors"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </PermissionGuard>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           )}
         </div>
@@ -537,18 +503,18 @@ export default function InventoryPage() {
       {/* TAB 2: STOCK MOVEMENT & BOM AUTO-DEDUCTION LOGS (9.4) */}
       {activeTab === 'history' && (
         <div className="space-y-4 animate-in fade-in duration-200">
-          <div className="rounded-3xl bg-white dark:bg-[#1A2620] border border-gray-200 dark:border-white/10 p-6 shadow-sm space-y-4">
+          <div className="rounded-3xl bg-white dark:bg-dark-card border border-gray-200 dark:border-white/10 p-6 shadow-sm space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-gray-100 dark:border-white/10 pb-4">
               <div>
                 <h3 className="font-heading text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                  <History size={20} className="text-[#C89B5C]" />
+                  <History size={20} className="text-accent" />
                   <span>Log Mutasi Stok & Pemotongan Resep BOM Otomatis (9.4)</span>
                 </h3>
                 <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
                   Setiap transaksi POS kasir secara langsung mengurangi stok bahan baku sesuai komposisi BOM menu yang terjual.
                 </p>
               </div>
-              <span className="rounded-xl bg-[#FAF3E7] dark:bg-black/40 border border-[#C89B5C]/30 px-3.5 py-1.5 text-xs font-mono font-bold text-[#C89B5C]">
+              <span className="rounded-xl bg-cream-100 dark:bg-black/40 border border-accent/30 px-3.5 py-1.5 text-xs font-mono font-bold text-accent">
                 Real-Time Ledger Audit
               </span>
             </div>
@@ -556,7 +522,7 @@ export default function InventoryPage() {
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="bg-gray-50 dark:bg-black/30 text-left text-[11px] uppercase tracking-wider text-gray-400 border-b border-gray-100 dark:border-white/10">
+                  <tr className="bg-primary/5 dark:bg-accent/10 text-left text-[11px] uppercase tracking-wider font-bold text-primary dark:text-accent border-b border-gray-100 dark:border-white/10">
                     <th className="px-6 py-3.5">Waktu Log</th>
                     <th className="px-6 py-3.5">Nama Bahan Baku</th>
                     <th className="px-6 py-3.5">Tipe Mutasi</th>
@@ -611,7 +577,7 @@ export default function InventoryPage() {
       {/* 9.4 MODAL: STOCK IN / OUT / WASTE LOGGER */}
       {isMovementModalOpen && movementTargetItem && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fadeIn">
-          <div className="w-full max-w-md rounded-3xl bg-white dark:bg-[#1A2620] p-6 sm:p-8 shadow-2xl border border-gray-200 dark:border-white/15 space-y-5">
+          <div className="w-full max-w-md rounded-3xl bg-white dark:bg-dark-card p-6 sm:p-8 shadow-2xl border border-gray-200 dark:border-white/15 space-y-5">
             <div className="flex items-center justify-between border-b border-gray-100 dark:border-white/10 pb-4">
               <h3 className="font-heading text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
                 {movementType === 'STOCK_IN' ? <ArrowDownLeft size={20} className="text-emerald-500" /> : <ArrowUpRight size={20} className="text-amber-500" />}
@@ -622,10 +588,10 @@ export default function InventoryPage() {
               </button>
             </div>
 
-            <div className="rounded-2xl bg-[#FAF3E7] dark:bg-black/40 p-4 text-xs space-y-1 border border-[#C89B5C]/30">
+            <div className="rounded-2xl bg-cream-100 dark:bg-black/40 p-4 text-xs space-y-1 border border-accent/30">
               <p className="font-extrabold text-gray-900 dark:text-white text-sm">{movementTargetItem.name}</p>
               <p className="text-gray-600 dark:text-gray-300">Stok Sistem Saat Ini: <strong className="text-gray-900 dark:text-white font-mono">{movementTargetItem.stock} {movementTargetItem.unit}</strong></p>
-              <p className="text-[#C89B5C] font-semibold">Tipe Mutasi: {movementType === 'STOCK_IN' ? 'Penambahan (+) dari Supplier / PO' : 'Pengurangan (-) karena Waste / Rusak / Dapur'}</p>
+              <p className="text-accent font-semibold">Tipe Mutasi: {movementType === 'STOCK_IN' ? 'Penambahan (+) dari Supplier / PO' : 'Pengurangan (-) karena Waste / Rusak / Dapur'}</p>
             </div>
 
             <form onSubmit={handleSaveStockMovement} className="space-y-4">
@@ -640,7 +606,7 @@ export default function InventoryPage() {
                   value={movementQty}
                   onChange={(e) => setMovementQty(e.target.value)}
                   placeholder="Misal: 1000"
-                  className="w-full rounded-2xl border border-gray-200 dark:border-white/15 bg-white dark:bg-black/35 px-4 py-3 text-sm font-mono font-extrabold text-gray-900 dark:text-white focus:border-[#C89B5C] focus:outline-none"
+                  className="w-full rounded-2xl border border-gray-200 dark:border-white/15 bg-white dark:bg-black/35 px-4 py-3 text-sm font-mono font-extrabold text-gray-900 dark:text-white focus:border-accent focus:outline-none"
                 />
               </div>
 
@@ -654,7 +620,7 @@ export default function InventoryPage() {
                   value={movementRef}
                   onChange={(e) => setMovementRef(e.target.value)}
                   placeholder="No. Faktur PO / alasan barang rusak..."
-                  className="w-full rounded-2xl border border-gray-200 dark:border-white/15 bg-white dark:bg-black/35 px-4 py-2.5 text-xs focus:border-[#C89B5C] focus:outline-none"
+                  className="w-full rounded-2xl border border-gray-200 dark:border-white/15 bg-white dark:bg-black/35 px-4 py-2.5 text-xs focus:border-accent focus:outline-none"
                 />
               </div>
 
@@ -685,10 +651,10 @@ export default function InventoryPage() {
       {/* Modal Cycle Count Stock Opname */}
       {isCycleModalOpen && cycleTargetItem && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fadeIn">
-          <div className="w-full max-w-md rounded-3xl bg-white dark:bg-[#1A2620] p-6 sm:p-8 shadow-2xl border border-gray-200 dark:border-white/15 space-y-5">
+          <div className="w-full max-w-md rounded-3xl bg-white dark:bg-dark-card p-6 sm:p-8 shadow-2xl border border-gray-200 dark:border-white/15 space-y-5">
             <div className="flex items-center justify-between border-b border-gray-100 dark:border-white/10 pb-3 mb-4">
               <div className="flex items-center gap-2">
-                <ClipboardCheck size={20} className="text-[#C89B5C]" />
+                <ClipboardCheck size={20} className="text-accent" />
                 <h3 className="font-heading text-lg font-bold text-gray-900 dark:text-white">Stock Opname Cycle Count</h3>
               </div>
               <button onClick={() => setIsCycleModalOpen(false)} className="rounded-full p-1.5 text-gray-400 hover:bg-gray-100 dark:hover:bg-white/10">
@@ -696,7 +662,7 @@ export default function InventoryPage() {
               </button>
             </div>
 
-            <div className="rounded-2xl bg-[#FAF3E7] dark:bg-black/40 p-4 mb-4 text-xs space-y-1 border border-[#C89B5C]/30">
+            <div className="rounded-2xl bg-cream-100 dark:bg-black/40 p-4 mb-4 text-xs space-y-1 border border-accent/30">
               <div className="flex justify-between items-center">
                 <span className="font-bold text-gray-900 dark:text-white text-sm">{cycleTargetItem.name}</span>
                 <span className="font-mono bg-white dark:bg-black px-2 py-0.5 rounded border border-gray-200 dark:border-white/15 text-gray-600 dark:text-gray-300">
@@ -723,7 +689,7 @@ export default function InventoryPage() {
                   value={physicalCountInput}
                   onChange={(e) => setPhysicalCountInput(e.target.value)}
                   placeholder="Masukkan jumlah hitungan fisik..."
-                  className="w-full rounded-2xl border border-gray-200 dark:border-white/15 bg-white dark:bg-black/35 px-4 py-3 text-sm focus:border-[#C89B5C] focus:outline-none font-bold text-gray-900 dark:text-white font-mono"
+                  className="w-full rounded-2xl border border-gray-200 dark:border-white/15 bg-white dark:bg-black/35 px-4 py-3 text-sm focus:border-accent focus:outline-none font-bold text-gray-900 dark:text-white font-mono"
                 />
                 {physicalCountInput !== '' && (
                   <div
@@ -758,7 +724,7 @@ export default function InventoryPage() {
                         value={batchNumberInput}
                         onChange={(e) => setBatchNumberInput(e.target.value)}
                         placeholder="BATCH-2026-A"
-                        className="w-full rounded-xl border border-gray-200 dark:border-white/15 px-3 py-2 text-xs font-mono bg-white dark:bg-black/40 focus:border-[#C89B5C] focus:outline-none"
+                        className="w-full rounded-xl border border-gray-200 dark:border-white/15 px-3 py-2 text-xs font-mono bg-white dark:bg-black/40 focus:border-accent focus:outline-none"
                       />
                     </div>
                     <div>
@@ -769,7 +735,7 @@ export default function InventoryPage() {
                         type="date"
                         value={expirationDateInput}
                         onChange={(e) => setExpirationDateInput(e.target.value)}
-                        className="w-full rounded-xl border border-gray-200 dark:border-white/15 px-3 py-2 text-xs bg-white dark:bg-black/40 focus:border-[#C89B5C] focus:outline-none"
+                        className="w-full rounded-xl border border-gray-200 dark:border-white/15 px-3 py-2 text-xs bg-white dark:bg-black/40 focus:border-accent focus:outline-none"
                       />
                     </div>
                   </div>
@@ -783,7 +749,7 @@ export default function InventoryPage() {
                   value={cycleNotesInput}
                   onChange={(e) => setCycleNotesInput(e.target.value)}
                   placeholder="Alasan selisih/varians atau nama auditor..."
-                  className="w-full rounded-2xl border border-gray-200 dark:border-white/15 bg-white dark:bg-black/35 px-4 py-2.5 text-xs focus:border-[#C89B5C] focus:outline-none"
+                  className="w-full rounded-2xl border border-gray-200 dark:border-white/15 bg-white dark:bg-black/35 px-4 py-2.5 text-xs focus:border-accent focus:outline-none"
                 />
               </div>
 
@@ -798,7 +764,7 @@ export default function InventoryPage() {
                 <button
                   type="submit"
                   disabled={cycleLoading}
-                  className="flex items-center gap-1.5 rounded-2xl bg-[#1E3D31] px-6 py-2.5 text-xs font-bold text-[#C89B5C] hover:bg-[#163026] shadow-md disabled:opacity-50"
+                  className="flex items-center gap-1.5 rounded-2xl bg-primary px-6 py-2.5 text-xs font-bold text-accent hover:bg-primary-hover shadow-md disabled:opacity-50"
                 >
                   {cycleLoading && <Loader2 size={13} className="animate-spin" />}
                   Simpan Stock Opname
@@ -812,7 +778,7 @@ export default function InventoryPage() {
       {/* Modal Tambah Item Bahan Baku */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fadeIn">
-          <div className="w-full max-w-md rounded-3xl bg-white dark:bg-[#1A2620] p-6 sm:p-8 shadow-2xl border border-gray-200 dark:border-white/15 space-y-5">
+          <div className="w-full max-w-md rounded-3xl bg-white dark:bg-dark-card p-6 sm:p-8 shadow-2xl border border-gray-200 dark:border-white/15 space-y-5">
             <div className="flex items-center justify-between border-b border-gray-100 dark:border-white/10 pb-4">
               <h2 className="font-heading text-lg font-bold text-gray-900 dark:text-white">Tambah Bahan Baku Baru</h2>
               <button onClick={() => setIsModalOpen(false)} className="rounded-full p-1.5 text-gray-400 hover:bg-gray-100 dark:hover:bg-white/10">
@@ -831,7 +797,7 @@ export default function InventoryPage() {
                   value={formName}
                   onChange={(e) => setFormName(e.target.value)}
                   placeholder="Contoh: Sirup Hazelnut Monin"
-                  className="w-full rounded-2xl border border-gray-200 dark:border-white/15 bg-white dark:bg-black/35 px-4 py-3 text-xs font-bold focus:border-[#C89B5C] focus:outline-none"
+                  className="w-full rounded-2xl border border-gray-200 dark:border-white/15 bg-white dark:bg-black/35 px-4 py-3 text-xs font-bold focus:border-accent focus:outline-none"
                 />
               </div>
 
@@ -843,7 +809,7 @@ export default function InventoryPage() {
                     value={formSku}
                     onChange={(e) => setFormSku(e.target.value)}
                     placeholder="SYR-005"
-                    className="w-full rounded-2xl border border-gray-200 dark:border-white/15 bg-white dark:bg-black/35 px-3.5 py-3 text-xs font-mono uppercase focus:border-[#C89B5C] focus:outline-none"
+                    className="w-full rounded-2xl border border-gray-200 dark:border-white/15 bg-white dark:bg-black/35 px-3.5 py-3 text-xs font-mono uppercase focus:border-accent focus:outline-none"
                   />
                 </div>
                 <div>
@@ -853,7 +819,7 @@ export default function InventoryPage() {
                   <select
                     value={formCategory}
                     onChange={(e) => setFormCategory(e.target.value)}
-                    className="w-full rounded-2xl border border-gray-200 dark:border-white/15 bg-white dark:bg-black/35 px-3.5 py-3 text-xs font-bold focus:border-[#C89B5C] focus:outline-none"
+                    className="w-full rounded-2xl border border-gray-200 dark:border-white/15 bg-white dark:bg-black/35 px-3.5 py-3 text-xs font-bold focus:border-accent focus:outline-none"
                   >
                     {['Kopi', 'Dairy', 'Sirup', 'Baking', 'Bahan Dasar', 'Kemasan', 'Minuman'].map((c) => (
                       <option key={c} value={c}>
@@ -872,7 +838,7 @@ export default function InventoryPage() {
                   <select
                     value={formUnit}
                     onChange={(e) => setFormUnit(e.target.value)}
-                    className="w-full rounded-2xl border border-gray-200 dark:border-white/15 bg-white dark:bg-black/35 px-3.5 py-3 text-xs font-bold focus:border-[#C89B5C] focus:outline-none"
+                    className="w-full rounded-2xl border border-gray-200 dark:border-white/15 bg-white dark:bg-black/35 px-3.5 py-3 text-xs font-bold focus:border-accent focus:outline-none"
                   >
                     {['gram', 'kg', 'liter', 'ml', 'botol', 'pack', 'pcs'].map((u) => (
                       <option key={u} value={u}>
@@ -888,7 +854,7 @@ export default function InventoryPage() {
                     required
                     value={formStock}
                     onChange={(e) => setFormStock(e.target.value)}
-                    className="w-full rounded-2xl border border-gray-200 dark:border-white/15 bg-white dark:bg-black/35 px-3.5 py-3 text-xs font-mono font-bold focus:border-[#C89B5C] focus:outline-none"
+                    className="w-full rounded-2xl border border-gray-200 dark:border-white/15 bg-white dark:bg-black/35 px-3.5 py-3 text-xs font-mono font-bold focus:border-accent focus:outline-none"
                   />
                 </div>
               </div>
@@ -901,7 +867,7 @@ export default function InventoryPage() {
                     required
                     value={formThreshold}
                     onChange={(e) => setFormThreshold(e.target.value)}
-                    className="w-full rounded-2xl border border-gray-200 dark:border-white/15 bg-white dark:bg-black/35 px-3.5 py-3 text-xs font-mono font-bold focus:border-[#C89B5C] focus:outline-none"
+                    className="w-full rounded-2xl border border-gray-200 dark:border-white/15 bg-white dark:bg-black/35 px-3.5 py-3 text-xs font-mono font-bold focus:border-accent focus:outline-none"
                   />
                 </div>
                 <div>
@@ -911,7 +877,7 @@ export default function InventoryPage() {
                     required
                     value={formCost}
                     onChange={(e) => setFormCost(e.target.value)}
-                    className="w-full rounded-2xl border border-gray-200 dark:border-white/15 bg-white dark:bg-black/35 px-3.5 py-3 text-xs font-mono font-bold focus:border-[#C89B5C] focus:outline-none"
+                    className="w-full rounded-2xl border border-gray-200 dark:border-white/15 bg-white dark:bg-black/35 px-3.5 py-3 text-xs font-mono font-bold focus:border-accent focus:outline-none"
                   />
                 </div>
               </div>
@@ -927,7 +893,7 @@ export default function InventoryPage() {
                 <button
                   type="submit"
                   disabled={formLoading}
-                  className="flex items-center gap-2 rounded-2xl bg-[#1E3D31] px-6 py-2.5 text-xs font-bold text-[#C89B5C] hover:bg-[#163026] shadow-md disabled:opacity-50"
+                  className="flex items-center gap-2 rounded-2xl bg-primary px-6 py-2.5 text-xs font-bold text-accent hover:bg-primary-hover shadow-md disabled:opacity-50"
                 >
                   {formLoading && <Loader2 size={13} className="animate-spin" />}
                   Simpan Bahan Baku

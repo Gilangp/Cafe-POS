@@ -1,884 +1,870 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
+import { useAdminMenu, AdminMenu, AdminCategory } from '@/features/menu/hooks/use-admin-menu';
+import { useAdminVariants, AdminVariantGroup } from '@/features/menu/hooks/use-admin-variants';
 import {
   Search,
   Plus,
   Edit2,
   Trash2,
-  Eye,
-  EyeOff,
   Coffee,
   X,
-  Check,
+  CheckCircle2,
   Loader2,
-  DollarSign,
-  Utensils,
-  Store,
-  Tag,
-  BookOpen,
-  Layers,
-  ChefHat,
-  Scale,
-  TrendingUp,
   FolderPlus,
+  Eye,
+  EyeOff,
+  Sparkles,
+  LayoutGrid,
+  ChefHat,
+  TrendingUp,
+  PackageOpen,
+  ChevronLeft,
+  ChevronRight,
+  Star,
+  Settings2,
+  PlusCircle,
+  Trash
 } from 'lucide-react';
-import { useProducts, CatalogProduct } from '@/features/menu/hooks/use-products';
-import { PermissionGuard } from '@/shared/components/common/permission-guard';
-import { useBranchStore } from '@/store/branch.store';
+import { motion, AnimatePresence } from 'framer-motion';
 
-const fmt = (n: number) =>
-  new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(n);
+const formatCurrency = (amount: number) => {
+  return new Intl.NumberFormat('id-ID', {
+    style: 'currency',
+    currency: 'IDR',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  }).format(amount);
+};
 
-interface RecipeIngredient {
-  id: string;
-  name: string;
-  qty: number;
-  unit: string;
-  costPerUnit: number;
-}
-
-export default function MenuPage() {
+export default function AdminMenuPage() {
   const {
-    products,
+    menus,
     categories,
-    recipes,
-    loading: catalogLoading,
-    usingLive,
-    refetch,
-    overrideBranchProduct,
-    createProduct,
-    updateProduct,
-    deleteProduct,
-  } = useProducts({ includeInactive: true });
+    inventories,
+    loading,
+    error,
+    createCategory,
+    updateCategory,
+    deleteCategory,
+    createMenu,
+    updateMenu,
+    deleteMenu,
+  } = useAdminMenu();
 
-  const activeBranchId = useBranchStore((s) => s.activeBranchId);
+  const { variants, loading: loadingVariants, createVariant, updateVariant, deleteVariant } = useAdminVariants();
 
-  const [search, setSearch] = useState('');
-  const [categoryFilter, setCategoryFilter] = useState('all');
+  const [activeTab, setActiveTab] = useState<'menus' | 'categories' | 'variants'>('menus');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string>('all');
+  
+  // Pagination State
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 12; // 12 items per page to keep it compact (3-4 rows)
 
-  // Modal states
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalMode, setModalMode] = useState<'add' | 'edit'>('add');
-  const [editId, setEditId] = useState<string | number | null>(null);
+  // Notification State
+  const [notification, setNotification] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
 
-  // Price Override Modal (MNU-002 / MNU-003)
-  const [isOverrideModalOpen, setIsOverrideModalOpen] = useState(false);
-  const [overrideTargetProduct, setOverrideTargetProduct] = useState<CatalogProduct | null>(null);
-  const [overridePriceInput, setOverridePriceInput] = useState('');
-  const [overrideStockInput, setOverrideStockInput] = useState('');
-  const [overrideLoading, setOverrideLoading] = useState(false);
+  // Modal States
+  const [showMenuModal, setShowMenuModal] = useState(false);
+  const [menuForm, setMenuForm] = useState<Partial<AdminMenu>>({
+    name: '',
+    category_id: '',
+    price: '',
+    description: '',
+    status: 'tersedia',
+    is_best_seller: false
+  });
+  
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // 9.2 BOM Recipe Composition Breakdown Drawer
-  const [isRecipeDrawerOpen, setIsRecipeDrawerOpen] = useState(false);
-  const [activeRecipeProduct, setActiveRecipeProduct] = useState<CatalogProduct | null>(null);
-  const [bomIngredients, setBomIngredients] = useState<RecipeIngredient[]>([
-    { id: 'ING-01', name: 'Biji Kopi Specialty Gayo Arabica', qty: 18, unit: 'gram', costPerUnit: 250 },
-    { id: 'ING-02', name: 'Susu Oat Barista Blend (Oatly)', qty: 150, unit: 'ml', costPerUnit: 40 },
-    { id: 'ING-03', name: 'Sirup Hazelnut Artisan / Vanilla', qty: 15, unit: 'ml', costPerUnit: 120 },
-    { id: 'ING-04', name: 'Paper Cup Hot / Cold 180ml + Lid', qty: 1, unit: 'pcs', costPerUnit: 1500 },
-  ]);
-  const [newIngName, setNewIngName] = useState('');
-  const [newIngQty, setNewIngQty] = useState('');
-  const [newIngUnit, setNewIngUnit] = useState('gram');
-  const [newIngCost, setNewIngCost] = useState('');
+  // --- BOM States ---
+  const [showBomDrawer, setShowBomDrawer] = useState(false);
+  const [bomMenu, setBomMenu] = useState<AdminMenu | null>(null);
+  const [bomIngredients, setBomIngredients] = useState<any[]>([]);
+  const [newIngredientId, setNewIngredientId] = useState('');
+  const [newIngredientQty, setNewIngredientQty] = useState('');
 
-  // 9.2 Category CRUD Modal
-  const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
-  const [newCatNameInput, setNewCatNameInput] = useState('');
-  const [localCategories, setLocalCategories] = useState([
-    { id: 1, name: 'Espresso & Signature Coffee', count: 14 },
-    { id: 2, name: 'Slow-Bar Manual Brew', count: 8 },
-    { id: 3, name: 'Non-Coffee Artisan Milk', count: 6 },
-    { id: 4, name: 'Viennoiserie & Pastry', count: 9 },
-    { id: 5, name: 'Bottled Cold Brew 24H', count: 5 },
-  ]);
+  // --- Variant Mapping States ---
+  const [showMenuVariantDrawer, setShowMenuVariantDrawer] = useState(false);
+  const [menuVariantMenu, setMenuVariantMenu] = useState<AdminMenu | null>(null);
+  const [menuVariantGroups, setMenuVariantGroups] = useState<{variant_group_id: string, is_required: boolean}[]>([]);
 
-  // Form fields for Add/Edit
-  const [formName, setFormName] = useState('');
-  const [formCategory, setFormCategory] = useState<string | number>('');
-  const [formPrice, setFormPrice] = useState('35000');
-  const [formSku, setFormSku] = useState('');
-  const [formDesc, setFormDesc] = useState('');
-  const [formRecipeId, setFormRecipeId] = useState<string | number>('');
-  const [formLoading, setFormLoading] = useState(false);
-  const [actionStatus, setActionStatus] = useState<string | null>(null);
-
-  const showNotification = (msg: string) => {
-    setActionStatus(msg);
-    setTimeout(() => setActionStatus(null), 4000);
+  const showToast = (message: string, type: 'success' | 'error' = 'success') => {
+    setNotification({ message, type });
+    setTimeout(() => setNotification(null), 3000);
   };
 
-  const toggleAvailableStatus = async (product: CatalogProduct) => {
-    try {
-      const newStatus = !product.is_available;
-      await overrideBranchProduct(product.id, {
-        is_available: newStatus,
-        price: product.effective_price,
-        stock_quantity: product.branch_stock_quantity || 0,
-      });
-      showNotification(`Status ${product.name} diperbarui menjadi ${newStatus ? 'Tersedia' : 'Habis (86\'d)'}`);
-    } catch (err) {
-      console.error('Failed toggle 86 status:', err);
-      showNotification('Gagal memperbarui status ketersediaan');
-    }
+  // --- Menu Handlers ---
+  const handleAddMenu = () => {
+    setMenuForm({
+      name: '',
+      category_id: categories[0]?.id || '',
+      price: '',
+      description: '',
+      status: 'tersedia',
+      is_best_seller: false
+    });
+    setShowMenuModal(true);
   };
 
-  const handleOpenAdd = () => {
-    setModalMode('add');
-    setEditId(null);
-    setFormName('');
-    setFormCategory(categories[0]?.id || 1);
-    setFormPrice('35000');
-    setFormSku('');
-    setFormDesc('');
-    setFormRecipeId('');
-    setIsModalOpen(true);
+  const handleEditMenu = (menu: AdminMenu) => {
+    setMenuForm({
+      id: menu.id,
+      name: menu.name,
+      category_id: menu.category_id,
+      price: Math.floor(Number(menu.price)).toString(),
+      description: menu.description || '',
+      status: menu.status,
+      is_best_seller: menu.is_best_seller
+    });
+    setShowMenuModal(true);
   };
 
-  const handleOpenEdit = (item: CatalogProduct) => {
-    setModalMode('edit');
-    setEditId(item.id);
-    setFormName(item.name);
-    setFormCategory(item.category_id || categories[0]?.id || 1);
-    setFormPrice((item.effective_price || item.price).toString());
-    setFormSku(item.sku || '');
-    setFormDesc(item.description || '');
-    setFormRecipeId(item.recipe_id || '');
-    setIsModalOpen(true);
-  };
-
-  const handleOpenOverride = (item: CatalogProduct) => {
-    setOverrideTargetProduct(item);
-    setOverridePriceInput((item.effective_price || item.price).toString());
-    setOverrideStockInput(item.branch_stock_quantity !== null && item.branch_stock_quantity !== undefined ? item.branch_stock_quantity.toString() : '');
-    setIsOverrideModalOpen(true);
-  };
-
-  const handleSaveOverride = async (e: React.FormEvent) => {
+  const handleSaveMenu = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!overrideTargetProduct) return;
-    setOverrideLoading(true);
+    setIsSubmitting(true);
     try {
-      const priceVal = parseFloat(overridePriceInput) || overrideTargetProduct.price;
-      const stockVal = overrideStockInput !== '' ? parseInt(overrideStockInput, 10) : undefined;
-      await overrideBranchProduct(overrideTargetProduct.id, {
-        price: priceVal,
-        is_available: overrideTargetProduct.is_available,
-        stock_quantity: stockVal,
-      });
-      showNotification(`Harga khusus roastery untuk ${overrideTargetProduct.name} berhasil disimpan!`);
-      setIsOverrideModalOpen(false);
-    } catch (err) {
-      console.error('Error overriding price:', err);
-      showNotification('Gagal menyimpan timpaan harga');
-    } finally {
-      setOverrideLoading(false);
-    }
-  };
-
-  const handleOpenRecipeDrawer = (item: CatalogProduct) => {
-    setActiveRecipeProduct(item);
-    setIsRecipeDrawerOpen(true);
-  };
-
-  const handleAddIngredientToBom = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newIngName.trim() || !newIngQty) return;
-    const item: RecipeIngredient = {
-      id: `ING-${Date.now()}`,
-      name: newIngName,
-      qty: Number(newIngQty) || 1,
-      unit: newIngUnit,
-      costPerUnit: Number(newIngCost) || 100,
-    };
-    setBomIngredients((prev) => [...prev, item]);
-    setNewIngName('');
-    setNewIngQty('');
-    setNewIngCost('');
-  };
-
-  const handleDeleteIngredient = (id: string) => {
-    setBomIngredients((prev) => prev.filter((i) => i.id !== id));
-  };
-
-  const handleSaveCategory = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newCatNameInput.trim()) return;
-    setLocalCategories((prev) => [...prev, { id: Date.now(), name: newCatNameInput, count: 0 }]);
-    setNewCatNameInput('');
-    showNotification('✓ Kategori menu baru berhasil ditambahkan!');
-  };
-
-  const handleDeleteItem = async (id: string | number, name: string) => {
-    if (!window.confirm(`Yakin ingin menghapus produk "${name}"?`)) return;
-    try {
-      await deleteProduct(id);
-      showNotification(`Produk "${name}" berhasil dihapus.`);
-    } catch (err) {
-      console.error('Delete error:', err);
-      showNotification('Gagal menghapus produk.');
-    }
-  };
-
-  const handleSaveProduct = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!formName.trim() || !formPrice) return;
-
-    setFormLoading(true);
-    try {
-      const numPrice = parseFloat(formPrice) || 0;
-      const payload = {
-        name: formName,
-        category_id: formCategory,
-        base_price: numPrice,
-        sku: formSku || undefined,
-        description: formDesc || 'Racikan spesial dari NEMU Space Specialty Roastery.',
-        recipe_id: formRecipeId || null,
-        is_active: true,
-      };
-
-      if (modalMode === 'add') {
-        await createProduct(payload);
-        showNotification('Produk baru dan tautan resep berhasil disimpan!');
-      } else if (modalMode === 'edit' && editId !== null) {
-        await updateProduct(editId, payload);
-        showNotification('Produk berhasil diperbarui!');
+      if (menuForm.id) {
+        await updateMenu(menuForm.id, menuForm);
+        showToast('Menu berhasil diperbarui');
+      } else {
+        await createMenu(menuForm);
+        showToast('Menu baru berhasil ditambahkan');
       }
-      setIsModalOpen(false);
-    } catch (err) {
-      console.error('Save error:', err);
-      showNotification('Terjadi kesalahan saat menyimpan produk');
+      setShowMenuModal(false);
+    } catch (err: any) {
+      showToast(err.response?.data?.message || 'Gagal menyimpan menu', 'error');
     } finally {
-      setFormLoading(false);
+      setIsSubmitting(false);
     }
   };
 
-  const filtered = products.filter((p) => {
-    const matchSearch =
-      p.name.toLowerCase().includes(search.toLowerCase()) ||
-      (p.sku && p.sku.toLowerCase().includes(search.toLowerCase()));
-    const matchCat =
-      categoryFilter === 'all' ||
-      String(p.category_id) === String(categoryFilter) ||
-      p.category.toLowerCase() === categoryFilter.toLowerCase();
+  const handleDeleteMenu = async (id: string, name: string) => {
+    if (!window.confirm(`Yakin ingin menghapus menu "${name}"?`)) return;
+    try {
+      await deleteMenu(id);
+      showToast('Menu berhasil dihapus');
+    } catch (err: any) {
+      showToast('Gagal menghapus menu', 'error');
+    }
+  };
+
+  const handleToggleMenuStatus = async (menu: AdminMenu) => {
+    try {
+      const newStatus = menu.status === 'tersedia' ? 'tidak_tersedia' : 'tersedia';
+      await updateMenu(menu.id, { status: newStatus });
+      showToast(`Status "${menu.name}" diubah menjadi ${newStatus === 'tersedia' ? 'Tersedia' : 'Habis'}`);
+    } catch (err: any) {
+      showToast('Gagal mengubah status', 'error');
+    }
+  };
+
+  const handleToggleBestSeller = async (menu: AdminMenu) => {
+    try {
+      await updateMenu(menu.id, { is_best_seller: !menu.is_best_seller });
+      showToast(`Menu "${menu.name}" ${!menu.is_best_seller ? 'ditandai sebagai Best Seller' : 'dihapus dari Best Seller'}`);
+    } catch (err: any) {
+      showToast('Gagal mengubah status Best Seller', 'error');
+    }
+  };
+
+  // --- BOM Handlers ---
+  const handleOpenBom = (menu: AdminMenu) => {
+    setBomMenu(menu);
+    // Map existing ingredients from pivot
+    const initialBom = (menu.ingredients || []).map(ing => ({
+      inventory_id: ing.inventory_id || ing.pivot?.inventory_id,
+      quantity_used: ing.quantity_used || ing.pivot?.quantity_used,
+    }));
+    setBomIngredients(initialBom);
+    setNewIngredientId('');
+    setNewIngredientQty('');
+    setShowBomDrawer(true);
+  };
+
+  const handleAddBomItem = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newIngredientId || !newIngredientQty) return;
+    
+    // check if already exists
+    if (bomIngredients.some(b => b.inventory_id === newIngredientId)) {
+      showToast('Bahan baku sudah ada dalam komposisi', 'error');
+      return;
+    }
+
+    setBomIngredients([...bomIngredients, { 
+      inventory_id: newIngredientId, 
+      quantity_used: newIngredientQty 
+    }]);
+    setNewIngredientId('');
+    setNewIngredientQty('');
+  };
+
+  const handleRemoveBomItem = (inventory_id: string) => {
+    setBomIngredients(bomIngredients.filter(b => b.inventory_id !== inventory_id));
+  };
+
+  const handleSaveBom = async () => {
+    if (!bomMenu) return;
+    setIsSubmitting(true);
+    try {
+      await updateMenu(bomMenu.id, { ingredients: bomIngredients });
+      showToast('Komposisi resep & HPP berhasil disimpan!');
+      setShowBomDrawer(false);
+    } catch (err: any) {
+      showToast('Gagal menyimpan komposisi resep', 'error');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  // --- Variant Mapping Handlers ---
+  const handleOpenVariant = (menu: AdminMenu) => {
+    setMenuVariantMenu(menu);
+    const initialVariants = (menu.variant_groups || []).map(vg => ({
+      variant_group_id: vg.id,
+      is_required: vg.pivot?.is_required || false
+    }));
+    setMenuVariantGroups(initialVariants);
+    setShowMenuVariantDrawer(true);
+  };
+
+  const handleToggleVariantGroup = (groupId: string, isRequired: boolean) => {
+    setMenuVariantGroups(prev => {
+      const exists = prev.find(v => v.variant_group_id === groupId);
+      if (exists) {
+        return prev.filter(v => v.variant_group_id !== groupId);
+      }
+      return [...prev, { variant_group_id: groupId, is_required: isRequired }];
+    });
+  };
+
+  const handleUpdateVariantRequired = (groupId: string, isRequired: boolean) => {
+    setMenuVariantGroups(prev => prev.map(v => 
+      v.variant_group_id === groupId ? { ...v, is_required: isRequired } : v
+    ));
+  };
+
+  const handleSaveMenuVariants = async () => {
+    if (!menuVariantMenu) return;
+    setIsSubmitting(true);
+    try {
+      await updateMenu(menuVariantMenu.id, { variant_groups: menuVariantGroups } as any);
+      showToast('Master Varian berhasil ditautkan ke menu!');
+      setShowMenuVariantDrawer(false);
+    } catch (err: any) {
+      showToast('Gagal menautkan varian ke menu', 'error');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  // --- Filtering & Pagination ---
+  const filteredMenus = menus.filter(menu => {
+    const matchSearch = menu.name.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchCat = selectedCategoryId === 'all' || menu.category_id === selectedCategoryId;
     return matchSearch && matchCat;
   });
 
-  const totalBomCost = bomIngredients.reduce((sum, item) => sum + item.qty * item.costPerUnit, 0);
+  const totalPages = Math.ceil(filteredMenus.length / itemsPerPage);
+  const paginatedMenus = filteredMenus.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
+  // Reset page when filter changes
+  React.useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, selectedCategoryId]);
 
   return (
-    <div className="space-y-6 -m-6 lg:-m-8 p-6 lg:p-8 selection:bg-[#C89B5C]/30">
-      {/* Header & Status */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-200 dark:border-white/10 pb-6">
+    <div className="space-y-6 animate-fadeIn pb-24">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <div className="flex items-center gap-3">
-            <h1 className="font-heading text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white tracking-wide">
-              Katalog Menu & Resep Bahan Baku (9.2)
-            </h1>
-            {usingLive ? (
-              <span className="flex items-center gap-1.5 rounded-full bg-emerald-500/20 border border-emerald-500/30 px-3.5 py-1 text-xs font-bold text-emerald-600 dark:text-emerald-400">
- Terhubung API Live
-              </span>
-            ) : (
-              <span className="rounded-full bg-[#1E3D31] text-[#C89B5C] px-3.5 py-1 text-xs font-bold shadow-sm">
-                Mode Offline Sync
-              </span>
-            )}
-          </div>
-          <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-1 font-sans">
-            Kelola produk katalog, atur komposisi resep BOM per item menu (<strong className="text-emerald-600 dark:text-emerald-400">9.2</strong>), serta pantau kalkulasi margin HPP otomatis.
+          <h1 className="font-heading text-3xl font-extrabold text-primary dark:text-cream-100 tracking-wide">
+            Master Menu
+          </h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+            Kelola katalog menu, kategori, harga, dan status ketersediaan secara real-time.
           </p>
         </div>
-
-        <div className="flex items-center gap-2.5 flex-wrap">
+        
+        <div className="flex items-center gap-3">
           <button
-            onClick={() => setIsCategoryModalOpen(true)}
-            className="flex items-center gap-1.5 rounded-2xl border border-gray-300 dark:border-white/20 bg-white dark:bg-white/5 px-4 py-2.5 text-xs font-bold text-gray-700 dark:text-gray-200 hover:border-[#C89B5C] transition-all shadow-sm"
+            onClick={handleAddMenu}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-accent text-primary font-bold hover:bg-[#b88c4d] transition-colors shadow-lg shadow-accent/20"
           >
-            <FolderPlus size={15} className="text-[#C89B5C]" />
-            <span>Kelola Kategori (9.2)</span>
+            <Plus size={18} /> Tambah Menu
           </button>
-
-          <PermissionGuard permission="menu.create">
-            <button
-              onClick={handleOpenAdd}
-              className="flex items-center justify-center gap-2 rounded-2xl bg-[#1E3D31] px-5 py-2.5 text-xs font-bold text-[#C89B5C] hover:bg-[#163026] transition-colors shadow-md active:scale-95"
-            >
-              <Plus size={16} /> Tambah Menu Baru
-            </button>
-          </PermissionGuard>
         </div>
       </div>
 
-      {/* Action Notification */}
-      {actionStatus && (
-        <div className="flex items-center gap-2.5 rounded-2xl border border-emerald-300 bg-emerald-50 dark:bg-emerald-950/40 dark:border-emerald-800 px-5 py-3.5 text-xs font-bold text-emerald-800 dark:text-emerald-300 animate-fadeIn shadow-sm">
-          <Check size={18} className="text-emerald-600 dark:text-emerald-400 shrink-0" />
-          <span>{actionStatus}</span>
-        </div>
-      )}
-
-      {/* Category Tabs */}
-      <div className="flex items-center justify-between gap-4 flex-wrap">
-        <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide flex-1">
-          <button
-            onClick={() => setCategoryFilter('all')}
-            className={`shrink-0 rounded-2xl px-5 py-2 text-xs font-bold transition-all ${
-              categoryFilter === 'all'
-                ? 'bg-[#1E3D31] text-[#C89B5C] shadow-md'
-                : 'bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 text-gray-600 dark:text-gray-300 hover:border-[#C89B5C]'
-            }`}
-          >
-            Semua Kategori ({products.length})
-          </button>
-          {categories.map((cat) => (
-            <button
-              key={cat.id}
-              onClick={() => setCategoryFilter(String(cat.id))}
-              className={`shrink-0 rounded-2xl px-5 py-2 text-xs font-bold transition-all ${
-                categoryFilter === String(cat.id)
-                  ? 'bg-[#1E3D31] text-[#C89B5C] shadow-md'
-                  : 'bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 text-gray-600 dark:text-gray-300 hover:border-[#C89B5C]'
-              }`}
-            >
-              {cat.name}
-            </button>
-          ))}
-        </div>
-
-        {/* Search Bar */}
-        <div className="relative w-full sm:w-72 shrink-0">
-          <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
-          <input
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Cari nama menu atau SKU..."
-            className="w-full rounded-2xl border border-gray-200 dark:border-white/15 bg-white dark:bg-black/35 py-2.5 pl-10 pr-4 text-xs font-medium text-gray-900 dark:text-white focus:border-[#C89B5C] focus:outline-none"
-          />
-        </div>
-      </div>
-
-      {/* Product Cards Grid */}
-      {catalogLoading ? (
-        <div className="flex flex-col items-center justify-center py-24 text-gray-400">
-          <Loader2 size={38} className="animate-spin mb-3 text-[#C89B5C]" />
-          <p className="text-xs font-bold">Memuat katalog menu & resep komposisi...</p>
+      {loading ? (
+        <div className="py-20 flex flex-col items-center justify-center text-gray-500">
+          <Loader2 size={40} className="animate-spin text-accent mb-4" />
+          <p className="font-medium">Memuat data master...</p>
         </div>
       ) : (
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {filtered.map((product) => {
-            const currentPrice = product.effective_price !== undefined ? product.effective_price : product.price;
-            const isOverridden = product.effective_price !== undefined && product.effective_price !== product.price;
-            const costVal = product.cost || Math.round(currentPrice * 0.32);
-            const margin = Math.round(((currentPrice - costVal) / (currentPrice || 1)) * 100);
-
-            return (
-              <div
-                key={product.id}
-                className={`rounded-3xl bg-white dark:bg-[#1A2620] border-2 shadow-sm overflow-hidden transition-all flex flex-col hover:shadow-xl hover:border-[#C89B5C]/60 ${
-                  product.is_available ? 'border-gray-200/80 dark:border-white/10' : 'border-dashed border-red-300 dark:border-red-800 bg-red-50/10 dark:bg-red-950/20'
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
+          {/* Filters */}
+          <div className="flex flex-col md:flex-row items-center gap-4 bg-white dark:bg-[#1A2620] p-4 rounded-2xl border border-gray-100 dark:border-white/5 shadow-sm">
+            <div className="relative w-full md:w-72 shrink-0">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+              <input 
+                type="text" 
+                placeholder="Cari nama menu..."
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+                className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-gray-50 dark:bg-black/20 border-none text-sm font-medium focus:ring-2 focus:ring-accent/50 outline-none transition-all dark:text-white"
+              />
+            </div>
+            <div className="flex items-center gap-2 w-full flex-1 overflow-x-auto pb-2 md:pb-0 scrollbar-hide">
+              <button
+                onClick={() => setSelectedCategoryId('all')}
+                className={`shrink-0 px-4 py-2 rounded-xl text-sm font-bold transition-all ${
+                  selectedCategoryId === 'all'
+                    ? 'bg-primary text-accent shadow-md'
+                    : 'bg-gray-100 dark:bg-white/5 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-white/10'
                 }`}
               >
-                <div className="relative flex items-center justify-center h-36 bg-[#FAF3E7] dark:bg-black/40 text-[#C89B5C]">
-                  <Coffee size={48} className="stroke-[1.5]" />
-                  {isOverridden && (
-                    <span className="absolute top-3 right-3 flex items-center gap-1 rounded-full bg-[#1E3D31] px-2.5 py-1 text-[10px] font-bold text-[#C89B5C] shadow-sm">
-                      <Store size={11} /> Harga Khusus
-                    </span>
-                  )}
-                  <span className="absolute bottom-3 left-3 flex items-center gap-1.5 rounded-xl bg-black/60 px-2.5 py-1 text-[10px] font-bold text-white shadow-sm">
-                    <ChefHat size={12} className="text-[#C89B5C]" />
-                    <span>{product.recipe_id ? 'Komposisi Terhubung' : 'BOM Baku 4 Bahan'}</span>
-                  </span>
-                </div>
-
-                <div className="p-5 space-y-3 flex-1 flex flex-col justify-between">
-                  <div>
-                    <div className="flex items-start justify-between gap-2 mb-1">
-                      <div>
-                        <h3 className="font-heading font-extrabold text-gray-900 dark:text-white text-base leading-snug">{product.name}</h3>
-                        <div className="flex items-center gap-1.5 mt-1">
-                          <span className="text-xs font-bold text-[#C89B5C] uppercase tracking-wider">
-                            {product.category}
-                          </span>
-                          {product.sku && (
-                            <span className="text-[10px] text-gray-400 font-mono">({product.sku})</span>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* Quick Toggle Status 86'd (MNU-004) */}
-                      <button
-                        onClick={() => toggleAvailableStatus(product)}
-                        title={product.is_available ? 'Klik untuk set Habis (86\'d)' : 'Klik untuk aktifkan produk'}
-                        className={`shrink-0 flex items-center gap-1 rounded-full px-3 py-1 text-[10px] font-extrabold transition-all shadow-sm ${
-                          product.is_available
-                            ? 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30'
-                            : 'bg-red-500/15 text-red-700 dark:text-red-400 border border-red-500/30'
-                        }`}
-                      >
-                        {product.is_available ? <Eye size={12} /> : <EyeOff size={12} />}
-                        {product.is_available ? 'Tersedia' : '86\'d (Habis)'}
-                      </button>
-                    </div>
-
-                    <div className="flex items-baseline justify-between text-sm mt-3 pt-3 border-t border-gray-100 dark:border-white/5">
-                      <div>
-                        <span className="font-mono font-extrabold text-gray-900 dark:text-white text-base">{fmt(currentPrice)}</span>
-                        {isOverridden && (
-                          <span className="line-through text-xs text-gray-400 ml-2">{fmt(product.price)}</span>
-                        )}
-                      </div>
-                      <span className="text-xs font-mono text-gray-500 dark:text-gray-400 font-semibold">HPP: {fmt(costVal)}</span>
-                    </div>
-
-                    <div className="flex items-center gap-2 mt-2">
-                      <div className="flex-1 h-2 rounded-full bg-gray-100 dark:bg-black/50 overflow-hidden">
-                        <div
-                          className={`h-full rounded-full transition-all ${margin >= 45 ? 'bg-emerald-500' : 'bg-[#C89B5C]'}`}
-                          style={{ width: `${Math.min(Math.max(margin, 5), 100)}%` }}
-                        />
-                      </div>
-                      <span className="text-xs font-extrabold font-mono text-gray-700 dark:text-gray-300">{margin}% Margin</span>
-                    </div>
-                  </div>
-
-                  <div className="pt-3 border-t border-gray-100 dark:border-white/10 flex flex-col gap-2">
-                    {/* 9.2 Recipe Breakdown BOM Button */}
-                    <button
-                      onClick={() => handleOpenRecipeDrawer(product)}
-                      className="w-full flex items-center justify-center gap-2 rounded-2xl bg-[#1E3D31] hover:bg-[#163026] py-2.5 text-xs font-bold text-[#C89B5C] transition-all shadow-sm"
-                    >
-                      <ChefHat size={15} />
-                      <span>Atur Komposisi Resep & BOM (9.2)</span>
-                    </button>
-
-                    <div className="flex gap-2">
-                      <PermissionGuard permission="menu.edit">
-                        <button
-                          onClick={() => handleOpenOverride(product)}
-                          className="flex items-center justify-center gap-1 rounded-2xl border border-gray-200 dark:border-white/15 px-3 py-2 text-xs font-bold text-gray-700 dark:text-gray-300 hover:border-[#C89B5C] hover:text-[#C89B5C] transition-all flex-1"
-                        >
-                          <DollarSign size={14} className="text-[#C89B5C]" /> Override
-                        </button>
-                      </PermissionGuard>
-
-                      <PermissionGuard permission="menu.edit">
-                        <button
-                          onClick={() => handleOpenEdit(product)}
-                          className="flex items-center justify-center gap-1 rounded-2xl border border-gray-200 dark:border-white/15 px-3 py-2 text-xs font-bold text-gray-700 dark:text-gray-300 hover:border-[#C89B5C] hover:text-[#C89B5C] transition-all flex-1"
-                        >
-                          <Edit2 size={13} /> Edit
-                        </button>
-                      </PermissionGuard>
-
-                      <PermissionGuard permission="menu.delete">
-                        <button
-                          onClick={() => handleDeleteItem(product.id, product.name)}
-                          className="flex items-center justify-center rounded-2xl border border-red-200 dark:border-red-900/50 px-3 py-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-all"
-                        >
-                          <Trash2 size={15} />
-                        </button>
-                      </PermissionGuard>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      )}
-
-      {/* 9.2 BOM RECIPE COMPOSITION DRAWER */}
-      {isRecipeDrawerOpen && activeRecipeProduct && (
-        <div className="fixed inset-0 z-50 flex items-center justify-end bg-black/60 backdrop-blur-sm animate-fadeIn">
-          <div className="h-full w-full max-w-xl bg-white dark:bg-[#1A2620] p-6 sm:p-8 shadow-2xl flex flex-col justify-between overflow-y-auto border-l border-gray-200 dark:border-white/15">
-            <div className="space-y-6">
-              <div className="flex items-center justify-between border-b border-gray-100 dark:border-white/10 pb-4">
-                <div className="flex items-center gap-3">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#1E3D31] text-[#C89B5C]">
-                    <ChefHat size={26} />
-                  </div>
-                  <div>
-                    <h3 className="font-heading text-lg font-extrabold text-gray-900 dark:text-white">Komposisi Bahan Baku (BOM 9.2)</h3>
-                    <p className="text-xs text-[#C89B5C] font-semibold mt-0.5">{activeRecipeProduct.name}</p>
-                  </div>
-                </div>
+                Semua
+              </button>
+              {categories.map(cat => (
                 <button
-                  onClick={() => setIsRecipeDrawerOpen(false)}
-                  className="rounded-full p-2 text-gray-400 hover:bg-gray-100 dark:hover:bg-white/10"
+                  key={cat.id}
+                  onClick={() => setSelectedCategoryId(cat.id)}
+                  className={`shrink-0 px-4 py-2 rounded-xl text-sm font-bold transition-all ${
+                    selectedCategoryId === cat.id
+                      ? 'bg-primary text-accent shadow-md'
+                      : 'bg-gray-100 dark:bg-white/5 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-white/10'
+                  }`}
                 >
-                  <X size={20} />
+                  {cat.name}
                 </button>
-              </div>
-
-              {/* HPP Cost Breakdown Banner */}
-              <div className="rounded-3xl bg-[#FAF3E7] dark:bg-black/40 border-2 border-[#C89B5C]/30 p-5 space-y-3">
-                <div className="flex items-center justify-between text-xs text-gray-600 dark:text-gray-300 font-semibold">
-                  <span>Harga Jual Master Menu:</span>
-                  <span className="font-mono font-bold text-gray-900 dark:text-white text-sm">{fmt(activeRecipeProduct.price)}</span>
-                </div>
-                <div className="flex items-center justify-between text-xs text-gray-600 dark:text-gray-300 font-semibold">
-                  <span>Total Harga Pokok Produksi (HPP BOM):</span>
-                  <span className="font-mono font-bold text-red-600 dark:text-red-400 text-sm">{fmt(totalBomCost)}</span>
-                </div>
-                <div className="border-t border-gray-300 dark:border-white/10 pt-2 flex items-center justify-between font-extrabold text-sm">
-                  <span className="text-gray-900 dark:text-white flex items-center gap-1.5">
-                    <TrendingUp size={16} className="text-emerald-500" /> Estimasi Profit Kotor:
-                  </span>
-                  <span className="font-mono text-emerald-600 dark:text-emerald-400">
-                    {fmt(Math.max(0, activeRecipeProduct.price - totalBomCost))} ({Math.round(((activeRecipeProduct.price - totalBomCost) / activeRecipeProduct.price) * 100)}%)
-                  </span>
-                </div>
-              </div>
-
-              {/* Ingredients List Table */}
-              <div className="space-y-3">
-                <h4 className="font-heading text-xs font-extrabold uppercase tracking-wider text-gray-700 dark:text-gray-300 flex items-center justify-between">
-                  <span>Daftar Komposisi (Otomatis Potong Stok saat POS Transaksi):</span>
-                  <span className="text-[11px] font-mono text-[#C89B5C]">{bomIngredients.length} Bahan</span>
-                </h4>
-
-                <div className="space-y-2.5 max-h-[280px] overflow-y-auto pr-1">
-                  {bomIngredients.map((item) => (
-                    <div
-                      key={item.id}
-                      className="flex items-center justify-between gap-3 rounded-2xl bg-gray-50 dark:bg-black/30 border border-gray-200 dark:border-white/10 p-3.5 text-xs transition-colors hover:border-[#C89B5C]"
-                    >
-                      <div className="flex-1 min-w-0">
-                        <p className="font-bold text-gray-900 dark:text-white truncate">{item.name}</p>
-                        <p className="text-[11px] text-gray-500 dark:text-gray-400 font-mono mt-0.5">
-                          Pemakaian: <strong className="text-[#C89B5C]">{item.qty} {item.unit}</strong> (@ {fmt(item.costPerUnit)}/{item.unit})
-                        </p>
-                      </div>
-                      <div className="flex items-center gap-3 shrink-0 font-mono font-extrabold text-gray-900 dark:text-white">
-                        <span>{fmt(item.qty * item.costPerUnit)}</span>
-                        <button
-                          onClick={() => handleDeleteIngredient(item.id)}
-                          className="text-red-500 hover:text-red-700 p-1 rounded-lg hover:bg-red-50 dark:hover:bg-red-950/40"
-                          title="Hapus bahan dari resep"
-                        >
-                          <Trash2 size={15} />
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Add Ingredient Form */}
-              <form onSubmit={handleAddIngredientToBom} className="rounded-2xl border border-gray-200 dark:border-white/15 p-4 space-y-3 bg-white dark:bg-black/20">
-                <p className="text-[11px] font-bold uppercase tracking-wider text-[#C89B5C]">Tambah Bahan Baku Komposisi Baru:</p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div>
-                    <input
-                      type="text"
-                      required
-                      placeholder="Nama Bahan (misal: Biji Arabica)"
-                      value={newIngName}
-                      onChange={(e) => setNewIngName(e.target.value)}
-                      className="w-full rounded-xl border border-gray-200 dark:border-white/15 bg-white dark:bg-black/40 px-3 py-2 text-xs font-semibold focus:border-[#C89B5C] focus:outline-none"
-                    />
-                  </div>
-                  <div className="grid grid-cols-3 gap-1.5">
-                    <input
-                      type="number"
-                      required
-                      placeholder="Qty"
-                      value={newIngQty}
-                      onChange={(e) => setNewIngQty(e.target.value)}
-                      className="w-full rounded-xl border border-gray-200 dark:border-white/15 bg-white dark:bg-black/40 px-2 py-2 text-xs font-mono text-center focus:border-[#C89B5C] focus:outline-none"
-                    />
-                    <select
-                      value={newIngUnit}
-                      onChange={(e) => setNewIngUnit(e.target.value)}
-                      className="w-full rounded-xl border border-gray-200 dark:border-white/15 bg-white dark:bg-black/40 px-1 py-2 text-xs focus:border-[#C89B5C] focus:outline-none"
-                    >
-                      <option value="gram">g</option>
-                      <option value="ml">ml</option>
-                      <option value="pcs">pcs</option>
-                      <option value="shot">shot</option>
-                    </select>
-                    <input
-                      type="number"
-                      placeholder="Rp/unit"
-                      value={newIngCost}
-                      onChange={(e) => setNewIngCost(e.target.value)}
-                      className="w-full rounded-xl border border-gray-200 dark:border-white/15 bg-white dark:bg-black/40 px-2 py-2 text-xs font-mono text-center focus:border-[#C89B5C] focus:outline-none"
-                    />
-                  </div>
-                </div>
-                <button
-                  type="submit"
-                  className="w-full rounded-xl bg-[#1E3D31] hover:bg-[#163026] py-2 text-xs font-bold text-[#C89B5C] transition-all flex items-center justify-center gap-1.5 shadow-sm"
-                >
-                  <Plus size={14} /> Tambah ke Komposisi BOM
-                </button>
-              </form>
-            </div>
-
-            <div className="pt-6 border-t border-gray-100 dark:border-white/10 flex justify-end">
-              <button
-                onClick={() => {
-                  showNotification(`Komposisi resep BOM ${activeRecipeProduct.name} berhasil disimpan! Potong stok otomatis kini aktif.`);
-                  setIsRecipeDrawerOpen(false);
-                }}
-                className="w-full sm:w-auto rounded-2xl bg-[#C89B5C] hover:bg-[#b88c4d] px-8 py-3.5 text-xs font-extrabold text-[#1E3D31] shadow-lg transition-all"
-              >
-                Simpan & Aktifkan Potong Stok BOM (9.2)
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* 9.2 CATEGORY CRUD MODAL */}
-      {isCategoryModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fadeIn">
-          <div className="w-full max-w-md rounded-3xl bg-white dark:bg-[#1A2620] p-6 sm:p-8 shadow-2xl border border-gray-200 dark:border-white/15 space-y-6">
-            <div className="flex items-center justify-between border-b border-gray-100 dark:border-white/10 pb-4">
-              <h3 className="font-heading text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                <FolderPlus size={20} className="text-[#C89B5C]" />
-                <span>Kelola Kategori Menu (9.2)</span>
-              </h3>
-              <button onClick={() => setIsCategoryModalOpen(false)} className="rounded-full p-1.5 text-gray-400 hover:bg-gray-100 dark:hover:bg-white/10">
-                <X size={18} />
-              </button>
-            </div>
-
-            <form onSubmit={handleSaveCategory} className="flex gap-2">
-              <input
-                type="text"
-                required
-                placeholder="Nama kategori baru (misal: Manual Brew)..."
-                value={newCatNameInput}
-                onChange={(e) => setNewCatNameInput(e.target.value)}
-                className="flex-1 rounded-2xl border border-gray-200 dark:border-white/15 bg-white dark:bg-black/35 px-4 py-2.5 text-xs font-bold focus:border-[#C89B5C] focus:outline-none"
-              />
-              <button
-                type="submit"
-                className="rounded-2xl bg-[#1E3D31] px-5 py-2.5 text-xs font-bold text-[#C89B5C] hover:bg-[#163026] shadow-sm shrink-0"
-              >
-                Tambah
-              </button>
-            </form>
-
-            <div className="space-y-2 max-h-[260px] overflow-y-auto pr-1">
-              {localCategories.map((cat) => (
-                <div key={cat.id} className="flex items-center justify-between rounded-2xl bg-gray-50 dark:bg-black/30 p-3.5 text-xs border border-gray-200 dark:border-white/10">
-                  <span className="font-bold text-gray-900 dark:text-white">{cat.name}</span>
-                  <div className="flex items-center gap-3">
-                    <span className="rounded-lg bg-[#C89B5C]/20 text-[#C89B5C] px-2.5 py-0.5 font-mono font-bold text-[11px]">
-                      {cat.count} menu
-                    </span>
-                    <button
-                      onClick={() => setLocalCategories((prev) => prev.filter((c) => c.id !== cat.id))}
-                      className="text-red-500 hover:text-red-700 p-1"
-                      title="Hapus kategori"
-                    >
-                      <Trash2 size={15} />
-                    </button>
-                  </div>
-                </div>
               ))}
             </div>
-
-            <div className="pt-2 flex justify-end">
-              <button
-                onClick={() => setIsCategoryModalOpen(false)}
-                className="rounded-2xl bg-[#1E3D31] px-6 py-2.5 text-xs font-bold text-[#C89B5C]"
-              >
-                Tutup
-              </button>
-            </div>
           </div>
-        </div>
+
+          {/* Menus Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {paginatedMenus.map(menu => {
+              // Calculate HPP
+              let totalCost = 0;
+              if (menu.ingredients && menu.ingredients.length > 0) {
+                menu.ingredients.forEach(ing => {
+                  const invId = ing.inventory_id || ing.pivot?.inventory_id;
+                  const qty = Number(ing.quantity_used || ing.pivot?.quantity_used || 0);
+                  const inv = inventories.find(i => i.id === invId);
+                  if (inv) {
+                    totalCost += qty * Number(inv.unit_price);
+                  }
+                });
+              }
+              const margin = Math.round(((Number(menu.price) - totalCost) / Number(menu.price)) * 100) || 0;
+
+              return (
+              <div 
+                key={menu.id} 
+                className={`bg-white dark:bg-[#1A2620] rounded-3xl border-2 overflow-hidden transition-all hover:shadow-xl group flex flex-col ${
+                  menu.status === 'tersedia' 
+                    ? 'border-gray-100 dark:border-white/5 hover:border-accent/40' 
+                    : 'border-red-100 dark:border-red-900/30 opacity-75'
+                }`}
+              >
+                <div className="h-40 bg-gray-100 dark:bg-black/30 relative flex items-center justify-center overflow-hidden">
+                  {menu.image ? (
+                    <img src={menu.image} alt={menu.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  ) : (
+                    <Coffee size={40} className="text-gray-300 dark:text-gray-600" />
+                  )}
+                  
+                  {/* Status Button (Top Left) */}
+                  <button 
+                    onClick={() => handleToggleMenuStatus(menu)}
+                    className={`absolute top-3 left-3 flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider shadow-lg transition-colors z-10 ${
+                      menu.status === 'tersedia' 
+                        ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/90 dark:text-emerald-50 hover:bg-red-100 hover:text-red-600' 
+                        : 'bg-red-100 text-red-700 dark:bg-red-500/90 dark:text-red-50 hover:bg-emerald-100 hover:text-emerald-600'
+                    }`}
+                  >
+                    {menu.status === 'tersedia' ? <Eye size={12} /> : <EyeOff size={12} />}
+                    {menu.status === 'tersedia' ? 'Ready' : 'Habis'}
+                  </button>
+
+                  {/* Best Seller Button (Top Right) */}
+                  <button
+                    onClick={() => handleToggleBestSeller(menu)}
+                    className={`absolute top-3 right-3 p-2 rounded-full shadow-lg transition-all z-10 ${
+                      menu.is_best_seller 
+                        ? 'bg-accent text-primary hover:bg-gray-100 hover:text-gray-400' 
+                        : 'bg-gray-100 text-gray-400 hover:bg-accent hover:text-primary dark:bg-black/50 dark:text-gray-400'
+                    }`}
+                    title={menu.is_best_seller ? 'Hapus dari Best Seller' : 'Tandai sebagai Best Seller'}
+                  >
+                    <Star size={14} className={menu.is_best_seller ? 'fill-current' : ''} />
+                  </button>
+                </div>
+                <div className="p-5">
+                  <div className="flex justify-between items-start gap-2 mb-2">
+                    <div>
+                      <h3 className="font-bold text-gray-900 dark:text-white leading-tight">{menu.name}</h3>
+                      <p className="text-[11px] font-bold text-accent uppercase tracking-wider mt-1">{menu.category?.name || 'Uncategorized'}</p>
+                    </div>
+                  </div>
+                  <div className="flex justify-between items-baseline mb-2">
+                    <p className="font-black text-lg text-primary dark:text-cream-100 font-mono">
+                      {formatCurrency(Number(menu.price))}
+                    </p>
+                    <p className="text-xs font-bold text-gray-500">HPP: {formatCurrency(totalCost)}</p>
+                  </div>
+                  
+                  <div className="flex items-center gap-2 mb-4" title="Margin Keuntungan (Profit)">
+                    <span className="text-[10px] font-bold text-gray-400">Margin:</span>
+                    <div className="flex-1 h-1.5 rounded-full bg-gray-100 dark:bg-black/50 overflow-hidden">
+                      <div className={`h-full rounded-full transition-all ${margin >= 45 ? 'bg-emerald-500' : 'bg-accent'}`} style={{ width: `${Math.min(Math.max(margin, 5), 100)}%` }} />
+                    </div>
+                    <span className="text-[10px] font-black font-mono text-gray-700 dark:text-gray-300">{margin}%</span>
+                  </div>
+                  
+                  <div className="flex flex-col gap-2 pt-4 border-t border-gray-100 dark:border-white/10 mt-auto">
+                    <div className="grid grid-cols-2 gap-2">
+                      <button 
+                        onClick={() => handleOpenBom(menu)}
+                        className="flex flex-col items-center justify-center gap-1.5 py-3 px-1 rounded-xl bg-primary hover:bg-[#163026] text-accent font-bold text-[10px] sm:text-xs transition-colors shadow-sm text-center leading-tight"
+                      >
+                        <ChefHat size={16} />
+                        <span>Resep & HPP</span>
+                      </button>
+                      <button 
+                        onClick={() => handleOpenVariant(menu)}
+                        className="flex flex-col items-center justify-center gap-1.5 py-3 px-1 rounded-xl bg-accent hover:bg-[#b88c4d] text-primary font-bold text-[10px] sm:text-xs transition-colors shadow-sm text-center leading-tight"
+                      >
+                        <Settings2 size={16} />
+                        <span>Atur Varian</span>
+                      </button>
+                    </div>
+                    
+                    <div className="flex items-center gap-2">
+                      <button 
+                        onClick={() => handleEditMenu(menu)}
+                        className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-gray-50 dark:bg-black/20 text-gray-700 dark:text-gray-300 font-bold text-xs hover:bg-accent hover:text-primary transition-colors"
+                      >
+                        <Edit2 size={14} /> Edit
+                      </button>
+                      <button 
+                        onClick={() => handleDeleteMenu(menu.id, menu.name)}
+                        className="w-10 h-10 flex items-center justify-center rounded-xl bg-red-50 dark:bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-colors"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )})}
+          </div>
+
+          {/* Pagination Controls */}
+          {totalPages > 1 && (
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 border-t border-gray-100 dark:border-white/5 mt-6">
+              <span className="text-xs text-primary/60 dark:text-cream-400/60 font-medium text-center sm:text-left">
+                Menampilkan {(currentPage - 1) * itemsPerPage + 1} - {Math.min(currentPage * itemsPerPage, filteredMenus.length)} dari {filteredMenus.length} menu
+              </span>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                  disabled={currentPage === 1}
+                  className="px-3 py-1.5 rounded-lg border border-black/5 dark:border-white/5 text-xs font-bold text-primary dark:text-cream-100 bg-white dark:bg-[#1A2620] hover:bg-gray-50 dark:hover:bg-white/5 disabled:opacity-50 transition-colors shadow-sm"
+                >
+                  Sebelumnya
+                </button>
+                <div className="flex items-center gap-1">
+                  {Array.from({ length: totalPages }).map((_, idx) => {
+                    const pageNum = idx + 1;
+                    if (pageNum === 1 || pageNum === totalPages || (pageNum >= currentPage - 1 && pageNum <= currentPage + 1)) {
+                      return (
+                        <button
+                          key={pageNum}
+                          onClick={() => setCurrentPage(pageNum)}
+                          className={`w-8 h-8 rounded-lg text-xs font-bold transition-colors shadow-sm border ${
+                            currentPage === pageNum 
+                              ? 'bg-primary text-accent border-primary' 
+                              : 'bg-white dark:bg-[#1A2620] text-primary dark:text-cream-100 border-black/5 dark:border-white/5 hover:bg-gray-50 dark:hover:bg-white/5'
+                          }`}
+                        >
+                          {pageNum}
+                        </button>
+                      );
+                    } else if (pageNum === currentPage - 2 || pageNum === currentPage + 2) {
+                      return <span key={pageNum} className="text-primary/40 dark:text-cream-400/40 text-xs">...</span>;
+                    }
+                    return null;
+                  })}
+                </div>
+                <button
+                  onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                  disabled={currentPage === totalPages}
+                  className="px-3 py-1.5 rounded-lg border border-black/5 dark:border-white/5 text-xs font-bold text-primary dark:text-cream-100 bg-white dark:bg-[#1A2620] hover:bg-gray-50 dark:hover:bg-white/5 disabled:opacity-50 transition-colors shadow-sm"
+                >
+                  Selanjutnya
+                </button>
+              </div>
+            </div>
+          )}
+        </motion.div>
       )}
 
-      {/* Modal CRUD Tambah/Edit Produk */}
-      {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fadeIn">
-          <div className="w-full max-w-md rounded-3xl bg-white dark:bg-[#1A2620] p-6 sm:p-8 shadow-2xl border border-gray-200 dark:border-white/15">
-            <div className="flex items-center justify-between border-b border-gray-100 dark:border-white/10 pb-4 mb-4">
-              <h2 className="font-heading text-xl font-bold text-gray-900 dark:text-white">
-                {modalMode === 'add' ? 'Tambah Menu Produk Baru' : 'Edit Produk Menu'}
-              </h2>
-              <button
-                onClick={() => setIsModalOpen(false)}
-                className="rounded-full p-1.5 text-gray-400 hover:bg-gray-100 dark:hover:bg-white/10"
+      {/* Menu Modal */}
+      {typeof document !== 'undefined' && createPortal(
+        <AnimatePresence>
+          {showMenuModal && (
+            <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
+              <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowMenuModal(false)} />
+              <motion.div 
+                initial={{ scale: 0.95, opacity: 0 }} 
+                animate={{ scale: 1, opacity: 1 }} 
+                exit={{ scale: 0.95, opacity: 0 }}
+                className="relative bg-white dark:bg-[#1A2620] w-full max-w-2xl rounded-3xl p-6 md:p-8 shadow-2xl border border-gray-100 dark:border-white/10 max-h-[90vh] overflow-y-auto custom-scrollbar"
               >
-                <X size={18} />
-              </button>
-            </div>
-
-            <form onSubmit={handleSaveProduct} className="space-y-4">
-              <div>
-                <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-1">
-                  Nama Menu <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={formName}
-                  onChange={(e) => setFormName(e.target.value)}
-                  placeholder="Contoh: Sea Salt Caramel Macchiato"
-                  className="w-full rounded-2xl border border-gray-200 dark:border-white/15 bg-white dark:bg-black/35 px-4 py-3 text-xs font-bold focus:border-[#C89B5C] focus:outline-none"
-                />
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="font-heading text-2xl font-bold text-gray-900 dark:text-white">
+                  {menuForm.id ? 'Edit Menu' : 'Tambah Menu Baru'}
+                </h3>
+                <button onClick={() => setShowMenuModal(false)} className="p-2 bg-gray-100 dark:bg-white/5 rounded-full hover:bg-gray-200"><X size={20}/></button>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-1">
-                    Kategori <span className="text-red-500">*</span>
-                  </label>
-                  <select
-                    value={formCategory}
-                    onChange={(e) => setFormCategory(e.target.value)}
-                    className="w-full rounded-2xl border border-gray-200 dark:border-white/15 bg-white dark:bg-black/35 px-3.5 py-3 text-xs font-bold focus:border-[#C89B5C] focus:outline-none"
-                  >
-                    {categories.map((c) => (
-                      <option key={c.id} value={c.id}>
-                        {c.name}
-                      </option>
-                    ))}
-                  </select>
+              <form onSubmit={handleSaveMenu} className="space-y-5">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                  <div>
+                    <label className="block text-xs font-bold text-gray-500 uppercase mb-2">Nama Menu <span className="text-red-500">*</span></label>
+                    <input 
+                      type="text" 
+                      required
+                      value={menuForm.name}
+                      onChange={e => setMenuForm({...menuForm, name: e.target.value})}
+                      className="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-black/20 border border-gray-100 dark:border-white/5 focus:border-accent focus:ring-1 focus:ring-accent outline-none font-bold dark:text-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-gray-500 uppercase mb-2">Kategori <span className="text-red-500">*</span></label>
+                    <select 
+                      required
+                      value={menuForm.category_id}
+                      onChange={e => setMenuForm({...menuForm, category_id: e.target.value})}
+                      className="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-black/20 border border-gray-100 dark:border-white/5 focus:border-accent focus:ring-1 focus:ring-accent outline-none font-bold dark:text-white"
+                    >
+                      <option value="" disabled>Pilih Kategori</option>
+                      {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                    </select>
+                  </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-1">
-                    Harga Dasar (IDR) <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="number"
+                  <label className="block text-xs font-bold text-gray-500 uppercase mb-2">Harga (Rp) <span className="text-red-500">*</span></label>
+                  <input 
+                    type="number" 
                     required
-                    value={formPrice}
-                    onChange={(e) => setFormPrice(e.target.value)}
-                    placeholder="35000"
-                    className="w-full rounded-2xl border border-gray-200 dark:border-white/15 bg-white dark:bg-black/35 px-3.5 py-3 text-xs font-mono font-bold focus:border-[#C89B5C] focus:outline-none"
+                    min="0"
+                    value={menuForm.price}
+                    onChange={e => setMenuForm({...menuForm, price: e.target.value})}
+                    className="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-black/20 border border-gray-100 dark:border-white/5 focus:border-accent focus:ring-1 focus:ring-accent outline-none font-mono font-bold text-lg dark:text-white"
                   />
                 </div>
-              </div>
 
-              <div>
-                <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-1">
-                  SKU Produk / Kode Intern
-                </label>
-                <input
-                  type="text"
-                  value={formSku}
-                  onChange={(e) => setFormSku(e.target.value)}
-                  placeholder="ESP-001"
-                  className="w-full rounded-2xl border border-gray-200 dark:border-white/15 bg-white dark:bg-black/35 px-4 py-3 text-xs font-mono uppercase focus:border-[#C89B5C] focus:outline-none"
-                />
-              </div>
+                <div>
+                  <label className="block text-xs font-bold text-gray-500 uppercase mb-2">Deskripsi (Opsional)</label>
+                  <textarea 
+                    rows={3}
+                    value={menuForm.description || ''}
+                    onChange={e => setMenuForm({...menuForm, description: e.target.value})}
+                    className="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-black/20 border border-gray-100 dark:border-white/5 focus:border-accent focus:ring-1 focus:ring-accent outline-none text-sm dark:text-white"
+                  />
+                </div>
 
-              <div>
-                <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-1">
-                  Deskripsi Menu
-                </label>
-                <textarea
-                  rows={2}
-                  value={formDesc}
-                  onChange={(e) => setFormDesc(e.target.value)}
-                  placeholder="Sajian lezat racikan rahasia NEMU Space..."
-                  className="w-full rounded-2xl border border-gray-200 dark:border-white/15 bg-white dark:bg-black/35 px-4 py-2.5 text-xs focus:border-[#C89B5C] focus:outline-none"
-                />
-              </div>
-
-              <div className="flex items-center justify-end gap-3 pt-3 border-t border-gray-100 dark:border-white/10">
-                <button
-                  type="button"
-                  onClick={() => setIsModalOpen(false)}
-                  className="rounded-2xl border border-gray-200 dark:border-white/15 px-5 py-2.5 text-xs font-bold text-gray-600 dark:text-gray-300 hover:bg-gray-50"
-                >
-                  Batal
-                </button>
-                <button
-                  type="submit"
-                  disabled={formLoading}
-                  className="flex items-center gap-2 rounded-2xl bg-[#1E3D31] px-6 py-2.5 text-xs font-bold text-[#C89B5C] hover:bg-[#163026] shadow-md disabled:opacity-50"
-                >
-                  {formLoading && <Loader2 size={13} className="animate-spin" />}
-                  {modalMode === 'add' ? 'Simpan Menu' : 'Perbarui Menu'}
-                </button>
-              </div>
-            </form>
+                <div className="flex justify-end gap-3 pt-6 border-t border-gray-100 dark:border-white/10 mt-6">
+                  <button type="button" onClick={() => setShowMenuModal(false)} className="px-6 py-3 rounded-xl font-bold text-gray-500 hover:bg-gray-100 dark:hover:bg-white/5">Batal</button>
+                  <button type="submit" disabled={isSubmitting} className="px-8 py-3 rounded-xl font-bold bg-accent text-primary hover:bg-[#b88c4d] disabled:opacity-50 flex items-center gap-2 shadow-lg shadow-accent/20">
+                    {isSubmitting ? <Loader2 size={18} className="animate-spin" /> : 'Simpan Menu'}
+                  </button>
+                </div>
+              </form>
+            </motion.div>
           </div>
-        </div>
+        )}
+        </AnimatePresence>,
+        document.body
       )}
 
-      {/* Modal Branch Price Override */}
-      {isOverrideModalOpen && overrideTargetProduct && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fadeIn">
-          <div className="w-full max-w-sm rounded-3xl bg-white dark:bg-[#1A2620] p-6 shadow-2xl border border-gray-200 dark:border-white/15">
-            <div className="flex items-center justify-between border-b border-gray-100 dark:border-white/10 pb-3 mb-4">
-              <div className="flex items-center gap-2">
-                <Store size={18} className="text-[#C89B5C]" />
-                <h3 className="font-heading text-lg font-bold text-gray-900 dark:text-white">Timpa Harga Khusus</h3>
-              </div>
-              <button
-                onClick={() => setIsOverrideModalOpen(false)}
-                className="rounded-full p-1.5 text-gray-400 hover:bg-gray-100 dark:hover:bg-white/10"
+      {/* BOM Drawer / Modal */}
+      {typeof document !== 'undefined' && createPortal(
+        <AnimatePresence>
+          {showBomDrawer && bomMenu && (
+            <div className="fixed inset-0 z-[9999] flex items-center justify-end">
+              <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowBomDrawer(false)} />
+              <motion.div 
+                initial={{ x: '100%' }} 
+                animate={{ x: 0 }} 
+                exit={{ x: '100%' }}
+                transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+                className="relative bg-white dark:bg-[#1A2620] w-full max-w-xl h-full shadow-2xl border-l border-gray-100 dark:border-white/10 flex flex-col"
               >
-                <X size={18} />
-              </button>
-            </div>
-
-            <div className="rounded-2xl bg-[#FAF3E7] dark:bg-black/40 p-3.5 mb-4 text-xs space-y-1 border border-[#C89B5C]/30">
-              <p className="font-extrabold text-gray-900 dark:text-white">{overrideTargetProduct.name}</p>
-              <p className="text-gray-500 dark:text-gray-300">Harga Master Nasional: <span className="font-semibold text-gray-900 dark:text-white">{fmt(overrideTargetProduct.price)}</span></p>
-              <p className="text-[#C89B5C] font-semibold">Berlaku untuk terminal aktif saat ini.</p>
-            </div>
-
-            <form onSubmit={handleSaveOverride} className="space-y-4">
-              <div>
-                <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-1">
-                  Harga Khusus (IDR) <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="number"
-                  required
-                  value={overridePriceInput}
-                  onChange={(e) => setOverridePriceInput(e.target.value)}
-                  placeholder="38000"
-                  className="w-full rounded-2xl border border-gray-200 dark:border-white/15 bg-white dark:bg-black/35 px-4 py-3 text-xs font-mono font-extrabold text-gray-900 dark:text-white focus:border-[#C89B5C] focus:outline-none"
-                />
+              <div className="p-6 border-b border-gray-100 dark:border-white/10 flex justify-between items-center bg-gray-50 dark:bg-black/20">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-2xl bg-primary flex items-center justify-center text-accent">
+                    <ChefHat size={24} />
+                  </div>
+                  <div>
+                    <h3 className="font-heading text-lg font-bold text-gray-900 dark:text-white">Resep & Komposisi HPP</h3>
+                    <p className="text-xs font-bold text-accent">{bomMenu.name}</p>
+                  </div>
+                </div>
+                <button onClick={() => setShowBomDrawer(false)} className="p-2 text-gray-500 hover:bg-gray-200 dark:hover:bg-white/10 rounded-full transition-colors"><X size={20}/></button>
               </div>
 
-              <div>
-                <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-1">
-                  Stok Khusus (Opsional)
-                </label>
-                <input
-                  type="number"
-                  value={overrideStockInput}
-                  onChange={(e) => setOverrideStockInput(e.target.value)}
-                  placeholder="Kosongkan jika unlimited"
-                  className="w-full rounded-2xl border border-gray-200 dark:border-white/15 bg-white dark:bg-black/35 px-4 py-3 text-xs focus:border-[#C89B5C] focus:outline-none"
-                />
+              <div className="flex-1 overflow-y-auto p-6 space-y-6">
+                {/* Add new ingredient */}
+                <form onSubmit={handleAddBomItem} className="bg-gray-50 dark:bg-black/20 p-4 rounded-2xl border border-gray-200 dark:border-white/10 space-y-4">
+                  <h4 className="text-xs font-bold text-gray-500 uppercase flex items-center gap-2"><PackageOpen size={16}/> Tambah Bahan Baku</h4>
+                  <div className="flex flex-col gap-3">
+                    <select 
+                      required
+                      value={newIngredientId}
+                      onChange={e => setNewIngredientId(e.target.value)}
+                      className="w-full px-4 py-3 rounded-xl bg-white dark:bg-black/40 border border-gray-200 dark:border-white/10 focus:ring-2 focus:ring-accent outline-none text-sm font-bold dark:text-white"
+                    >
+                      <option value="" disabled>Pilih Inventory / Raw Material</option>
+                      {inventories.map(inv => (
+                        <option key={inv.id} value={inv.id}>{inv.name} (Stok: {inv.stock_quantity} {inv.unit})</option>
+                      ))}
+                    </select>
+                    <div className="flex gap-2 w-full">
+                      <div className="relative flex-1">
+                        <input 
+                          type="number"
+                          step="0.01"
+                          required
+                          placeholder="Jumlah"
+                          value={newIngredientQty}
+                          onChange={e => setNewIngredientQty(e.target.value)}
+                          className="w-full pl-4 pr-12 py-3 rounded-xl bg-white dark:bg-black/40 border border-gray-200 dark:border-white/10 focus:ring-2 focus:ring-accent outline-none text-sm text-center font-mono dark:text-white"
+                        />
+                        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] font-bold text-gray-400 pointer-events-none uppercase">
+                          {inventories.find(i => i.id === newIngredientId)?.unit || ''}
+                        </span>
+                      </div>
+                      <button type="submit" className="w-16 flex justify-center items-center py-3 bg-primary text-accent hover:bg-[#163026] rounded-xl font-bold transition-colors">
+                        <Plus size={18} />
+                      </button>
+                    </div>
+                  </div>
+                </form>
+
+                {/* List Ingredients */}
+                <div className="space-y-3">
+                  <h4 className="text-xs font-bold text-gray-500 uppercase">Daftar Komposisi & Kalkulasi</h4>
+                  {bomIngredients.length === 0 ? (
+                    <div className="text-center py-8 text-gray-400 text-sm font-medium border-2 border-dashed border-gray-200 dark:border-white/10 rounded-2xl">
+                      Belum ada komposisi bahan baku.
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      {bomIngredients.map((bom, idx) => {
+                        const inv = inventories.find(i => i.id === bom.inventory_id);
+                        const cost = inv ? Number(inv.unit_price) * Number(bom.quantity_used) : 0;
+                        return (
+                          <div key={idx} className="flex items-center justify-between p-4 bg-white dark:bg-[#1A2620] border border-gray-100 dark:border-white/10 rounded-2xl shadow-sm hover:border-accent transition-colors">
+                            <div>
+                              <p className="font-bold text-gray-900 dark:text-white">{inv?.name || 'Unknown'}</p>
+                              <p className="text-xs text-gray-500 mt-1">Takaran: <strong className="text-accent">{bom.quantity_used} {inv?.unit}</strong> (@ {formatCurrency(Number(inv?.unit_price || 0))}/{inv?.unit})</p>
+                            </div>
+                            <div className="flex items-center gap-4">
+                              <span className="font-mono font-bold text-gray-900 dark:text-white">{formatCurrency(cost)}</span>
+                              <button onClick={() => handleRemoveBomItem(bom.inventory_id)} className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-xl transition-colors">
+                                <Trash2 size={16} />
+                              </button>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+                
+                {/* Summary HPP */}
+                {bomIngredients.length > 0 && (
+                  <div className="bg-accent/10 border border-accent/20 rounded-2xl p-5 space-y-2">
+                    <div className="flex justify-between text-sm font-bold text-gray-700 dark:text-gray-300">
+                      <span>Harga Jual Menu</span>
+                      <span className="font-mono">{formatCurrency(Number(bomMenu.price))}</span>
+                    </div>
+                    <div className="flex justify-between text-sm font-bold text-red-600 dark:text-red-400">
+                      <span>Total HPP (Modal)</span>
+                      <span className="font-mono">
+                        {formatCurrency(bomIngredients.reduce((acc, bom) => {
+                          const inv = inventories.find(i => i.id === bom.inventory_id);
+                          return acc + (inv ? Number(inv.unit_price) * Number(bom.quantity_used) : 0);
+                        }, 0))}
+                      </span>
+                    </div>
+                    <div className="pt-2 border-t border-accent/20 flex justify-between items-center text-primary dark:text-cream-100">
+                      <span className="font-black flex items-center gap-2"><TrendingUp size={16}/> Estimasi Profit Kotor</span>
+                      <span className="font-black font-mono">
+                        {(() => {
+                          const totalHpp = bomIngredients.reduce((acc, bom) => {
+                            const inv = inventories.find(i => i.id === bom.inventory_id);
+                            return acc + (inv ? Number(inv.unit_price) * Number(bom.quantity_used) : 0);
+                          }, 0);
+                          const profit = Number(bomMenu.price) - totalHpp;
+                          const margin = Math.round((profit / Number(bomMenu.price)) * 100) || 0;
+                          return `${formatCurrency(profit)} (${margin}%)`;
+                        })()}
+                      </span>
+                    </div>
+                  </div>
+                )}
+
               </div>
 
-              <div className="flex items-center justify-end gap-2 pt-3 border-t border-gray-100 dark:border-white/10">
-                <button
-                  type="button"
-                  onClick={() => setIsOverrideModalOpen(false)}
-                  className="rounded-2xl border border-gray-200 dark:border-white/15 px-4 py-2.5 text-xs font-bold text-gray-600 dark:text-gray-300"
+              <div className="p-6 border-t border-gray-100 dark:border-white/10 bg-gray-50 dark:bg-black/20">
+                <button 
+                  onClick={handleSaveBom}
+                  disabled={isSubmitting}
+                  className="w-full py-3.5 rounded-xl font-bold bg-accent text-primary hover:bg-[#b88c4d] disabled:opacity-50 flex items-center justify-center gap-2 shadow-lg shadow-accent/20 transition-all"
                 >
-                  Batal
-                </button>
-                <button
-                  type="submit"
-                  disabled={overrideLoading}
-                  className="flex items-center gap-1.5 rounded-2xl bg-[#1E3D31] px-5 py-2.5 text-xs font-bold text-[#C89B5C] hover:bg-[#163026] transition-colors disabled:opacity-50 shadow-sm"
-                >
-                  {overrideLoading && <Loader2 size={13} className="animate-spin" />}
-                  Simpan Harga
+                  {isSubmitting ? <Loader2 size={20} className="animate-spin" /> : <><CheckCircle2 size={20} /> Simpan Komposisi & HPP</>}
                 </button>
               </div>
-            </form>
+            </motion.div>
           </div>
-        </div>
+        )}
+        </AnimatePresence>,
+        document.body
+      )}
+
+      {/* Menu Variant Drawer / Modal */}
+      {typeof document !== 'undefined' && createPortal(
+        <AnimatePresence>
+          {showMenuVariantDrawer && menuVariantMenu && (
+            <div className="fixed inset-0 z-[9999] flex items-center justify-end">
+              <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowMenuVariantDrawer(false)} />
+              <motion.div 
+                initial={{ x: '100%' }} 
+                animate={{ x: 0 }} 
+                exit={{ x: '100%' }}
+                transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+                className="relative bg-white dark:bg-[#1A2620] w-full max-w-md h-full shadow-2xl border-l border-gray-100 dark:border-white/10 flex flex-col"
+              >
+              <div className="p-6 border-b border-gray-100 dark:border-white/10 flex justify-between items-center bg-gray-50 dark:bg-black/20">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-2xl bg-accent flex items-center justify-center text-primary">
+                    <Settings2 size={24} />
+                  </div>
+                  <div>
+                    <h3 className="font-heading text-lg font-bold text-gray-900 dark:text-white">Tautan Varian Menu</h3>
+                    <p className="text-xs font-bold text-accent">{menuVariantMenu.name}</p>
+                  </div>
+                </div>
+                <button onClick={() => setShowMenuVariantDrawer(false)} className="p-2 text-gray-500 hover:bg-gray-200 dark:hover:bg-white/10 rounded-full transition-colors"><X size={20}/></button>
+              </div>
+
+              <div className="flex-1 overflow-y-auto p-6 space-y-4">
+                <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-4">
+                  Pilih Master Varian yang tersedia untuk menu ini. Anda juga bisa mengatur apakah varian tersebut wajib dipilih atau opsional.
+                </p>
+
+                {variants.length === 0 ? (
+                  <div className="text-center py-8 text-gray-400 text-sm font-medium border-2 border-dashed border-gray-200 dark:border-white/10 rounded-2xl">
+                    Belum ada Master Varian. Tambahkan di menu Kategori & Varian.
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {variants.map(vg => {
+                      const isActive = menuVariantGroups.some(v => v.variant_group_id === vg.id);
+                      const currentLink = menuVariantGroups.find(v => v.variant_group_id === vg.id);
+                      
+                      return (
+                        <div 
+                          key={vg.id} 
+                          className={`p-4 rounded-2xl border-2 transition-all cursor-pointer ${
+                            isActive 
+                              ? 'border-accent bg-accent/5' 
+                              : 'border-gray-100 dark:border-white/5 bg-white dark:bg-[#1A2620] hover:border-accent/40'
+                          }`}
+                        >
+                          <div className="flex items-center justify-between" onClick={() => handleToggleVariantGroup(vg.id, vg.type === 'single')}>
+                            <div>
+                              <h4 className={`font-bold ${isActive ? 'text-accent' : 'text-gray-900 dark:text-white'}`}>
+                                {vg.name}
+                              </h4>
+                              <p className="text-xs font-medium text-gray-500 mt-1">
+                                {vg.options.length} Opsi • {vg.type === 'single' ? 'Pilih Satu' : 'Pilih Banyak'}
+                              </p>
+                            </div>
+                            <div className={`w-6 h-6 rounded-md flex items-center justify-center border-2 transition-colors ${
+                              isActive ? 'bg-accent border-accent text-primary' : 'border-gray-300 dark:border-gray-600 text-transparent'
+                            }`}>
+                              <CheckCircle2 size={16} className={isActive ? 'opacity-100' : 'opacity-0'} />
+                            </div>
+                          </div>
+                          
+                          {isActive && (
+                            <div className="mt-4 pt-4 border-t border-gray-200 dark:border-white/10 flex items-center justify-between" onClick={e => e.stopPropagation()}>
+                              <span className="text-xs font-bold text-gray-600 dark:text-gray-300">Wajib Dipilih?</span>
+                              <label className="relative inline-flex items-center cursor-pointer">
+                                <input 
+                                  type="checkbox" 
+                                  className="sr-only peer" 
+                                  checked={currentLink?.is_required || false}
+                                  onChange={(e) => handleUpdateVariantRequired(vg.id, e.target.checked)}
+                                />
+                                <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-accent"></div>
+                              </label>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+
+              <div className="p-6 border-t border-gray-100 dark:border-white/10 bg-gray-50 dark:bg-black/20">
+                <button 
+                  onClick={handleSaveMenuVariants}
+                  disabled={isSubmitting}
+                  className="w-full py-3.5 rounded-xl font-bold bg-accent text-primary hover:bg-[#b88c4d] disabled:opacity-50 flex items-center justify-center gap-2 shadow-lg shadow-accent/20 transition-all"
+                >
+                  {isSubmitting ? <Loader2 size={20} className="animate-spin" /> : <><CheckCircle2 size={20} /> Simpan Tautan Varian</>}
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+        </AnimatePresence>,
+        document.body
+      )}
+
+      {/* Global Notification Toast */}
+      {typeof document !== 'undefined' && createPortal(
+        <AnimatePresence>
+          {notification && (
+            <motion.div
+              initial={{ opacity: 0, y: -50, x: 20 }}
+              animate={{ opacity: 1, y: 0, x: 0 }}
+              exit={{ opacity: 0, y: -20, x: 20 }}
+              className={`fixed top-24 right-8 z-[10000] flex items-center gap-3 px-6 py-4 rounded-2xl shadow-2xl font-bold text-sm border-2 ${
+                notification.type === 'success' 
+                  ? 'bg-emerald-500 text-white border-emerald-400' 
+                  : 'bg-red-500 text-white border-red-400'
+              }`}
+            >
+              {notification.type === 'success' ? <CheckCircle2 size={20} /> : <X size={20} />}
+              {notification.message}
+            </motion.div>
+          )}
+        </AnimatePresence>,
+        document.body
       )}
     </div>
   );

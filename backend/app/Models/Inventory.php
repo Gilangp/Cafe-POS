@@ -18,6 +18,7 @@ class Inventory extends Model
         'supplier_id',
         'name',
         'stock_quantity',
+        'unit_price',
         'unit',
         'minimum_stock',
     ];
@@ -50,6 +51,7 @@ class Inventory extends Model
     public function menus(): BelongsToMany
     {
         return $this->belongsToMany(Menu::class, 'menu_ingredients')
+            ->using(MenuIngredient::class)
             ->withPivot('quantity_used')
             ->withTimestamps();
     }

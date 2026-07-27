@@ -210,7 +210,15 @@ export default function KdsPage() {
                                   <span className="text-[15px] font-bold leading-snug text-primary dark:text-cream-100">{item.name}</span>
                                   <span className="text-sm font-black text-primary/80 dark:text-cream-400/80 shrink-0 mt-0.5">x{item.qty}</span>
                                </div>
-                               {item.note && <p className="text-xs text-amber-600 dark:text-amber-400 mt-0.5 font-medium">{item.note}</p>}
+                               {item.note && (
+                                 <div className="flex flex-wrap gap-1 mt-1.5">
+                                   {item.note.split(',').map((n, i) => (
+                                     <span key={i} className="px-1.5 py-0.5 rounded bg-amber-100/50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 text-[10px] font-bold tracking-wider uppercase text-amber-700 dark:text-amber-400">
+                                       {n.trim()}
+                                     </span>
+                                   ))}
+                                 </div>
+                               )}
                              </div>
                           </div>
                        ))}
@@ -302,7 +310,15 @@ export default function KdsPage() {
                                   <span className={`text-[15px] font-bold leading-snug ${item.done ? 'line-through text-primary/40' : 'text-primary dark:text-cream-100'}`}>{item.name}</span>
                                   <span className="text-sm font-black text-primary/80 dark:text-cream-400/80 shrink-0 mt-0.5">x{item.qty}</span>
                                </div>
-                               {item.note && <p className="text-xs text-amber-600 dark:text-amber-400 mt-0.5 font-medium">{item.note}</p>}
+                               {item.note && (
+                                 <div className={`flex flex-wrap gap-1 mt-1.5 ${item.done ? 'opacity-40 grayscale' : ''}`}>
+                                   {item.note.split(',').map((n, i) => (
+                                     <span key={i} className="px-1.5 py-0.5 rounded bg-amber-100/50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 text-[10px] font-bold tracking-wider uppercase text-amber-700 dark:text-amber-400">
+                                       {n.trim()}
+                                     </span>
+                                   ))}
+                                 </div>
+                               )}
                              </div>
                           </button>
                        ))}
