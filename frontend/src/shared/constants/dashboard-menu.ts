@@ -2,7 +2,7 @@ import {
   LayoutDashboard, Calculator, CalendarCheck, Utensils, Tags, Package, 
   ClipboardList, Clock, MonitorPlay, Image as ImageIcon, FileText, 
   Ticket, HelpCircle, TrendingUp, CalendarClock, Archive, 
-  Users, Shield, Key, Settings, Store, Database, Activity 
+  Users, Shield, Key, Settings, Store, Database, Activity, Scale
 } from 'lucide-react';
 import { ForwardRefExoticComponent, RefAttributes } from 'react';
 import { LucideProps } from 'lucide-react';
@@ -60,7 +60,7 @@ export const DASHBOARD_MENU: MenuItem[] = [
       { title: 'User & Karyawan', icon: Users, href: '/dashboard/admin/users', roles: ['owner', 'admin'] },
       { title: 'CRM & Member', icon: Shield, href: '/dashboard/admin/memberships', roles: ['owner', 'admin'] },
       { title: 'Daftar Suplier', icon: Package, href: '/dashboard/admin/suppliers', roles: ['owner', 'admin'] },
-      { title: 'Pembelian (PO)', icon: TrendingUp, href: '/dashboard/admin/procurement', roles: ['owner', 'admin'] },
+      { title: 'Pembelian (PO)', icon: TrendingUp, href: '/dashboard/admin/procurement/purchase-orders', roles: ['owner', 'admin'] },
     ]
   },
   {
@@ -68,6 +68,7 @@ export const DASHBOARD_MENU: MenuItem[] = [
     roles: ['owner', 'admin'],
     items: [
       { title: 'Pengaturan Umum', icon: Settings, href: '/dashboard/admin/settings', roles: ['owner', 'admin'] },
+      { title: 'Konversi Satuan', icon: Scale, href: '/dashboard/admin/unit-conversions', roles: ['owner', 'admin'] },
       { title: 'Aktivitas Sistem', icon: Activity, href: '/dashboard/admin/audit', roles: ['owner'] },
       { title: 'Backup', icon: Database, href: '/dashboard/admin/backup', roles: ['owner'] },
     ]

@@ -278,66 +278,103 @@ export default function AdminMenuPage() {
   }, [searchQuery, selectedCategoryId]);
 
   return (
-    <div className="space-y-6 animate-fadeIn pb-24">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div className="space-y-6 -m-6 lg:-m-8 p-6 lg:p-8 selection:bg-accent/30 animate-fadeIn pb-24">
+      {/* Top Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-200 dark:border-white/10 pb-6">
         <div>
-          <h1 className="font-heading text-3xl font-extrabold text-primary dark:text-cream-100 tracking-wide">
+          <h1 className="font-heading text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white tracking-wide">
             Master Menu
           </h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-            Kelola katalog menu, kategori, harga, dan status ketersediaan secara real-time.
+          <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-1 font-sans">
+            Kelola katalog menu, resep HPP, varian, dan status ketersediaan secara real-time.
           </p>
         </div>
-        
-        <div className="flex items-center gap-3">
-          <button
-            onClick={handleAddMenu}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-accent text-primary font-bold hover:bg-[#b88c4d] transition-colors shadow-lg shadow-accent/20"
-          >
-            <Plus size={18} /> Tambah Menu
-          </button>
+        <button
+          onClick={handleAddMenu}
+          className="flex items-center gap-2 rounded-2xl bg-accent px-5 py-2.5 text-xs font-bold text-primary hover:bg-[#b88c4d] transition-colors shadow-md active:scale-95 shrink-0"
+        >
+          <Plus size={16} /> Tambah Menu
+        </button>
+      </div>
+
+      {/* Stats Cards */}
+      <div className="grid gap-4 sm:grid-cols-4">
+        <div className="flex items-center gap-4 rounded-3xl bg-white dark:bg-[#1A2620] border border-gray-200 dark:border-white/10 p-5 shadow-sm">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-primary text-accent shadow-md">
+            <Coffee size={22} />
+          </div>
+          <div>
+            <p className="text-2xl font-extrabold text-gray-900 dark:text-white font-heading">{menus.length}</p>
+            <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mt-0.5">Total Menu</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-4 rounded-3xl bg-white dark:bg-[#1A2620] border border-gray-200 dark:border-white/10 p-5 shadow-sm">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400">
+            <Eye size={22} />
+          </div>
+          <div>
+            <p className="text-2xl font-extrabold text-emerald-600 dark:text-emerald-400 font-heading">{menus.filter(m => m.status === 'tersedia').length}</p>
+            <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mt-0.5">Tersedia (Ready)</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-4 rounded-3xl bg-white dark:bg-[#1A2620] border border-gray-200 dark:border-white/10 p-5 shadow-sm">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-red-500/15 border border-red-500/30 text-red-600 dark:text-red-400">
+            <EyeOff size={22} />
+          </div>
+          <div>
+            <p className="text-2xl font-extrabold text-red-600 dark:text-red-400 font-heading">{menus.filter(m => m.status !== 'tersedia').length}</p>
+            <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mt-0.5">Habis / Non-Aktif</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-4 rounded-3xl bg-white dark:bg-[#1A2620] border border-gray-200 dark:border-white/10 p-5 shadow-sm">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-accent/15 border border-accent/30 text-accent">
+            <Star size={22} />
+          </div>
+          <div>
+            <p className="text-2xl font-extrabold text-accent font-heading">{menus.filter(m => m.is_best_seller).length}</p>
+            <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mt-0.5">Best Seller</p>
+          </div>
         </div>
       </div>
 
       {loading ? (
-        <div className="py-20 flex flex-col items-center justify-center text-gray-500">
-          <Loader2 size={40} className="animate-spin text-accent mb-4" />
-          <p className="font-medium">Memuat data master...</p>
+        <div className="flex flex-col items-center justify-center py-20 text-gray-400 bg-white dark:bg-[#1A2620] rounded-3xl border border-gray-200 dark:border-white/10">
+          <Loader2 size={36} className="animate-spin mb-3 text-accent" />
+          <p className="text-xs font-bold">Memuat data master menu...</p>
         </div>
       ) : (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
           {/* Filters */}
-          <div className="flex flex-col md:flex-row items-center gap-4 bg-white dark:bg-[#1A2620] p-4 rounded-2xl border border-gray-100 dark:border-white/5 shadow-sm">
-            <div className="relative w-full md:w-72 shrink-0">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div className="relative flex-1 min-w-[260px] max-w-sm">
+              <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
               <input 
                 type="text" 
                 placeholder="Cari nama menu..."
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-gray-50 dark:bg-black/20 border-none text-sm font-medium focus:ring-2 focus:ring-accent/50 outline-none transition-all dark:text-white"
+                className="w-full rounded-2xl border border-gray-200 dark:border-white/15 bg-white dark:bg-black/35 py-2.5 pl-10 pr-4 text-xs font-medium focus:border-accent focus:outline-none dark:text-white"
               />
             </div>
-            <div className="flex items-center gap-2 w-full flex-1 overflow-x-auto pb-2 md:pb-0 scrollbar-hide">
+            <div className="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0 scrollbar-hide">
               <button
                 onClick={() => setSelectedCategoryId('all')}
-                className={`shrink-0 px-4 py-2 rounded-xl text-sm font-bold transition-all ${
+                className={`shrink-0 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
                   selectedCategoryId === 'all'
-                    ? 'bg-primary text-accent shadow-md'
-                    : 'bg-gray-100 dark:bg-white/5 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-white/10'
+                    ? 'bg-primary text-accent shadow-sm'
+                    : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white bg-white dark:bg-black/30 border border-gray-200 dark:border-white/15'
                 }`}
               >
-                Semua
+                Semua ({menus.length})
               </button>
               {categories.map(cat => (
                 <button
                   key={cat.id}
                   onClick={() => setSelectedCategoryId(cat.id)}
-                  className={`shrink-0 px-4 py-2 rounded-xl text-sm font-bold transition-all ${
+                  className={`shrink-0 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
                     selectedCategoryId === cat.id
-                      ? 'bg-primary text-accent shadow-md'
-                      : 'bg-gray-100 dark:bg-white/5 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-white/10'
+                      ? 'bg-primary text-accent shadow-sm'
+                      : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white bg-white dark:bg-black/30 border border-gray-200 dark:border-white/15'
                   }`}
                 >
                   {cat.name}
@@ -347,7 +384,7 @@ export default function AdminMenuPage() {
           </div>
 
           {/* Menus Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {paginatedMenus.map(menu => {
               // Calculate HPP
               let totalCost = 0;
@@ -366,20 +403,20 @@ export default function AdminMenuPage() {
               return (
               <div 
                 key={menu.id} 
-                className={`bg-white dark:bg-[#1A2620] rounded-3xl border-2 overflow-hidden transition-all hover:shadow-xl group flex flex-col ${
+                className={`group relative bg-white dark:bg-[#1A2620] rounded-3xl border overflow-hidden transition-all hover:shadow-glow flex flex-col h-full animate-fadeIn ${
                   menu.status === 'tersedia' 
-                    ? 'border-gray-100 dark:border-white/5 hover:border-accent/40' 
-                    : 'border-red-100 dark:border-red-900/30 opacity-75'
+                    ? 'border-gray-200 dark:border-white/10 hover:border-accent/40' 
+                    : 'border-red-200 dark:border-red-900/30 opacity-70'
                 }`}
               >
-                <div className="h-40 bg-gray-100 dark:bg-black/30 relative flex items-center justify-center overflow-hidden">
+                <div className="h-36 bg-gray-100 dark:bg-black/30 relative flex items-center justify-center overflow-hidden">
                   {menu.image ? (
                     <img src={menu.image} alt={menu.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                   ) : (
-                    <Coffee size={40} className="text-gray-300 dark:text-gray-600" />
+                    <Coffee size={36} className="text-gray-300 dark:text-gray-600" />
                   )}
                   
-                  {/* Status Button (Top Left) */}
+                  {/* Status Badge */}
                   <button 
                     onClick={() => handleToggleMenuStatus(menu)}
                     className={`absolute top-3 left-3 flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider shadow-lg transition-colors z-10 ${
@@ -392,69 +429,77 @@ export default function AdminMenuPage() {
                     {menu.status === 'tersedia' ? 'Ready' : 'Habis'}
                   </button>
 
-                  {/* Best Seller Button (Top Right) */}
+                  {/* Best Seller */}
                   <button
                     onClick={() => handleToggleBestSeller(menu)}
                     className={`absolute top-3 right-3 p-2 rounded-full shadow-lg transition-all z-10 ${
                       menu.is_best_seller 
                         ? 'bg-accent text-primary hover:bg-gray-100 hover:text-gray-400' 
-                        : 'bg-gray-100 text-gray-400 hover:bg-accent hover:text-primary dark:bg-black/50 dark:text-gray-400'
+                        : 'bg-white/80 dark:bg-black/50 text-gray-400 hover:bg-accent hover:text-primary'
                     }`}
                     title={menu.is_best_seller ? 'Hapus dari Best Seller' : 'Tandai sebagai Best Seller'}
                   >
                     <Star size={14} className={menu.is_best_seller ? 'fill-current' : ''} />
                   </button>
                 </div>
-                <div className="p-5">
-                  <div className="flex justify-between items-start gap-2 mb-2">
-                    <div>
-                      <h3 className="font-bold text-gray-900 dark:text-white leading-tight">{menu.name}</h3>
-                      <p className="text-[11px] font-bold text-accent uppercase tracking-wider mt-1">{menu.category?.name || 'Uncategorized'}</p>
-                    </div>
-                  </div>
-                  <div className="flex justify-between items-baseline mb-2">
-                    <p className="font-black text-lg text-primary dark:text-cream-100 font-mono">
-                      {formatCurrency(Number(menu.price))}
-                    </p>
-                    <p className="text-xs font-bold text-gray-500">HPP: {formatCurrency(totalCost)}</p>
+
+                <div className="p-5 flex flex-col flex-1">
+                  <div className="mb-3">
+                    <span className="inline-block px-2.5 py-1 rounded-lg bg-primary/10 dark:bg-accent/10 text-primary dark:text-accent text-[10px] font-extrabold uppercase tracking-wider mb-2">
+                      {menu.category?.name || 'Uncategorized'}
+                    </span>
+                    <h3 className="font-heading text-base font-bold text-gray-900 dark:text-white leading-tight line-clamp-2">{menu.name}</h3>
                   </div>
                   
-                  <div className="flex items-center gap-2 mb-4" title="Margin Keuntungan (Profit)">
-                    <span className="text-[10px] font-bold text-gray-400">Margin:</span>
-                    <div className="flex-1 h-1.5 rounded-full bg-gray-100 dark:bg-black/50 overflow-hidden">
-                      <div className={`h-full rounded-full transition-all ${margin >= 45 ? 'bg-emerald-500' : 'bg-accent'}`} style={{ width: `${Math.min(Math.max(margin, 5), 100)}%` }} />
+                  <div className="mt-auto pt-3 border-t border-gray-100 dark:border-white/5 space-y-3">
+                    <div className="flex justify-between items-end">
+                      <div>
+                        <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wider mb-0.5">Harga Jual</p>
+                        <p className="text-xl font-extrabold text-gray-900 dark:text-white font-mono">{formatCurrency(Number(menu.price))}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wider mb-0.5">HPP</p>
+                        <p className="text-sm font-mono font-bold text-gray-400">{formatCurrency(totalCost)}</p>
+                      </div>
                     </div>
-                    <span className="text-[10px] font-black font-mono text-gray-700 dark:text-gray-300">{margin}%</span>
-                  </div>
-                  
-                  <div className="flex flex-col gap-2 pt-4 border-t border-gray-100 dark:border-white/10 mt-auto">
-                    <div className="grid grid-cols-2 gap-2">
+
+                    <div className="space-y-1">
+                      <div className="flex justify-between text-[10px] font-bold">
+                        <span className={margin >= 45 ? 'text-emerald-500' : margin >= 20 ? 'text-accent' : 'text-red-500'}>Margin</span>
+                        <span className="text-gray-400 font-mono">{margin}%</span>
+                      </div>
+                      <div className="h-1.5 w-full rounded-full bg-gray-100 dark:bg-black/50 overflow-hidden">
+                        <div className={`h-full rounded-full transition-all ${margin >= 45 ? 'bg-emerald-500' : margin >= 20 ? 'bg-accent' : 'bg-red-500'}`} style={{ width: `${Math.min(Math.max(margin, 5), 100)}%` }} />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-2 pt-2 border-t border-gray-100 dark:border-white/5">
                       <button 
                         onClick={() => handleOpenBom(menu)}
-                        className="flex flex-col items-center justify-center gap-1.5 py-3 px-1 rounded-xl bg-primary hover:bg-[#163026] text-accent font-bold text-[10px] sm:text-xs transition-colors shadow-sm text-center leading-tight"
+                        className="flex flex-col items-center justify-center gap-1 py-2 rounded-xl bg-primary/10 dark:bg-primary hover:bg-primary dark:hover:bg-[#163026] text-primary dark:text-accent hover:text-accent transition-colors border border-primary/20 dark:border-white/5"
                       >
                         <ChefHat size={16} />
-                        <span>Resep & HPP</span>
+                        <span className="text-[10px] font-bold">Resep & HPP</span>
                       </button>
                       <button 
                         onClick={() => handleOpenVariant(menu)}
-                        className="flex flex-col items-center justify-center gap-1.5 py-3 px-1 rounded-xl bg-accent hover:bg-[#b88c4d] text-primary font-bold text-[10px] sm:text-xs transition-colors shadow-sm text-center leading-tight"
+                        className="flex flex-col items-center justify-center gap-1 py-2 rounded-xl bg-accent/10 hover:bg-accent text-accent hover:text-primary transition-colors border border-accent/20"
                       >
                         <Settings2 size={16} />
-                        <span>Atur Varian</span>
+                        <span className="text-[10px] font-bold">Atur Varian</span>
                       </button>
                     </div>
                     
                     <div className="flex items-center gap-2">
                       <button 
                         onClick={() => handleEditMenu(menu)}
-                        className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-gray-50 dark:bg-black/20 text-gray-700 dark:text-gray-300 font-bold text-xs hover:bg-accent hover:text-primary transition-colors"
+                        className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-gray-50 dark:bg-white/5 text-gray-600 dark:text-gray-300 hover:bg-primary hover:text-accent transition-colors text-xs font-bold border border-transparent hover:border-accent/30"
                       >
                         <Edit2 size={14} /> Edit
                       </button>
                       <button 
                         onClick={() => handleDeleteMenu(menu.id, menu.name)}
-                        className="w-10 h-10 flex items-center justify-center rounded-xl bg-red-50 dark:bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-colors"
+                        className="w-11 h-11 flex shrink-0 items-center justify-center rounded-xl bg-red-50 dark:bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-colors"
                       >
                         <Trash2 size={16} />
                       </button>
@@ -467,15 +512,15 @@ export default function AdminMenuPage() {
 
           {/* Pagination Controls */}
           {totalPages > 1 && (
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 border-t border-gray-100 dark:border-white/5 mt-6">
-              <span className="text-xs text-primary/60 dark:text-cream-400/60 font-medium text-center sm:text-left">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 border-t border-gray-200 dark:border-white/10 mt-6">
+              <span className="text-xs text-gray-500 dark:text-gray-400 font-bold text-center sm:text-left">
                 Menampilkan {(currentPage - 1) * itemsPerPage + 1} - {Math.min(currentPage * itemsPerPage, filteredMenus.length)} dari {filteredMenus.length} menu
               </span>
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                   disabled={currentPage === 1}
-                  className="px-3 py-1.5 rounded-lg border border-black/5 dark:border-white/5 text-xs font-bold text-primary dark:text-cream-100 bg-white dark:bg-[#1A2620] hover:bg-gray-50 dark:hover:bg-white/5 disabled:opacity-50 transition-colors shadow-sm"
+                  className="px-4 py-2 rounded-xl border border-gray-200 dark:border-white/15 text-xs font-bold text-gray-700 dark:text-gray-300 bg-white dark:bg-black/30 hover:border-accent hover:text-accent disabled:opacity-50 transition-colors"
                 >
                   Sebelumnya
                 </button>
@@ -487,17 +532,17 @@ export default function AdminMenuPage() {
                         <button
                           key={pageNum}
                           onClick={() => setCurrentPage(pageNum)}
-                          className={`w-8 h-8 rounded-lg text-xs font-bold transition-colors shadow-sm border ${
+                          className={`w-8 h-8 rounded-lg text-xs font-bold transition-colors border ${
                             currentPage === pageNum 
                               ? 'bg-primary text-accent border-primary' 
-                              : 'bg-white dark:bg-[#1A2620] text-primary dark:text-cream-100 border-black/5 dark:border-white/5 hover:bg-gray-50 dark:hover:bg-white/5'
+                              : 'bg-white dark:bg-black/30 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-white/15 hover:border-accent hover:text-accent'
                           }`}
                         >
                           {pageNum}
                         </button>
                       );
                     } else if (pageNum === currentPage - 2 || pageNum === currentPage + 2) {
-                      return <span key={pageNum} className="text-primary/40 dark:text-cream-400/40 text-xs">...</span>;
+                      return <span key={pageNum} className="text-gray-400 text-xs">...</span>;
                     }
                     return null;
                   })}
@@ -505,7 +550,7 @@ export default function AdminMenuPage() {
                 <button
                   onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                   disabled={currentPage === totalPages}
-                  className="px-3 py-1.5 rounded-lg border border-black/5 dark:border-white/5 text-xs font-bold text-primary dark:text-cream-100 bg-white dark:bg-[#1A2620] hover:bg-gray-50 dark:hover:bg-white/5 disabled:opacity-50 transition-colors shadow-sm"
+                  className="px-4 py-2 rounded-xl border border-gray-200 dark:border-white/15 text-xs font-bold text-gray-700 dark:text-gray-300 bg-white dark:bg-black/30 hover:border-accent hover:text-accent disabled:opacity-50 transition-colors"
                 >
                   Selanjutnya
                 </button>

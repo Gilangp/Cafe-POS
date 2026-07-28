@@ -10,8 +10,8 @@ export function usePermission() {
     (permissionCode: string): boolean => {
       if (!user) return false;
 
-      // Super admins and corporate admins bypass specific permission checks
-      if (user.role === 'super_admin' || user.role === 'corporate_admin') {
+      // Super admins, corporate admins, Admin, and Owner bypass specific permission checks
+      if (['super_admin', 'corporate_admin', 'Admin', 'Owner'].includes(user.role)) {
         return true;
       }
 
@@ -27,7 +27,7 @@ export function usePermission() {
   const hasAnyPermission = useCallback(
     (permissionCodes: string[]): boolean => {
       if (!user) return false;
-      if (user.role === 'super_admin' || user.role === 'corporate_admin') return true;
+      if (['super_admin', 'corporate_admin', 'Admin', 'Owner'].includes(user.role)) return true;
       return permissionCodes.some((code) => hasPermission(code));
     },
     [user, hasPermission]

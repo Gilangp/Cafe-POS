@@ -241,7 +241,7 @@ export default function PosPage() {
         }
       `}} />
 
-      <div className="pos-content-left lg:w-[70%] flex-1 flex flex-col min-h-0 bg-white dark:bg-[#1A2620] rounded-2xl shadow-card-shadow border border-black/5 dark:border-white/5 overflow-hidden">
+      <div className="pos-content-left lg:w-[70%] flex-1 flex flex-col min-h-0 bg-white dark:bg-[#1A2620] rounded-3xl border border-gray-200 dark:border-white/10 shadow-sm overflow-hidden">
         
         {/* Top Bar: Search & Categories */}
         <div className="p-4 border-b border-black/5 dark:border-white/5 space-y-4">
@@ -252,7 +252,7 @@ export default function PosPage() {
               placeholder="Cari nama menu..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 bg-gray-50 dark:bg-black/20 border border-gray-200 dark:border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-accent/50 text-primary dark:text-white"
+              className="w-full pl-10 pr-4 py-3 rounded-2xl border border-gray-200 dark:border-white/15 bg-white dark:bg-black/35 focus:border-accent focus:outline-none text-primary dark:text-white"
             />
           </div>
           
@@ -263,8 +263,8 @@ export default function PosPage() {
                 onClick={() => setSelectedCategory(cat)}
                 className={`px-4 py-2 rounded-lg whitespace-nowrap text-sm font-semibold transition-colors shrink-0 ${
                   selectedCategory === cat 
-                  ? 'bg-primary dark:bg-accent text-white dark:text-primary shadow-md' 
-                  : 'bg-gray-50 dark:bg-white/5 text-primary/70 dark:text-cream-400 hover:bg-gray-200 dark:hover:bg-white/10'
+                  ? 'bg-primary text-accent shadow-sm' 
+                  : 'bg-white dark:bg-black/30 border border-gray-200 dark:border-white/15 text-gray-500 dark:text-gray-400 hover:border-accent hover:text-accent'
                 }`}
               >
                 {cat === 'all' ? 'Semua Kategori' : cat}
@@ -297,7 +297,7 @@ export default function PosPage() {
                     });
                   }
                 }}
-                className="bg-white dark:bg-[#2A3F33] border border-black/5 dark:border-white/5 rounded-2xl overflow-hidden cursor-pointer hover:border-accent/50 hover:shadow-lg transition-all group flex flex-col"
+                className="bg-white dark:bg-[#1A2620] rounded-3xl border border-gray-200 dark:border-white/10 cursor-pointer overflow-hidden transition-all hover:shadow-glow hover:border-accent/40 group flex flex-col"
               >
                 <div className="aspect-square bg-gray-100 dark:bg-black/40 relative overflow-hidden">
                   {menu.image ? (
@@ -333,10 +333,10 @@ export default function PosPage() {
       </div>
 
 
-      <div className="pos-content-right w-full lg:w-[30%] flex flex-col min-h-0 bg-white dark:bg-[#1A2620] rounded-2xl shadow-card-shadow border border-black/5 dark:border-white/5 shrink-0 overflow-hidden">
+      <div className="pos-content-right w-full lg:w-[30%] flex flex-col min-h-0 bg-white dark:bg-[#1A2620] rounded-3xl border border-gray-200 dark:border-white/10 shadow-sm shrink-0 overflow-hidden">
         
         {/* Cart Header */}
-        <div className="p-4 border-b border-black/5 dark:border-white/5 flex items-center justify-between bg-primary text-white rounded-t-2xl">
+        <div className="p-4 border-b border-black/5 dark:border-white/5 flex items-center justify-between bg-primary text-accent rounded-t-3xl border-b border-gray-200 dark:border-white/10">
           <div className="flex items-center gap-2 min-w-0">
             <ShoppingCart size={20} className="text-accent shrink-0" />
             <h2 className="font-heading font-bold text-base xl:text-lg truncate">Pesanan Saat Ini</h2>
@@ -352,13 +352,13 @@ export default function PosPage() {
              <div className="flex gap-1 flex-1">
                <button 
                   onClick={() => setOrderType('dine_in')}
-                  className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${orderType === 'dine_in' ? 'bg-[#1E3D31] text-accent shadow-md' : 'text-gray-500 hover:bg-gray-100 dark:hover:bg-white/5'}`}
+                  className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${orderType === 'dine_in' ? 'bg-primary text-accent shadow-sm' : 'text-gray-500 hover:bg-gray-100 dark:hover:bg-white/5'}`}
                >
                  Dine In
                </button>
                <button 
                   onClick={() => { setOrderType('takeaway'); setAssignedTable(''); }}
-                  className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${orderType === 'takeaway' ? 'bg-[#1E3D31] text-accent shadow-md' : 'text-gray-500 hover:bg-gray-100 dark:hover:bg-white/5'}`}
+                  className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${orderType === 'takeaway' ? 'bg-primary text-accent shadow-sm' : 'text-gray-500 hover:bg-gray-100 dark:hover:bg-white/5'}`}
                >
                  Takeaway
                </button>
@@ -405,7 +405,7 @@ export default function PosPage() {
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -20 }}
                   key={item.cart_id}
-                  className="flex gap-3 bg-gray-50 dark:bg-[#2A3F33]/30 p-3 rounded-xl border border-black/5 dark:border-white/5"
+                  className="flex gap-3 bg-white dark:bg-[#1A2620] p-3 rounded-2xl border border-gray-200 dark:border-white/10 shadow-sm hover:border-accent/30 transition-colors"
                 >
                   <div className="w-16 h-16 rounded-lg bg-gray-200 dark:bg-black/40 overflow-hidden shrink-0">
                     {item.image ? (
@@ -454,7 +454,7 @@ export default function PosPage() {
         </div>
 
         {/* Cart Summary & Checkout */}
-        <div className="p-3 border-t border-black/5 dark:border-white/5 bg-gray-50 dark:bg-[#1A2620] rounded-b-2xl space-y-3 shrink-0">
+        <div className="p-3 border-t border-black/5 dark:border-white/5 bg-gray-50 dark:bg-[#1A2620] rounded-b-3xl space-y-3 shrink-0">
           
           <div className="flex gap-2">
             {[
@@ -574,7 +574,7 @@ export default function PosPage() {
               initial={{ scale: 0.95, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.95, opacity: 0, y: 20 }}
-              className="bg-white dark:bg-[#1A2620] rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh] border border-black/5 dark:border-white/10"
+              className="bg-white dark:bg-[#1A2620] rounded-3xl shadow-2xl border border-gray-200 dark:border-white/10 w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh] border border-black/5 dark:border-white/10"
             >
               {/* Header with gradient & optional image context */}
               <div className="relative p-6 border-b border-gray-100 dark:border-white/10 bg-gradient-to-r from-gray-50 to-white dark:from-[#1A2620] dark:to-[#2A3F33] flex justify-between items-start shrink-0">
@@ -743,7 +743,7 @@ export default function PosPage() {
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden flex flex-col"
+              className="bg-white rounded-3xl shadow-2xl border border-gray-200 dark:border-white/10 w-full max-w-sm overflow-hidden flex flex-col"
             >
               <div className="p-4 border-b flex justify-between items-center bg-gray-50">
                 <h3 className="font-bold text-gray-800">Pembayaran QRIS</h3>
@@ -795,7 +795,7 @@ export default function PosPage() {
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="receipt-modal-content bg-white rounded-2xl shadow-2xl w-full max-w-sm max-h-[90vh] overflow-hidden flex flex-col"
+              className="receipt-modal-content bg-white rounded-3xl shadow-2xl border border-gray-200 dark:border-white/10 w-full max-w-sm max-h-[90vh] overflow-hidden flex flex-col"
             >
               <div className="p-4 border-b flex justify-between items-center print:hidden bg-gray-50">
                 <h3 className="font-bold text-gray-800">Transaksi Sukses!</h3>

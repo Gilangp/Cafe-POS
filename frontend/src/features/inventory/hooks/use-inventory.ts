@@ -57,7 +57,7 @@ export function useInventory(options?: { lowStockOnly?: boolean }) {
         params.branch_id = activeBranchId;
       }
 
-      const res = await api.get<any>('/inventory', { params });
+      const res = await api.get<any>('/admin/inventories', { params });
       const rawData = Array.isArray(res.data?.data)
         ? res.data.data
         : Array.isArray(res.data)
@@ -68,9 +68,9 @@ export function useInventory(options?: { lowStockOnly?: boolean }) {
         const mapped: InventoryItem[] = rawData.map((item: any) => ({
           id: item.id,
           name: item.name || item.item_name || 'Bahan Baku',
-          category: item.category || 'Umum',
-          stock: Number(item.quantity ?? item.current_stock ?? item.stock ?? 0),
-          unit: item.unit || 'satuan',
+          category: typeof item.category === 'object' && item.category !== null ? item.category.name : (item.category || 'Umum'),
+          stock: Number(item.stock_quantity ?? item.quantity ?? item.current_stock ?? item.stock ?? 0),
+          unit: typeof item.unit === 'object' && item.unit !== null ? item.unit.name : (item.unit || 'satuan'),
           threshold: Number(item.reorder_point ?? item.minimum_stock ?? item.threshold ?? 5),
           cost: Number(item.unit_cost ?? item.cost_per_unit ?? item.cost ?? 15000),
           sku: item.sku || '',
@@ -103,8 +103,8 @@ export function useInventory(options?: { lowStockOnly?: boolean }) {
 
   // INV-005 & INV-006: Cycle count and FEFO batch adjustments
   const performCycleCount = async (payload: CycleCountPayload) => {
-    if (usingLive && typeof payload.inventory_item_id !== 'string') {
-      const res = await api.post<any>('/inventory/adjust', payload);
+    if (usingLive) {
+      const res = await api.post<any>(`/admin/inventories/${payload.inventory_item_id}/adjust`, payload);
       await fetchInventory(true);
       return res.data;
     } else {
@@ -113,7 +113,7 @@ export function useInventory(options?: { lowStockOnly?: boolean }) {
           if (String(item.id) === String(payload.inventory_item_id)) {
             const isDown = ['ADJUSTMENT_DOWN', 'DAMAGED', 'WASTE'].includes(payload.type);
             const delta = isDown ? -payload.quantity : payload.quantity;
-            const newStock = Math.max(0, item.stock + delta);
+            const newStock = item.stock + delta;
             return { ...item, stock: newStock, lastUpdate: 'Baru saja' };
           }
           return item;
@@ -124,9 +124,9 @@ export function useInventory(options?: { lowStockOnly?: boolean }) {
   };
 
   const adjustStock = async (id: string | number, delta: number) => {
-    if (usingLive && typeof id !== 'string') {
+    if (usingLive) {
       const type = delta >= 0 ? 'ADJUSTMENT_UP' : 'ADJUSTMENT_DOWN';
-      await api.post('/inventory/adjust', {
+      await api.post(`/admin/inventories/${id}/adjust`, {
         inventory_item_id: id,
         type,
         quantity: Math.abs(delta),
@@ -137,7 +137,7 @@ export function useInventory(options?: { lowStockOnly?: boolean }) {
       setItems((prev) =>
         prev.map((item) => {
           if (item.id === id) {
-            const newStock = Math.max(0, item.stock + delta);
+            const newStock = item.stock + delta;
             return { ...item, stock: newStock, lastUpdate: 'Baru saja' };
           }
           return item;
@@ -148,7 +148,7 @@ export function useInventory(options?: { lowStockOnly?: boolean }) {
 
   const addItem = async (payload: Omit<InventoryItem, 'id' | 'lastUpdate' | 'source'>) => {
     if (usingLive) {
-      const res = await api.post<any>('/inventory', {
+      const res = await api.post<any>('/admin/inventories', {
         branch_id: activeBranchId || 1,
         name: payload.name,
         category: payload.category,
@@ -173,8 +173,8 @@ export function useInventory(options?: { lowStockOnly?: boolean }) {
   };
 
   const deleteItem = async (id: string | number) => {
-    if (usingLive && typeof id !== 'string') {
-      await api.delete(`/inventory/${id}`);
+    if (usingLive) {
+      await api.delete(`/admin/inventories/${id}`);
       await fetchInventory(true);
     } else {
       setItems((prev) => prev.filter((item) => item.id !== id));

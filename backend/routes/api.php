@@ -116,6 +116,10 @@ Route::prefix('v1')->group(function () {
             Route::post('inventory-categories', [App\Http\Controllers\Api\InventoryController::class, 'storeCategory']);
             Route::delete('inventory-categories/{category}', [App\Http\Controllers\Api\InventoryController::class, 'destroyCategory']);
             Route::apiResource('suppliers', App\Http\Controllers\Api\SupplierController::class);
+            Route::apiResource('unit-conversions', App\Http\Controllers\Api\UnitConversionController::class);
+            Route::apiResource('purchase-orders', App\Http\Controllers\Api\PurchaseOrderController::class);
+            Route::post('purchase-orders/{purchase_order}/receive', [App\Http\Controllers\Api\PurchaseOrderController::class, 'receive']);
+            Route::post('purchase-orders/{purchase_order}/cancel', [App\Http\Controllers\Api\PurchaseOrderController::class, 'cancel']);
 
             // Reports & Analytics (Bab 28.6)
             Route::get('reports/sales', [App\Http\Controllers\Api\ReportController::class, 'sales']);

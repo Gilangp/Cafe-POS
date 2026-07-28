@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import {
   FileText,
   Plus,
@@ -19,6 +20,7 @@ import {
 } from 'lucide-react';
 import { useProcurement, PurchaseOrderData } from '@/features/inventory/hooks/use-procurement';
 import { useInventory } from '@/features/inventory/hooks/use-inventory';
+import { useUnitConversions } from '@/features/inventory/hooks/use-unit-conversions';
 import { PermissionGuard } from '@/shared/components/common/permission-guard';
 
 const fmt = (n: number) =>
@@ -33,8 +35,9 @@ const statusBadge: Record<string, string> = {
 };
 
 export default function PurchaseOrdersPage() {
-  const { purchaseOrders, suppliers, loading, usingLive, createPurchaseOrder, receivePurchaseOrder } = useProcurement();
-  const { items: inventoryItems } = useInventory();
+  const { purchaseOrders, suppliers, loading, usingLive, createPurchaseOrder, receivePurchaseOrder, cancelPurchaseOrder } = useProcurement();
+  const { items: inventoryItems, loading: invLoading } = useInventory();
+  const { conversions } = useUnitConversions();
 
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
@@ -46,8 +49,8 @@ export default function PurchaseOrdersPage() {
   const [expectedDate, setExpectedDate] = useState('');
   const [poNotes, setPoNotes] = useState('');
   const [poItems, setPoItems] = useState<
-    { inventory_item_id: string | number; quantity: string; unit: string; unit_price: string }[]
-  >([{ inventory_item_id: '', quantity: '10', unit: 'kg', unit_price: '25000' }]);
+    { inventory_item_id: string | number; quantity: string; unit: string; conversion_multiplier: string; unit_price: string }[]
+  >([{ inventory_item_id: '', quantity: '10', unit: 'kg', conversion_multiplier: '1000', unit_price: '25000' }]);
   const [formLoading, setFormLoading] = useState(false);
   const [actionStatus, setActionStatus] = useState<string | null>(null);
 
@@ -67,18 +70,53 @@ export default function PurchaseOrdersPage() {
     }[]
   >([]);
   const [receiveLoading, setReceiveLoading] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const showNotification = (msg: string) => {
     setActionStatus(msg);
     setTimeout(() => setActionStatus(null), 3500);
   };
 
+  // Auto-open modal if navigated from inventory critical alert
+  useEffect(() => {
+    // Only process URL when both hooks have finished loading their initial data
+    if (typeof window !== 'undefined' && !loading && !invLoading) {
+      const params = new URLSearchParams(window.location.search);
+      const criticalIdsStr = params.get('critical_items');
+      
+      if (criticalIdsStr && inventoryItems.length > 0) {
+        const ids = criticalIdsStr.split(',');
+        const criticalInventory = inventoryItems.filter(i => ids.includes(i.id.toString()));
+        
+        if (criticalInventory.length > 0) {
+          setSupplierId(suppliers.length > 0 ? suppliers[0].id : '');
+          setOrderDate(new Date().toISOString().split('T')[0]);
+          setPoItems(criticalInventory.map(item => ({
+            inventory_item_id: item.id,
+            quantity: item.min_stock ? (item.min_stock * 2).toString() : '10',
+            unit: item.unit || 'satuan',
+            unit_price: (item.cost || 0).toString(),
+          })));
+          setPoNotes('Auto-generated PO untuk item dengan stok kritis');
+          setIsCreateModalOpen(true);
+          
+          // Clear the URL so it doesn't reopen on refresh
+          window.history.replaceState({}, '', '/dashboard/admin/procurement/purchase-orders');
+        }
+      }
+    }
+  }, [loading, invLoading, inventoryItems, suppliers]);
+
   const handleOpenCreate = () => {
     setSupplierId(suppliers[0]?.id || '');
     setOrderDate(new Date().toISOString().split('T')[0]);
     setExpectedDate('');
     setPoNotes('');
-    setPoItems([{ inventory_item_id: inventoryItems[0]?.id || '', quantity: '10', unit: inventoryItems[0]?.unit || 'kg', unit_price: (inventoryItems[0]?.cost || 25000).toString() }]);
+    setPoItems([{ inventory_item_id: inventoryItems[0]?.id || '', quantity: '1', unit: inventoryItems[0]?.unit || 'kg', conversion_multiplier: '1', unit_price: (inventoryItems[0]?.cost || 25000).toString() }]);
     setIsCreateModalOpen(true);
   };
 
@@ -88,8 +126,9 @@ export default function PurchaseOrdersPage() {
       ...prev,
       {
         inventory_item_id: defaultItem?.id || '',
-        quantity: '10',
+        quantity: '1',
         unit: defaultItem?.unit || 'satuan',
+        conversion_multiplier: '1',
         unit_price: (defaultItem?.cost || 15000).toString(),
       },
     ]);
@@ -109,8 +148,33 @@ export default function PurchaseOrdersPage() {
               ...item,
               inventory_item_id: value,
               unit: match?.unit || item.unit,
+              conversion_multiplier: '1', // Reset conversion on item change
               unit_price: match?.cost ? match.cost.toString() : item.unit_price,
             };
+          }
+          if (field === 'unit') {
+            const match = inventoryItems.find((inv) => String(inv.id) === String(item.inventory_item_id));
+            const baseUnit = match?.unit?.toLowerCase() || '';
+            const poUnit = value.toLowerCase();
+            
+            let autoConversion = item.conversion_multiplier;
+            
+            // Check dynamic conversions from DB
+            const dynamicMatch = conversions.find(
+              c => c.from_unit.toLowerCase() === poUnit && c.to_unit.toLowerCase() === baseUnit
+            );
+            
+            if (dynamicMatch) {
+              autoConversion = dynamicMatch.multiplier.toString();
+            } else {
+              // Fallback for some common defaults if not in DB yet
+              if (poUnit === 'kg' && baseUnit === 'gram') autoConversion = '1000';
+              else if (poUnit === 'liter' && baseUnit === 'ml') autoConversion = '1000';
+              else if (poUnit === 'lusin' && baseUnit === 'pcs') autoConversion = '12';
+              else if (poUnit === 'box' && baseUnit === 'pcs') autoConversion = '24';
+            }
+            
+            return { ...item, [field]: value, conversion_multiplier: autoConversion };
           }
           return { ...item, [field]: value };
         }
@@ -123,12 +187,17 @@ export default function PurchaseOrdersPage() {
     e.preventDefault();
     if (!supplierId || poItems.length === 0) return;
 
+    // Determine status from the button clicked
+    const submitter = (e.nativeEvent as any).submitter as HTMLButtonElement | undefined;
+    const saveStatus = submitter?.value === 'DRAFT' ? 'DRAFT' : 'ORDERED';
+
     setFormLoading(true);
     try {
       const itemsPayload = poItems.map((i) => ({
         inventory_item_id: i.inventory_item_id || inventoryItems[0]?.id || 1,
         quantity: parseFloat(i.quantity) || 1,
         unit: i.unit || 'satuan',
+        conversion_multiplier: parseFloat(i.conversion_multiplier) || 1,
         unit_price_cents: Math.round((parseFloat(i.unit_price) || 0) * 100),
       }));
 
@@ -136,12 +205,13 @@ export default function PurchaseOrdersPage() {
         supplier_id: supplierId,
         order_date: orderDate,
         expected_delivery_date: expectedDate || undefined,
+        status: saveStatus,
         notes: poNotes || 'Dibuat dari modul Pengadaan Admin',
         items: itemsPayload,
       });
 
       setIsCreateModalOpen(false);
-      showNotification('Purchase Order baru berhasil dibuat!');
+      showNotification(`Purchase Order berhasil disimpan sebagai ${saveStatus}!`);
     } catch (err) {
       console.error('Create PO error:', err);
       showNotification('Gagal membuat Purchase Order');
@@ -189,12 +259,24 @@ export default function PurchaseOrdersPage() {
 
       await receivePurchaseOrder(selectedPo.id, { items: payloadItems });
       setIsReceiveModalOpen(false);
-      showNotification(`Barang untuk ${selectedPo.po_number} berhasil diterima. Stok & Batch FEFO (INV-006) diperbarui!`);
+      showNotification(`Barang untuk ${selectedPo.po_number} berhasil diterima. Stok & Batch FEFO diperbarui!`);
     } catch (err) {
       console.error('Receive error:', err);
       showNotification('Gagal memproses penerimaan barang PO');
     } finally {
       setReceiveLoading(false);
+    }
+  };
+
+  const handleCancelPo = async (po: PurchaseOrderData) => {
+    if (confirm(`Apakah Anda yakin ingin membatalkan PO ${po.po_number}?`)) {
+      try {
+        await cancelPurchaseOrder(po.id);
+        showNotification(`PO ${po.po_number} berhasil dibatalkan.`);
+      } catch (err) {
+        console.error('Cancel error:', err);
+        showNotification('Gagal membatalkan PO');
+      }
     }
   };
 
@@ -208,35 +290,24 @@ export default function PurchaseOrdersPage() {
   });
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 -m-6 lg:-m-8 p-6 lg:p-8 selection:bg-accent/30">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-200 dark:border-white/10 pb-6">
         <div>
-          <div className="flex items-center gap-2">
-            <h1 className="font-serif text-3xl font-bold text-gray-800">Purchase Orders (PO)</h1>
-            {usingLive ? (
-              <span className="flex items-center gap-1 rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold text-emerald-700">
- Terhubung API Laravel V1
-              </span>
-            ) : (
-              <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-bold text-amber-700">
-                Mode Lokal / Offline
-              </span>
-            )}
-          </div>
-          <p className="text-sm text-gray-500 mt-1">
-            Buat PO ke supplier dan proses penerimaan barang dengan integrasi Batch FEFO (<span className="font-semibold text-gray-700">INV-006</span>) dan HPP rata-rata tertimbang.
+          <h1 className="font-heading text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white tracking-wide flex items-center gap-3">
+            Purchase Orders (PO)
+          </h1>
+          <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-1 font-sans">
+            Buat PO ke supplier dan proses penerimaan barang dengan integrasi Batch FEFO dan perhitungan HPP rata-rata tertimbang.
           </p>
         </div>
 
-        <PermissionGuard permission="procurement.create">
           <button
             onClick={handleOpenCreate}
-            className="flex items-center justify-center gap-2 rounded-xl bg-[#12100E] px-5 py-2.5 text-sm font-bold text-[#BA935D] hover:bg-[#1e1a17] transition-colors shadow-sm"
+            className="flex items-center gap-2 rounded-2xl bg-accent px-5 py-2.5 text-xs font-bold text-primary hover:bg-[#b88c4d] transition-colors shadow-md active:scale-95 shrink-0"
           >
             <Plus size={16} /> Buat PO Baru
           </button>
-        </PermissionGuard>
       </div>
 
       {/* Action Notification */}
@@ -250,12 +321,12 @@ export default function PurchaseOrdersPage() {
       {/* Filters */}
       <div className="flex flex-wrap gap-3">
         <div className="relative flex-1 min-w-48">
-          <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
+          <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Cari nomor PO atau nama supplier..."
-            className="w-full rounded-xl border border-gray-200 bg-white py-2.5 pl-10 pr-4 text-sm focus:border-[#BA935D] focus:outline-none focus:ring-1 focus:ring-[#BA935D]"
+            className="w-full rounded-2xl border border-gray-200 dark:border-white/15 bg-white dark:bg-black/35 py-2.5 pl-10 pr-4 text-xs font-medium focus:border-accent focus:outline-none"
           />
         </div>
         <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-hide">
@@ -263,10 +334,10 @@ export default function PurchaseOrdersPage() {
             <button
               key={st}
               onClick={() => setStatusFilter(st)}
-              className={`shrink-0 rounded-full px-4 py-1.5 text-xs font-bold transition-all ${
+              className={`shrink-0 rounded-2xl px-5 py-2.5 text-xs font-bold transition-all ${
                 statusFilter === st
-                  ? 'bg-[#12100E] text-[#BA935D] shadow-md'
-                  : 'bg-white border border-gray-200 text-gray-600 hover:border-[#BA935D]'
+                  ? 'bg-primary text-accent shadow-sm'
+                  : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white bg-white dark:bg-black/30 border border-gray-200 dark:border-white/15'
               }`}
             >
               {st === 'all' ? 'Semua Status' : st}
@@ -277,9 +348,9 @@ export default function PurchaseOrdersPage() {
 
       {/* PO List */}
       {loading ? (
-        <div className="flex flex-col items-center justify-center py-20 text-gray-400 bg-white rounded-2xl border border-gray-100">
-          <Loader2 size={36} className="animate-spin mb-3 text-[#BA935D]" />
-          <p className="text-sm font-semibold">Memuat daftar Purchase Order...</p>
+        <div className="flex flex-col items-center justify-center py-20 text-gray-400 bg-white dark:bg-[#1A2620] rounded-3xl border border-gray-200 dark:border-white/10">
+          <Loader2 size={36} className="animate-spin mb-3 text-accent" />
+          <p className="text-xs font-bold">Memuat daftar Purchase Order...</p>
         </div>
       ) : (
         <div className="space-y-4">
@@ -290,11 +361,11 @@ export default function PurchaseOrdersPage() {
             return (
               <div
                 key={po.id}
-                className="rounded-2xl bg-white border border-gray-100 p-5 shadow-sm hover:shadow-md transition-all flex flex-col md:flex-row md:items-center justify-between gap-4"
+                className="group relative bg-white dark:bg-[#1A2620] rounded-3xl border border-gray-200 dark:border-white/10 p-5 shadow-sm hover:shadow-glow hover:border-accent/40 transition-all flex flex-col md:flex-row md:items-center justify-between gap-4 animate-fadeIn"
               >
                 <div className="space-y-2">
                   <div className="flex items-center gap-3">
-                    <span className="flex items-center gap-1.5 font-mono text-sm font-bold text-gray-900 bg-[#FAF6F0] px-3 py-1 rounded-lg text-[#BA935D] border border-[#BA935D]/20">
+                    <span className="flex items-center gap-1.5 font-mono text-xs font-bold text-gray-900 dark:text-white bg-primary/10 dark:bg-accent/10 px-3 py-1 rounded-lg text-primary dark:text-accent border border-primary/20 dark:border-accent/20">
                       <Receipt size={14} /> {po.po_number}
                     </span>
                     <span className={`rounded-full px-3 py-0.5 text-[11px] font-bold ${statusBadge[po.status] || 'bg-gray-100 text-gray-600'}`}>
@@ -318,20 +389,6 @@ export default function PurchaseOrdersPage() {
 
                   {po.notes && <p className="text-xs text-gray-500 italic">&ldquo;{po.notes}&rdquo;</p>}
 
-                  {/* Items summary */}
-                  <div className="flex flex-wrap gap-2 pt-1">
-                    {(po.items || []).map((item, i) => (
-                      <span
-                        key={i}
-                        className="inline-flex items-center gap-1 rounded-md bg-gray-50 border border-gray-200 px-2.5 py-1 text-[11px] font-semibold text-gray-700"
-                      >
-                        <span>{item.inventory_item?.name || `Item #${item.inventory_item_id}`}:</span>
-                        <span className="font-mono font-bold text-gray-900">
-                          {item.received_quantity}/{item.quantity} {item.unit}
-                        </span>
-                      </span>
-                    ))}
-                  </div>
                 </div>
 
                 <div className="flex md:flex-col items-center md:items-end justify-between border-t md:border-t-0 pt-3 md:pt-0 gap-3">
@@ -341,15 +398,24 @@ export default function PurchaseOrdersPage() {
                   </div>
 
                   {!isFinished && (
-                    <PermissionGuard permission="procurement.edit">
+                    <div className="flex flex-col gap-2">
                       <button
                         onClick={() => handleOpenReceive(po)}
-                        className="flex items-center gap-1.5 rounded-xl bg-[#BA935D] px-4 py-2 text-xs font-bold text-white hover:bg-[#a6804b] transition-colors shadow-sm shrink-0"
+                        className="flex items-center justify-center gap-1.5 rounded-xl bg-accent px-4 py-2 text-xs font-bold text-primary hover:bg-[#b88c4d] transition-colors shadow-sm shrink-0"
                       >
                         <PackageCheck size={15} />
                         <span>Terima Barang (Batch FEFO)</span>
                       </button>
-                    </PermissionGuard>
+                      {(po.status === 'DRAFT' || po.status === 'ORDERED') && (
+                        <button
+                          onClick={() => handleCancelPo(po)}
+                          className="flex items-center justify-center gap-1.5 rounded-xl bg-red-50 dark:bg-red-900/20 px-4 py-2 text-xs font-bold text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors border border-red-200 dark:border-red-900/30"
+                        >
+                          <X size={15} />
+                          <span>Batalkan PO</span>
+                        </button>
+                      )}
+                    </div>
                   )}
                 </div>
               </div>
@@ -359,17 +425,17 @@ export default function PurchaseOrdersPage() {
       )}
 
       {/* Modal Create Purchase Order */}
-      {isCreateModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fadeIn">
-          <div className="w-full max-w-2xl rounded-2xl bg-white p-6 shadow-2xl border border-gray-100 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between border-b border-gray-100 pb-4 mb-4">
+      {mounted && isCreateModalOpen && createPortal(
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fadeIn" style={{ zIndex: 9999 }}>
+          <div className="w-full max-w-2xl rounded-3xl bg-white dark:bg-[#1A2620] p-6 shadow-2xl border border-gray-200 dark:border-white/15 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between border-b border-gray-100 dark:border-white/10 pb-4 mb-4">
               <div className="flex items-center gap-2">
-                <FileText size={20} className="text-[#BA935D]" />
-                <h2 className="font-serif text-xl font-bold text-gray-800">Buat Purchase Order Baru</h2>
+                <FileText size={20} className="text-accent" />
+                <h2 className="font-heading text-lg font-bold text-gray-900 dark:text-white">Buat Purchase Order Baru</h2>
               </div>
               <button
                 onClick={() => setIsCreateModalOpen(false)}
-                className="rounded-lg p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+                className="rounded-full p-1.5 text-gray-400 hover:bg-gray-100 dark:hover:bg-white/10"
               >
                 <X size={18} />
               </button>
@@ -387,6 +453,9 @@ export default function PurchaseOrdersPage() {
                     onChange={(e) => setSupplierId(e.target.value)}
                     className="w-full rounded-xl border border-gray-200 px-3 py-2 text-xs font-semibold focus:border-[#BA935D] focus:outline-none"
                   >
+                    {suppliers.length === 0 && (
+                      <option value="" disabled>-- Belum ada data Supplier --</option>
+                    )}
                     {suppliers.map((s) => (
                       <option key={s.id} value={s.id}>
                         {s.name} ({s.category || 'Umum'})
@@ -439,10 +508,11 @@ export default function PurchaseOrdersPage() {
                 <div className="rounded-xl border border-gray-200 overflow-hidden">
                   <table className="w-full text-xs">
                     <thead>
-                      <tr className="bg-gray-50 text-gray-400 uppercase tracking-wider text-left">
+                      <tr className="bg-gray-50 dark:bg-black/20 text-gray-400 uppercase tracking-wider text-left">
                         <th className="p-2.5">Bahan Baku</th>
                         <th className="p-2.5 w-24">Jumlah</th>
-                        <th className="p-2.5 w-20">Satuan</th>
+                        <th className="p-2.5 w-24">Satuan PO</th>
+                        <th className="p-2.5 w-24">Konversi</th>
                         <th className="p-2.5 w-32">Harga/Sat (IDR)</th>
                         <th className="p-2.5 w-10"></th>
                       </tr>
@@ -472,7 +542,29 @@ export default function PurchaseOrdersPage() {
                               className="w-full rounded-lg border border-gray-200 px-2 py-1.5 font-mono focus:border-[#BA935D] focus:outline-none"
                             />
                           </td>
-                          <td className="p-2 text-gray-600 font-semibold">{item.unit}</td>
+                          <td className="p-2">
+                            <input
+                              type="text"
+                              required
+                              value={item.unit}
+                              onChange={(e) => handlePoItemChange(idx, 'unit', e.target.value)}
+                              className="w-full rounded-lg border border-gray-200 px-2 py-1.5 font-mono focus:border-[#BA935D] focus:outline-none"
+                              placeholder="kg, dus..."
+                            />
+                          </td>
+                          <td className="p-2 relative group">
+                            <input
+                              type="number"
+                              required
+                              value={item.conversion_multiplier}
+                              onChange={(e) => handlePoItemChange(idx, 'conversion_multiplier', e.target.value)}
+                              className="w-full rounded-lg border border-gray-200 px-2 py-1.5 font-mono focus:border-[#BA935D] focus:outline-none"
+                            />
+                            {/* Tooltip to explain conversion */}
+                            <div className="absolute hidden group-hover:block bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 p-2 bg-gray-900 text-white text-[10px] rounded shadow-xl z-50">
+                              Berapa banyak stok dasar per 1 satuan PO ini? (Cth: 1 kg = 1000 gram, isi 1000)
+                            </div>
+                          </td>
                           <td className="p-2">
                             <input
                               type="number"
@@ -519,37 +611,51 @@ export default function PurchaseOrdersPage() {
                 >
                   Batal
                 </button>
-                <button
-                  type="submit"
-                  disabled={formLoading}
-                  className="flex items-center gap-1.5 rounded-xl bg-[#12100E] px-6 py-2 text-xs font-bold text-[#BA935D] hover:bg-[#1e1a17] transition-colors disabled:opacity-50"
-                >
-                  {formLoading && <Loader2 size={13} className="animate-spin" />}
-                  Simpan & Terbitkan PO
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="submit"
+                    name="status"
+                    value="DRAFT"
+                    disabled={formLoading}
+                    className="flex items-center gap-1.5 rounded-xl border border-primary/20 dark:border-white/20 bg-transparent px-4 py-2 text-xs font-bold text-primary dark:text-cream-100 hover:bg-black/5 dark:hover:bg-white/10 transition-colors disabled:opacity-50"
+                  >
+                    Simpan Draft
+                  </button>
+                  <button
+                    type="submit"
+                    name="status"
+                    value="ORDERED"
+                    disabled={formLoading}
+                    className="flex items-center gap-1.5 rounded-xl bg-primary px-6 py-2 text-xs font-bold text-accent hover:bg-[#163026] transition-colors disabled:opacity-50"
+                  >
+                    {formLoading && <Loader2 size={13} className="animate-spin" />}
+                    Simpan & Terbitkan
+                  </button>
+                </div>
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
-      {/* Modal Receive Purchase Order with Batch FEFO (INV-006 & Procurement) */}
-      {isReceiveModalOpen && selectedPo && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fadeIn">
-          <div className="w-full max-w-3xl rounded-2xl bg-white p-6 shadow-2xl border border-gray-100 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between border-b border-gray-100 pb-4 mb-4">
+      {/* Modal Receive Purchase Order with Batch FEFO */}
+      {mounted && isReceiveModalOpen && selectedPo && createPortal(
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fadeIn" style={{ zIndex: 9999 }}>
+          <div className="w-full max-w-3xl rounded-3xl bg-white dark:bg-[#1A2620] p-6 shadow-2xl border border-gray-200 dark:border-white/15 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between border-b border-gray-100 dark:border-white/10 pb-4 mb-4">
               <div className="flex items-center gap-2">
-                <PackageCheck size={22} className="text-emerald-600" />
+                <PackageCheck size={22} className="text-emerald-500" />
                 <div>
-                  <h3 className="font-serif text-xl font-bold text-gray-800">Penerimaan Barang PO (Receiving)</h3>
-                  <p className="text-xs text-gray-500 font-mono mt-0.5">
+                  <h3 className="font-heading text-lg font-bold text-gray-900 dark:text-white">Penerimaan Barang PO (Receiving)</h3>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 font-mono mt-0.5">
                     {selectedPo.po_number} • {selectedPo.supplier?.name}
                   </p>
                 </div>
               </div>
               <button
                 onClick={() => setIsReceiveModalOpen(false)}
-                className="rounded-lg p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+                className="rounded-full p-1.5 text-gray-400 hover:bg-gray-100 dark:hover:bg-white/10"
               >
                 <X size={18} />
               </button>
@@ -558,7 +664,7 @@ export default function PurchaseOrdersPage() {
             <div className="rounded-xl bg-emerald-50/60 border border-emerald-200 p-3.5 mb-4 text-xs space-y-1 text-emerald-900">
               <div className="flex items-center gap-1.5 font-bold">
                 <Hash size={14} className="text-emerald-700" />
-                <span>Integrasi Batch FEFO Kedaluwarsa (INV-006)</span>
+                <span>Pencatatan Kedaluwarsa Barang (FEFO)</span>
               </div>
               <p className="text-emerald-800">
                 Penerimaan barang otomatis membuat rekam jejak batch dan memperbarui HPP rata-rata tertimbang (*Weighted-Average Unit Cost*).
@@ -569,7 +675,7 @@ export default function PurchaseOrdersPage() {
               <div className="overflow-x-auto rounded-xl border border-gray-200">
                 <table className="w-full text-xs">
                   <thead>
-                    <tr className="bg-gray-50 text-left uppercase tracking-wider text-gray-400">
+                    <tr className="bg-gray-50 dark:bg-black/20 text-left uppercase tracking-wider text-gray-400">
                       <th className="p-3">Nama Bahan Baku</th>
                       <th className="p-3 w-28">Order vs Terima</th>
                       <th className="p-3 w-28">Qty Diterima</th>
@@ -651,7 +757,8 @@ export default function PurchaseOrdersPage() {
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

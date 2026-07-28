@@ -14,6 +14,7 @@ class SupplierController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
+        \Illuminate\Support\Facades\Log::info('SupplierController::index called', ['user' => $request->user()?->id]);
         $query = Supplier::withCount('inventories');
 
         if ($request->filled('search')) {

@@ -1,6 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
+import { useRouter } from 'next/navigation';
 import {
   Search,
   AlertTriangle,
@@ -41,20 +43,45 @@ interface StockMovementLog {
   user: string;
 }
 
-const initialLogs: StockMovementLog[] = [
-  { id: 'LOG-901', timestamp: '17 Jul 2026 14:32:10', itemName: 'Biji Kopi Specialty Gayo Arabica', type: 'BOM_AUTO_DEDUCT', quantityChange: -36, unit: 'gram', reference: 'POS Order #INV-8821 (2x Sea Salt Caramel)', user: 'System (POS Auto-BOM 9.4)' },
-  { id: 'LOG-902', timestamp: '17 Jul 2026 14:15:00', itemName: 'Susu Oat Barista Blend (Oatly)', type: 'STOCK_IN', quantityChange: 6000, unit: 'ml', reference: 'Penerimaan PO #PO-2026-089 dari Supplier Global Dairy', user: 'Fajar (Head Barista)' },
-  { id: 'LOG-903', timestamp: '17 Jul 2026 13:50:22', itemName: 'Sirup Hazelnut Artisan / Vanilla', type: 'BOM_AUTO_DEDUCT', quantityChange: -15, unit: 'ml', reference: 'POS Order #INV-8819 (1x Hazelnut Latte)', user: 'System (POS Auto-BOM 9.4)' },
-  { id: 'LOG-904', timestamp: '17 Jul 2026 11:20:00', itemName: 'Paper Cup Hot / Cold 180ml + Lid', type: 'STOCK_OUT_WASTE', quantityChange: -5, unit: 'pcs', reference: 'Rusak saat persiapan shift pagi (Waste Adjustment)', user: 'Nadia (Barista)' },
-  { id: 'LOG-905', timestamp: '16 Jul 2026 21:00:00', itemName: 'Biji Kopi Specialty Gayo Arabica', type: 'OPNAME', quantityChange: +120, unit: 'gram', reference: 'Audit Stock Opname Closing Shift Malam (INV-005)', user: 'Fajar (Head Barista)' },
-];
+const initialLogs: StockMovementLog[] = [];
 
 export default function InventoryPage() {
+  const router = useRouter();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
   const { items, loading, usingLive, adjustStock, addItem, deleteItem, performCycleCount, refetch } = useInventory();
   const [activeTab, setActiveTab] = useState<'stock' | 'history'>('stock');
   const [search, setSearch] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [logs, setLogs] = useState<StockMovementLog[]>(initialLogs);
+  const [logsLoading, setLogsLoading] = useState(false);
+
+  // Fetch real logs from API
+  useEffect(() => {
+    if (usingLive) {
+      setLogsLoading(true);
+      import('@/shared/api/axios').then(({ default: api }) => {
+        api.get('/admin/inventories/logs')
+          .then(res => {
+            if (res.data?.data) {
+              const fetchedLogs = res.data.data.map((log: any) => ({
+                id: log.id || `LOG-${Date.now()}-${Math.random()}`,
+                timestamp: new Date(log.created_at).toLocaleString('id-ID'),
+                itemName: log.inventory?.name || 'Item Terhapus',
+                type: log.type || 'STOCK_IN',
+                quantityChange: Number(log.quantity),
+                unit: typeof log.inventory?.unit === 'object' && log.inventory?.unit ? log.inventory.unit.name : (log.inventory?.unit || 'satuan'),
+                reference: log.reference_number || log.notes || '-',
+                user: log.user?.name || 'Sistem',
+              }));
+              setLogs(fetchedLogs);
+            }
+          })
+          .catch(err => console.error('Failed to fetch real inventory logs:', err))
+          .finally(() => setLogsLoading(false));
+      });
+    }
+  }, [usingLive, activeTab]);
 
   // Modal State for Add Item
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -77,7 +104,7 @@ export default function InventoryPage() {
   const [expirationDateInput, setExpirationDateInput] = useState('');
   const [cycleLoading, setCycleLoading] = useState(false);
 
-  // 9.4 Stock In / Out / Waste Logger Modal
+  // Stock In / Out / Waste Logger Modal
   const [isMovementModalOpen, setIsMovementModalOpen] = useState(false);
   const [movementTargetItem, setMovementTargetItem] = useState<InventoryItem | null>(null);
   const [movementType, setMovementType] = useState<'STOCK_IN' | 'STOCK_OUT_WASTE'>('STOCK_IN');
@@ -137,7 +164,7 @@ export default function InventoryPage() {
         quantityChange: delta,
         unit: movementTargetItem.unit,
         reference: movementRef,
-        user: 'Admin Roastery (Manual 9.4)',
+        user: 'Admin Roastery (Manual)',
       };
       setLogs((prev) => [newLog, ...prev]);
 
@@ -154,7 +181,7 @@ export default function InventoryPage() {
   const handleOpenCycleCount = (item: InventoryItem) => {
     setCycleTargetItem(item);
     setPhysicalCountInput(item.stock.toString());
-    setCycleNotesInput('Stock Opname Cycle Count (INV-005)');
+    setCycleNotesInput('Stock Opname Cycle Count');
     setBatchNumberInput('');
     setExpirationDateInput('');
     setIsCycleModalOpen(true);
@@ -190,7 +217,7 @@ export default function InventoryPage() {
             quantityChange: variance,
             unit: cycleTargetItem.unit,
             reference: `${cycleNotesInput || 'Stock Opname Audit'}`,
-            user: 'Admin Roastery (Opname 9.4)',
+            user: 'Admin Roastery (Opname)',
           },
           ...prev,
         ]);
@@ -255,56 +282,22 @@ export default function InventoryPage() {
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-200 dark:border-white/10 pb-6">
         <div>
-          <div className="flex items-center gap-3">
-            <h1 className="font-heading text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white tracking-wide">
-              Manajemen Persediaan & Stok Bahan Baku (9.4)
-            </h1>
-            {usingLive ? (
-              <span className="flex items-center gap-1.5 rounded-full bg-emerald-500/20 border border-emerald-500/30 px-3.5 py-1 text-xs font-bold text-emerald-600 dark:text-emerald-400">
- Terhubung API Live
-              </span>
-            ) : (
-              <span className="rounded-full bg-primary text-accent px-3.5 py-1 text-xs font-bold shadow-sm">
-                Mode Offline / BOM Deduct
-              </span>
-            )}
-          </div>
+          <h1 className="font-heading text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white tracking-wide">
+            Manajemen Inventaris
+          </h1>
           <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-1 font-sans">
-            Catat barang masuk (Stock In) & keluar (Waste/Stock Out), pantau peringatan stok kritis di bawah minimum, serta audit pemotongan stok otomatis dari resep BOM POS (<strong className="text-emerald-600 dark:text-emerald-400">9.4</strong>).
+            Catat barang masuk (Stock In) & keluar (Waste/Stock Out), pantau peringatan stok kritis, dan audit otomatis (BOM).
           </p>
         </div>
 
-        <div className="flex items-center gap-2.5 flex-wrap">
-          <div className="flex gap-1 rounded-2xl border border-gray-200 dark:border-white/15 bg-white dark:bg-black/30 p-1">
-            <button
-              onClick={() => setActiveTab('stock')}
-              className={`flex items-center gap-1.5 rounded-xl px-4 py-2 text-xs font-bold transition-all ${
-                activeTab === 'stock' ? 'bg-primary text-accent shadow-sm' : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
-              }`}
-            >
-              <Package size={14} />
-              <span>1. Daftar Stok & Peringatan Kritis</span>
-            </button>
-            <button
-              onClick={() => setActiveTab('history')}
-              className={`flex items-center gap-1.5 rounded-xl px-4 py-2 text-xs font-bold transition-all ${
-                activeTab === 'history' ? 'bg-primary text-accent shadow-sm' : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
-              }`}
-            >
-              <History size={14} />
-              <span>2. Log Mutasi & Audit BOM ({logs.length})</span>
-            </button>
-          </div>
-
-          <PermissionGuard permission="inventory.create">
-            <button
-              onClick={() => setIsModalOpen(true)}
-              className="flex items-center gap-2 rounded-2xl bg-primary px-5 py-2.5 text-xs font-bold text-accent hover:bg-primary-hover transition-colors shadow-md active:scale-95 shrink-0"
-            >
-              <Plus size={16} /> Tambah Item Bahan
-            </button>
-          </PermissionGuard>
-        </div>
+        <PermissionGuard permission="inventory.create">
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="flex items-center gap-2 rounded-2xl bg-accent px-5 py-2.5 text-xs font-bold text-primary hover:bg-[#b88c4d] transition-colors shadow-md active:scale-95 shrink-0"
+          >
+            <Plus size={16} /> Tambah Item Bahan
+          </button>
+        </PermissionGuard>
       </div>
 
       {/* Action Notification */}
@@ -315,7 +308,7 @@ export default function InventoryPage() {
         </div>
       )}
 
-      {/* Low Stock Alert Banner (9.4 Peringatan Stok Kritis di Bawah Minimum) */}
+      {/* Low Stock Alert Banner (Peringatan Stok Kritis di Bawah Minimum) */}
       {criticalItems.length > 0 && (
         <div className="rounded-3xl bg-red-500/10 border-2 border-red-500/40 p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 animate-pulse">
           <div className="flex items-center gap-3.5">
@@ -324,7 +317,7 @@ export default function InventoryPage() {
             </div>
             <div>
               <h3 className="font-heading text-sm font-extrabold text-red-700 dark:text-red-400">
-                Peringatan Stok Kritis di Bawah Minimum (Low Stock Alert 9.4)
+                Peringatan Stok Kritis di Bawah Minimum
               </h3>
               <p className="text-xs text-red-600/90 dark:text-red-300/90 mt-0.5">
                 Sebanyak <strong className="font-mono text-red-700 dark:text-red-300">{criticalItems.length} bahan baku</strong> berada di bawah batas minimum pengaman. Segera lakukan Stock In / PO dari supplier agar dapur tidak 86&apos;d.
@@ -332,7 +325,10 @@ export default function InventoryPage() {
             </div>
           </div>
           <button
-            onClick={() => showNotification('Membuka modul Purchase Order (PO) otomatis untuk seluruh item kritis...')}
+            onClick={() => {
+              const criticalIds = criticalItems.map((i) => i.id).join(',');
+              router.push(`/dashboard/admin/procurement/purchase-orders?critical_items=${criticalIds}`);
+            }}
             className="rounded-2xl bg-red-600 hover:bg-red-500 text-white px-5 py-2.5 text-xs font-bold shadow-md transition-all active:scale-95 shrink-0"
           >
             + Buat PO Pembelian Cepat
@@ -342,7 +338,7 @@ export default function InventoryPage() {
 
       {/* Alert Summary Cards */}
       <div className="grid gap-4 sm:grid-cols-3">
-        <div className="flex items-center gap-4 rounded-3xl bg-white dark:bg-dark-card border border-gray-200 dark:border-white/10 p-5 shadow-sm">
+        <div className="flex items-center gap-4 rounded-3xl bg-white dark:bg-[#1A2620] border border-gray-200 dark:border-white/10 p-5 shadow-sm">
           <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-red-500/15 border border-red-500/30 text-red-600 dark:text-red-400">
             <AlertTriangle size={22} />
           </div>
@@ -351,7 +347,7 @@ export default function InventoryPage() {
             <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mt-0.5">Stok Kritis (Bawah Min.)</p>
           </div>
         </div>
-        <div className="flex items-center gap-4 rounded-3xl bg-white dark:bg-dark-card border border-gray-200 dark:border-white/10 p-5 shadow-sm">
+        <div className="flex items-center gap-4 rounded-3xl bg-white dark:bg-[#1A2620] border border-gray-200 dark:border-white/10 p-5 shadow-sm">
           <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-amber-500/15 border border-amber-500/30 text-amber-600 dark:text-amber-400">
             <TrendingDown size={22} />
           </div>
@@ -360,7 +356,7 @@ export default function InventoryPage() {
             <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mt-0.5">Hampir Habis (Perhatian)</p>
           </div>
         </div>
-        <div className="flex items-center gap-4 rounded-3xl bg-white dark:bg-dark-card border border-gray-200 dark:border-white/10 p-5 shadow-sm">
+        <div className="flex items-center gap-4 rounded-3xl bg-white dark:bg-[#1A2620] border border-gray-200 dark:border-white/10 p-5 shadow-sm">
           <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-primary text-accent">
             <Package size={22} />
           </div>
@@ -371,9 +367,31 @@ export default function InventoryPage() {
         </div>
       </div>
 
+      {/* TABS Navigation */}
+      <div className="flex gap-2 border-b border-gray-200 dark:border-white/10 pb-4">
+        <button
+          onClick={() => setActiveTab('stock')}
+          className={`flex items-center gap-2 rounded-2xl px-5 py-2.5 text-xs font-bold transition-all ${
+            activeTab === 'stock' ? 'bg-primary text-accent shadow-sm' : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white bg-white dark:bg-black/30 border border-gray-200 dark:border-white/15'
+          }`}
+        >
+          <Package size={16} />
+          <span>Daftar Stok & Peringatan</span>
+        </button>
+        <button
+          onClick={() => setActiveTab('history')}
+          className={`flex items-center gap-2 rounded-2xl px-5 py-2.5 text-xs font-bold transition-all ${
+            activeTab === 'history' ? 'bg-primary text-accent shadow-sm' : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white bg-white dark:bg-black/30 border border-gray-200 dark:border-white/15'
+          }`}
+        >
+          <History size={16} />
+          <span>Log Mutasi & Audit ({logs.length})</span>
+        </button>
+      </div>
+
       {/* TAB 1: INVENTORY ITEMS LIST */}
       {activeTab === 'stock' && (
-        <div className="space-y-4 animate-in fade-in duration-200">
+        <div className="space-y-6 animate-in fade-in duration-200">
           {/* Filters */}
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div className="relative flex-1 min-w-[260px] max-w-sm">
@@ -402,7 +420,7 @@ export default function InventoryPage() {
           </div>
 
           {loading ? (
-            <div className="flex flex-col items-center justify-center py-20 text-gray-400 bg-white dark:bg-dark-card rounded-3xl border border-gray-200 dark:border-white/10">
+            <div className="flex flex-col items-center justify-center py-20 text-gray-400 bg-white dark:bg-[#1A2620] rounded-3xl border border-gray-200 dark:border-white/10">
               <Loader2 size={36} className="animate-spin mb-3 text-accent" />
               <p className="text-xs font-bold">Memuat data persediaan & level stok...</p>
             </div>
@@ -411,7 +429,7 @@ export default function InventoryPage() {
               {filtered.map((item) => {
                 const level = stockLevel(item);
                 return (
-                  <div key={item.id} className="group relative bg-white dark:bg-dark-card rounded-3xl border border-gray-200 dark:border-white/10 p-5 shadow-sm hover:shadow-glow hover:border-accent/40 transition-all flex flex-col h-full animate-fadeIn">
+                  <div key={item.id} className="group relative bg-white dark:bg-[#1A2620] rounded-3xl border border-gray-200 dark:border-white/10 p-5 shadow-sm hover:shadow-glow hover:border-accent/40 transition-all flex flex-col h-full animate-fadeIn">
                     <div className="flex justify-between items-start mb-4">
                       <div>
                         <span className="inline-block px-2.5 py-1 rounded-lg bg-primary/10 dark:bg-accent/10 text-primary dark:text-accent text-[10px] font-extrabold uppercase tracking-wider mb-2">
@@ -500,15 +518,15 @@ export default function InventoryPage() {
         </div>
       )}
 
-      {/* TAB 2: STOCK MOVEMENT & BOM AUTO-DEDUCTION LOGS (9.4) */}
+      {/* TAB 2: STOCK MOVEMENT & BOM AUTO-DEDUCTION LOGS */}
       {activeTab === 'history' && (
         <div className="space-y-4 animate-in fade-in duration-200">
-          <div className="rounded-3xl bg-white dark:bg-dark-card border border-gray-200 dark:border-white/10 p-6 shadow-sm space-y-4">
+          <div className="rounded-3xl bg-white dark:bg-[#1A2620] border border-gray-200 dark:border-white/10 p-6 shadow-sm space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-gray-100 dark:border-white/10 pb-4">
               <div>
                 <h3 className="font-heading text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
                   <History size={20} className="text-accent" />
-                  <span>Log Mutasi Stok & Pemotongan Resep BOM Otomatis (9.4)</span>
+                  <span>Log Mutasi Stok & Pemotongan Resep BOM Otomatis</span>
                 </h3>
                 <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
                   Setiap transaksi POS kasir secara langsung mengurangi stok bahan baku sesuai komposisi BOM menu yang terjual.
@@ -575,9 +593,9 @@ export default function InventoryPage() {
       )}
 
       {/* 9.4 MODAL: STOCK IN / OUT / WASTE LOGGER */}
-      {isMovementModalOpen && movementTargetItem && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fadeIn">
-          <div className="w-full max-w-md rounded-3xl bg-white dark:bg-dark-card p-6 sm:p-8 shadow-2xl border border-gray-200 dark:border-white/15 space-y-5">
+      {mounted && isMovementModalOpen && movementTargetItem && createPortal(
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fadeIn">
+          <div className="w-full max-w-md rounded-3xl bg-white dark:bg-[#1A2620] p-6 sm:p-8 shadow-2xl border border-gray-200 dark:border-white/15 space-y-5">
             <div className="flex items-center justify-between border-b border-gray-100 dark:border-white/10 pb-4">
               <h3 className="font-heading text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
                 {movementType === 'STOCK_IN' ? <ArrowDownLeft size={20} className="text-emerald-500" /> : <ArrowUpRight size={20} className="text-amber-500" />}
@@ -645,13 +663,13 @@ export default function InventoryPage() {
               </div>
             </form>
           </div>
-        </div>
+        </div>, document.body
       )}
 
       {/* Modal Cycle Count Stock Opname */}
-      {isCycleModalOpen && cycleTargetItem && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fadeIn">
-          <div className="w-full max-w-md rounded-3xl bg-white dark:bg-dark-card p-6 sm:p-8 shadow-2xl border border-gray-200 dark:border-white/15 space-y-5">
+      {mounted && isCycleModalOpen && cycleTargetItem && createPortal(
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fadeIn">
+          <div className="w-full max-w-md rounded-3xl bg-white dark:bg-[#1A2620] p-6 sm:p-8 shadow-2xl border border-gray-200 dark:border-white/15 space-y-5">
             <div className="flex items-center justify-between border-b border-gray-100 dark:border-white/10 pb-3 mb-4">
               <div className="flex items-center gap-2">
                 <ClipboardCheck size={20} className="text-accent" />
@@ -772,13 +790,13 @@ export default function InventoryPage() {
               </div>
             </form>
           </div>
-        </div>
+        </div>, document.body
       )}
 
       {/* Modal Tambah Item Bahan Baku */}
-      {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fadeIn">
-          <div className="w-full max-w-md rounded-3xl bg-white dark:bg-dark-card p-6 sm:p-8 shadow-2xl border border-gray-200 dark:border-white/15 space-y-5">
+      {mounted && isModalOpen && createPortal(
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fadeIn">
+          <div className="w-full max-w-md rounded-3xl bg-white dark:bg-[#1A2620] p-6 sm:p-8 shadow-2xl border border-gray-200 dark:border-white/15 space-y-5">
             <div className="flex items-center justify-between border-b border-gray-100 dark:border-white/10 pb-4">
               <h2 className="font-heading text-lg font-bold text-gray-900 dark:text-white">Tambah Bahan Baku Baru</h2>
               <button onClick={() => setIsModalOpen(false)} className="rounded-full p-1.5 text-gray-400 hover:bg-gray-100 dark:hover:bg-white/10">
@@ -901,7 +919,7 @@ export default function InventoryPage() {
               </div>
             </form>
           </div>
-        </div>
+        </div>, document.body
       )}
     </div>
   );
