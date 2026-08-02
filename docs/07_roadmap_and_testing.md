@@ -40,24 +40,38 @@ gantt
 
 ## 39. TESTING STRATEGY
 
+> **Dokumen lengkap:** [`08_testing_specification.md`](./08_testing_specification.md) — ketentuan testing, matriks modul, critical paths (CP-01…CP-20), automated vs manual, backlog, dan cara menjalankan.  
+> **Docs vs kode:** arsitektur path & API diselaraskan di `02`, `05`; gap RBAC (void/KDS) tercatat di `03` §25.1 dan `05` §28.9 — diperbaiki di kode lalu ditutup tes §12.1 di `08`.
+
 ### 39.1 Jenis Pengujian
 
-| Jenis Pengujian | Cakupan | Tools |
-|---|---|---|
-| Unit Testing | Fungsi/logic bisnis backend (perhitungan transaksi, validasi stok) | PHPUnit (Laravel) |
-| Integration Testing | Alur antar modul (contoh: transaksi POS memicu pengurangan stok) | PHPUnit + Database Testing |
-| API Testing | Validasi seluruh endpoint (request/response, status code, autentikasi) | Postman/Newman |
-| Component Testing | Komponen UI React (rendering, interaksi state) | Jest + React Testing Library |
-| End-to-End Testing | Skenario penuh pengguna (reservasi, transaksi POS, publikasi CMS) | Playwright/Cypress |
-| Responsive Testing | Pengujian tampilan di berbagai breakpoint & perangkat | Chrome DevTools, BrowserStack |
-| Accessibility Testing | Kontras warna, navigasi keyboard, screen reader | Lighthouse, axe DevTools |
-| Performance Testing | Waktu muat halaman, Core Web Vitals | Lighthouse, WebPageTest |
-| Security Testing | Uji validasi input, RBAC, proteksi XSS/SQL Injection | OWASP ZAP, manual penetration testing |
-| User Acceptance Testing (UAT) | Validasi akhir oleh Owner & tim operasional coffee shop | Skenario UAT terstruktur (Bab 40) |
+| Jenis Pengujian | Otomatis? | Cakupan | Tools |
+|---|---|---|---|
+| Unit Testing | **Ya** | Logic bisnis BE + store/util FE (cart, total, stok, queue) | PHPUnit, Vitest |
+| Integration / Feature API | **Ya** | Alur antar modul + endpoint (POS→stok, auth, RBAC) | PHPUnit + DB Testing |
+| API Collection (opsional) | **Ya** | Smoke staging request/response | Postman/Newman |
+| Component Testing | **Ya** | Komponen UI React kritis (POS, form, KDS) | Vitest + React Testing Library |
+| End-to-End Testing | **Ya (P0)** | Skenario penuh (login, reservasi, POS, KDS) | Playwright |
+| Responsive Testing | Semi | Breakpoint & perangkat | Chrome DevTools, BrowserStack |
+| Accessibility Testing | Semi | Kontras, keyboard, screen reader | Lighthouse, axe |
+| Performance Testing | Semi | Core Web Vitals, latency POS | Lighthouse, WebPageTest |
+| Security Testing | Semi | Validasi input, RBAC, XSS/SQLi | OWASP ZAP, manual |
+| User Acceptance Testing (UAT) | Manual | Validasi Owner & ops coffee shop | Checklist Bab 40 + `08` §7 |
 
 ### 39.2 Strategi Regresi
 
-Setiap penambahan fitur baru wajib disertai regression testing terhadap modul yang saling terintegrasi, khususnya pada alur **POS → Inventory → Laporan**, karena ketiga modul ini saling bergantung secara data.
+Setiap penambahan fitur baru wajib disertai regression testing terhadap modul yang saling terintegrasi, khususnya alur **POS → Inventory → Laporan** dan **POS → KDS**. Critical path P0 (CP-01…CP-08) wajib hijau sebelum rilis — detail di `08_testing_specification.md` §5.
+
+### 39.3 Automated Testing (ringkas)
+
+| Layer | Perintah | Lokasi |
+|---|---|---|
+| Frontend unit/component | `cd frontend && npm test` | `frontend/tests/` |
+| Backend feature/unit | `cd backend && php vendor/bin/phpunit` | `backend/tests/` |
+| E2E (target) | `npx playwright test` | `e2e/` (belum dipasang) |
+
+**Wajib otomatis:** Unit, Component kritis, Feature API, E2E alur P0.  
+**Manual/semi:** UAT, printer struk, PWA visual, security dalam, pixel UI.
 
 ---
 

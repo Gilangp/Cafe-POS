@@ -127,3 +127,17 @@
 \**Admin hanya dapat melihat audit log terkait aktivitasnya sendiri, sedangkan Owner dapat melihat seluruh audit log sistem.
 
 > **Catatan Fleksibilitas Role:** Owner dapat menetapkan satu akun pengguna dengan **dua peran sekaligus** (Kasir + Dapur/Barista) melalui Manajemen User, sehingga staf yang merangkap tugas kasir dan barista tetap dapat login satu kali namun memiliki akses ke POS maupun Kitchen Display.
+
+### 25.1 Status implementasi middleware (audit)
+
+Matriks di atas = **kebijakan target**. Kode API saat audit docs:
+
+| Kebijakan | Status kode | Tindak lanjut |
+|---|---|---|
+| Void hanya Admin/Owner | ❌ void masih di grup `role:Kasir,Admin,Owner` | GAP-RBAC-01 — `05` §28.9 |
+| Ubah status KDS hanya Dapur(+Admin/Owner) | ❌ PATCH KDS ikut role Kasir | GAP-RBAC-02 |
+| POS Kasir/Admin/Owner | ✅ | — |
+| Admin CMS Admin/Owner | ✅ | — |
+| Owner dashboard/backup API | ✅ prefix `/owner` | UI backup/users masih di tree admin |
+
+Detail endpoint & path FE: `05_database_and_api.md`, `02_system_architecture.md`.

@@ -2,50 +2,54 @@
 
 ## 10. SITEMAP
 
+> **Catatan path:** URL publik & dashboard memakai **slug English** (sesuai implementasi Next.js). Label UI tetap Bahasa Indonesia.
+
 ```mermaid
 graph TD
-    A[NEMU Space Website] --> B[Landing Page]
-    A --> C[Halaman Menu]
-    A --> D[Halaman Promo]
-    A --> E[Halaman Artikel]
-    A --> F[Detail Artikel]
-    A --> G[Halaman Galeri]
-    A --> H[Halaman Reservasi]
-    A --> I[Halaman Kontak/Lokasi]
-    A --> J[Login]
-    J --> K[Dashboard Kasir]
-    J --> N[Kitchen Display - Dapur/Barista]
-    J --> L[Dashboard Admin]
-    J --> M[Dashboard Owner]
+    A[NEMU Space Website] --> B[Landing Page /]
+    A --> C[Menu /menu]
+    A --> D[Promo /promotion]
+    A --> E[Artikel /article]
+    A --> F[Detail Artikel /article/slug]
+    A --> G[Galeri /gallery]
+    A --> H[Reservasi /reservation]
+    A --> H2[Status Reservasi /reservation/status]
+    A --> I[Kontak /contact]
+    A --> EV[Events /events]
+    A --> CR[Careers /careers]
+    A --> J[Login /login]
+    J --> K[POS Kasir /dashboard/pos]
+    J --> N[KDS /dashboard/admin/kds]
+    J --> L[Dashboard Admin /dashboard/admin/*]
+    J --> M[Dashboard Owner /dashboard/owner/*]
 
-    K --> K1[POS]
-    K --> K2[Riwayat Transaksi]
+    K --> K1[POS Transaksi]
+    K --> K2[Riwayat via POS API]
     K --> K3[Reservasi Hari Ini]
 
-    N --> N1[Antrian Pesanan Masuk]
-    N --> N2[Pesanan Diproses]
-    N --> N3[Pesanan Siap]
+    N --> N1[Antrian Masuk]
+    N --> N2[Diproses]
+    N --> N3[Siap]
 
-    L --> L1[Kelola Landing Page]
-    L --> L2[Kelola Menu & Kategori]
-    L --> L3[Kelola Promo]
-    L --> L4[Kelola Artikel]
-    L --> L5[Kelola Galeri]
-    L --> L6[Kelola Reservasi]
-    L --> L7[Kelola Inventory]
-    L --> L8[Kelola Kasir]
-    L --> L9[Kelola Media]
-    L --> L10[Laporan]
-    L --> L11[Pengaturan Website]
+    L --> L1[CMS /admin/cms]
+    L --> L2[Menu & Kategori]
+    L --> L3[Promotions]
+    L --> L4[Inventory]
+    L --> L5[Procurement PO/Supplier]
+    L --> L6[Reservations]
+    L --> L7[Orders POS history]
+    L --> L8[Reports / Analytics]
+    L --> L9[Users / Employees]
+    L --> L10[Settings / Audit / Backup]
+    L --> L11[Unit Conversions]
 
-    M --> L
-    M --> M1[Dashboard Bisnis]
-    M --> M2[Grafik Penjualan]
-    M --> M3[Statistik]
-    M --> M4[Backup/Restore]
-    M --> M5[Pengaturan Sistem]
-    M --> M6[Manajemen User]
+    M --> M1[Overview / Sales / Analytics]
+    M --> M2[Inventory view]
+    M --> M3[Reports]
+    M --> M4[Settings]
 ```
+
+> **Out of scope (jangan di sitemap produk):** `/order`, `/qr/[tableCode]`, admin CRM, admin memberships/loyalty.
 
 ---
 
@@ -53,145 +57,178 @@ graph TD
 
 ### 11.1 Struktur Navigasi Publik
 
-| Level 1 | Level 2 | Level 3 |
+| Level 1 (UI) | Path aktual | Level 2 |
 |---|---|---|
-| Beranda | Hero Banner, Tentang Kami, Menu Favorit, Promo, Testimoni, FAQ | — |
-| Menu | Semua Menu, Kategori, Pencarian, Detail Menu | — |
-| Promo | Daftar Promo Aktif | Detail Promo |
-| Artikel | Daftar Artikel, Kategori Artikel | Detail Artikel |
-| Galeri | Galeri Foto per Kategori | Preview Gambar |
-| Reservasi | Form Reservasi | Status Reservasi |
-| Kontak | Alamat, Jam Operasional, Peta, WhatsApp, Media Sosial | — |
+| Beranda | `/` | Hero, Tentang, Menu favorit, Promo, Testimoni, FAQ |
+| Menu | `/menu` | Filter kategori, pencarian |
+| Promo | `/promotion` | Promo aktif |
+| Artikel | `/article`, `/article/[slug]` | List + detail |
+| Galeri | `/gallery` | Grid foto |
+| Reservasi | `/reservation`, `/reservation/status` | Form + cek status |
+| Kontak | `/contact` | Alamat, jam, peta, WA, sosmed |
+| Events / Careers | `/events`, `/careers` | Konten pendukung (opsional) |
+| Accessibility | `/accessibility` | Info a11y |
+
+**Bukan navigasi produk:** `/order`, `/qr/*`, `/account` (order online / membership — out of scope).
 
 ### 11.2 Struktur Navigasi Internal (Setelah Login)
 
-| Role | Struktur Menu Utama |
-|---|---|
-| Kasir | Dashboard → POS → Riwayat Transaksi → Reservasi Hari Ini |
-| Dapur/Barista | Kitchen Display → Antrian Masuk → Diproses → Siap Diambil |
-| Admin | Dashboard → CMS (Landing Page, Menu, Promo, Artikel, Galeri) → Reservasi → Inventory → Kasir & Dapur → Media → Laporan → Pengaturan |
-| Owner | Seluruh menu Admin + Dashboard Bisnis → Grafik → Statistik → Backup/Restore → Pengaturan Sistem → Manajemen User |
+| Role | Path utama (aktual) | Menu |
+|---|---|---|
+| Kasir | `/dashboard/pos` | POS, ringkasan shift, reservasi hari ini (via API) |
+| Dapur/Barista | `/dashboard/admin/kds` | Kitchen Display (antrian → proses → siap) |
+| Admin | `/dashboard/admin/*` | CMS, menu, kategori, promo, inventory, procurement, reservasi, riwayat orders POS, reports, users, settings, audit, backup, unit-conversions, KDS — **tanpa** CRM/membership |
+| Owner | `/dashboard/owner/*` + akses admin | Overview, sales, analytics, inventory, reports, settings; backup/user juga lewat admin UI + API `/owner/*` |
+
+> **Gap vs matriks ideal (Bab 25):** UI KDS, users, backup saat ini berada di tree `admin/`. API Owner (`/api/v1/owner/*`) sudah terpisah role `Owner`. Refactor path FE ke `/dashboard/kds`, `/dashboard/owner/users` dll. adalah backlog struktur — bukan blocker fungsional API.
 
 ### 11.3 Prinsip Arsitektur Informasi
 
-1. **Maksimal 3 klik** dari beranda menuju informasi penting apapun (menu, reservasi, kontak).
-2. Navigasi konsisten pada seluruh halaman publik (sticky navbar).
-3. Dashboard internal menggunakan pola **Sidebar Navigation** dengan pengelompokan berdasarkan modul.
-4. Breadcrumb wajib digunakan pada seluruh halaman dashboard internal untuk konteks lokasi pengguna.
+1. **Maksimal 3 klik** dari beranda ke menu, reservasi, kontak.
+2. Navbar publik sticky & konsisten.
+3. Dashboard internal: **sidebar** per modul.
+4. Breadcrumb pada halaman dashboard.
+5. **Slug URL English**, copy UI **Bahasa Indonesia** (NFR-13).
 
 ---
 
 ## 29. FOLDER STRUCTURE (FRONTEND & BACKEND)
 
-### 29.1 Struktur Frontend (Next.js 15 + TypeScript)
+### 29.1 Struktur Frontend (aktual — Next.js 14 + TypeScript)
 
 ```
-nemu-space-frontend/
+frontend/
 ├── public/
-│   ├── icons/
-│   └── manifest.json
 ├── src/
 │   ├── app/
 │   │   ├── (public)/
-│   │   │   ├── page.tsx                 # Landing Page
+│   │   │   ├── page.tsx                 # Landing
 │   │   │   ├── menu/
-│   │   │   ├── promo/
-│   │   │   ├── artikel/[slug]/
-│   │   │   ├── galeri/
-│   │   │   ├── reservasi/
-│   │   │   └── kontak/
+│   │   │   ├── promotion/
+│   │   │   ├── article/[slug]/
+│   │   │   ├── gallery/
+│   │   │   ├── reservation/
+│   │   │   │   └── status/
+│   │   │   ├── contact/
+│   │   │   ├── events/
+│   │   │   ├── careers/
+│   │   │   └── accessibility/
+│   │   │   # out-of-scope (abaikan/hapus): order/, qr/, account/
 │   │   ├── (auth)/
-│   │   │   └── login/
-│   │   ├── (dashboard)/
-│   │   │   ├── kasir/
-│   │   │   │   ├── pos/
-│   │   │   │   └── riwayat/
-│   │   │   ├── dapur/
-│   │   │   │   └── kitchen-display/
-│   │   │   ├── admin/
-│   │   │   │   ├── landing-page/
-│   │   │   │   ├── menu/
-│   │   │   │   ├── promo/
-│   │   │   │   ├── artikel/
-│   │   │   │   ├── galeri/
-│   │   │   │   ├── reservasi/
-│   │   │   │   ├── inventory/
-│   │   │   │   ├── laporan/
-│   │   │   │   └── pengaturan/
-│   │   │   └── owner/
-│   │   │       ├── dashboard-bisnis/
-│   │   │       ├── manajemen-user/
-│   │   │       └── backup-restore/
-│   │   └── layout.tsx
-│   ├── components/
-│   │   ├── ui/                          # shadcn/ui components
-│   │   ├── landing/
-│   │   ├── pos/
+│   │   │   ├── login/
+│   │   │   └── forgot-password/
 │   │   ├── dashboard/
-│   │   └── shared/
-│   ├── lib/
-│   │   ├── api.ts                       # Axios instance
-│   │   ├── utils.ts
-│   │   └── validators/                  # Zod schemas
-│   ├── hooks/
-│   ├── store/                           # State management (Zustand/Context)
-│   ├── types/
+│   │   │   ├── page.tsx
+│   │   │   ├── layout.tsx
+│   │   │   ├── pos/                     # Kasir POS
+│   │   │   ├── admin/
+│   │   │   │   ├── cms/
+│   │   │   │   ├── menu/
+│   │   │   │   ├── categories/
+│   │   │   │   ├── promotions/
+│   │   │   │   ├── inventory/
+│   │   │   │   ├── suppliers/
+│   │   │   │   ├── procurement/
+│   │   │   │   ├── unit-conversions/
+│   │   │   │   ├── reservations/
+│   │   │   │   ├── orders/              # riwayat transaksi POS (bukan order online)
+│   │   │   │   ├── kds/                 # Kitchen Display (UI)
+│   │   │   │   ├── employees/
+│   │   │   │   # out-of-scope: crm/, memberships/
+│   │   │   │   ├── users/
+│   │   │   │   ├── reports/
+│   │   │   │   ├── analytics/
+│   │   │   │   ├── audit/
+│   │   │   │   ├── backup/
+│   │   │   │   └── settings/
+│   │   │   └── owner/
+│   │   │       ├── overview/
+│   │   │       ├── sales/
+│   │   │       ├── analytics/
+│   │   │       ├── inventory/
+│   │   │       ├── reports/
+│   │   │       └── settings/
+│   │   ├── layout.tsx
+│   │   └── middleware.ts
+│   ├── features/                        # Domain modules
+│   │   ├── authentication/
+│   │   ├── landing/
+│   │   ├── menu/
+│   │   ├── reservation/
+│   │   ├── cashier/                     # POS hooks offline/realtime
+│   │   ├── inventory/
+│   │   ├── cms/
+│   │   ├── gallery/
+│   │   ├── article/
+│   │   ├── promotion/
+│   │   ├── report/
+│   │   ├── settings/
+│   │   ├── users/
+│   │   └── dashboard/
+│   ├── shared/                          # lib, services, providers, ui
+│   │   ├── lib/                         # offline-queue, auth, supabase, …
+│   │   ├── services/                    # pos.service, api client, …
+│   │   └── providers/
+│   ├── store/                           # Zustand
+│   │   ├── auth.store.ts
+│   │   ├── cart.store.ts
+│   │   ├── branch.store.ts
+│   │   ├── reservation.store.ts
+│   │   ├── theme.store.ts
+│   │   ├── sidebar.store.ts
+│   │   └── user.store.ts
+│   ├── assets/
 │   └── styles/
-│       └── globals.css
-├── next.config.js
-├── tailwind.config.ts
-└── package.json
+├── tests/                               # Vitest
+├── vitest.config.ts
+├── package.json
+└── tsconfig.json                        # paths: @/*, @shared/*, @features/*, @store/*
 ```
 
-### 29.2 Struktur Backend (Laravel 12)
+### 29.2 Struktur Backend (aktual — Laravel 10 + Sanctum)
 
 ```
-nemu-space-backend/
+backend/
 ├── app/
 │   ├── Http/
-│   │   ├── Controllers/
-│   │   │   ├── Api/
-│   │   │   │   ├── Public/
-│   │   │   │   │   ├── LandingPageController.php
-│   │   │   │   │   ├── MenuController.php
-│   │   │   │   │   ├── ReservationController.php
-│   │   │   │   │   └── ArticleController.php
-│   │   │   │   ├── Auth/
-│   │   │   │   │   └── AuthController.php
-│   │   │   │   ├── Pos/
-│   │   │   │   │   └── TransactionController.php
-│   │   │   │   ├── Kitchen/
-│   │   │   │   │   └── OrderTicketController.php
-│   │   │   │   ├── Admin/
-│   │   │   │   │   ├── MenuManagementController.php
-│   │   │   │   │   ├── InventoryController.php
-│   │   │   │   │   ├── ReportController.php
-│   │   │   │   │   └── SettingController.php
-│   │   │   │   └── Owner/
-│   │   │   │       ├── DashboardController.php
-│   │   │   │       ├── UserManagementController.php
-│   │   │   │       └── BackupController.php
-│   │   │   └── Controller.php
+│   │   ├── Controllers/Api/
+│   │   │   ├── AuthController.php
+│   │   │   ├── LandingPageController.php
+│   │   │   ├── PublicMenuController.php
+│   │   │   ├── PublicReservationController.php
+│   │   │   ├── PublicArticleController.php
+│   │   │   ├── PublicGalleryController.php
+│   │   │   ├── PosController.php
+│   │   │   ├── KdsController.php
+│   │   │   ├── InventoryController.php
+│   │   │   ├── SupplierController.php
+│   │   │   ├── PurchaseOrderController.php
+│   │   │   ├── UnitConversionController.php
+│   │   │   ├── AdminMenuController.php
+│   │   │   ├── AdminCategoryController.php
+│   │   │   ├── AdminVariantController.php
+│   │   │   ├── Admin* (banner, promo, article, gallery, faq, reservation, setting)
+│   │   │   ├── MediaController.php
+│   │   │   ├── ReportController.php
+│   │   │   ├── UserController.php
+│   │   │   ├── AuditController.php
+│   │   │   └── OwnerController.php
 │   │   ├── Middleware/
 │   │   │   ├── RoleMiddleware.php
-│   │   │   └── AuditLogMiddleware.php
-│   │   ├── Requests/                    # Form Request Validation
-│   │   └── Resources/                   # API Resource (JSON transformer)
-│   ├── Models/
-│   ├── Services/
-│   │   ├── TransactionService.php
-│   │   ├── InventoryService.php
-│   │   ├── ReportExportService.php
-│   │   └── BackupService.php
-│   ├── Repositories/
-│   └── Policies/
+│   │   │   ├── AuditLogMiddleware.php
+│   │   │   ├── Authenticate.php
+│   │   │   └── HandleCorsManual.php
+│   │   └── Kernel.php
+│   ├── Models/                          # lihat daftar tabel Bab 26
+│   └── Providers/
 ├── database/
 │   ├── migrations/
 │   ├── seeders/
 │   └── factories/
 ├── routes/
-│   └── api.php
-├── config/
+│   └── api.php                          # prefix v1 → /api/v1/*
+├── tests/Feature/
+├── phpunit.xml                          # sqlite :memory: untuk test
 └── composer.json
 ```
 
@@ -203,20 +240,23 @@ nemu-space-backend/
 
 ```mermaid
 graph TB
-    subgraph Client
+    subgraph client_sg["Client"]
         U[Browser / PWA Pengguna]
     end
 
-    subgraph Vercel
-        FE[Next.js 15 Frontend]
+    subgraph vercel_sg["Vercel"]
+        FE[Next.js 14 Frontend]
     end
 
-    subgraph Render
-        BE[Laravel 12 REST API]
+    subgraph hosting_sg["Cloud Hosting (Render.com)"]
+        BE[Laravel 10 REST API]
     end
 
-    subgraph Supabase
-        DB[(PostgreSQL Database)]
+    subgraph db_sg["Database (MySQL)"]
+        DB[(MySQL 8.0 Database)]
+    end
+    
+    subgraph storage_sg["File Storage (Supabase)"]
         ST[Supabase Storage - Media]
     end
 
@@ -229,22 +269,27 @@ graph TB
 
 ### 37.2 Lingkungan (Environments)
 
-| Environment | Frontend (Vercel) | Backend (Render) | Database (Supabase) |
+| Environment | Frontend (Vercel) | Backend (Render) | Database (MySQL Service) |
 |---|---|---|---|
-| Development | Preview Deployment per branch | Service terpisah (staging) | Project Supabase terpisah (dev) |
-| Staging | Branch `staging` | Service staging | Project Supabase staging |
-| Production | Branch `main` | Service production | Project Supabase production |
+| Development | Preview Deployment per branch | Service terpisah (staging) | Database dev/staging |
+| Staging | Branch `staging` | Service staging | Database staging |
+| Production | Branch `main` | Service production | Database production |
 
 ### 37.3 CI/CD
 
-1. Setiap push ke branch `main` memicu build & deploy otomatis pada Vercel (frontend) dan Render (backend) melalui integrasi Git.
-2. Migrasi database (`php artisan migrate`) dijalankan otomatis sebagai bagian dari deployment pipeline backend, dengan strategi migrasi yang aman (backward-compatible).
-3. Environment variable (kredensial database, storage key, app key) dikelola melalui secret manager masing-masing platform (Vercel Environment Variables, Render Environment Variables), tidak pernah disimpan dalam kode sumber.
+1. **Trigger:** Setiap push ke `main` atau `develop`, dan PR ke branch tersebut.
+2. **Platform:** GitHub Actions.
+3. **Environment:** Menggunakan **Docker & Docker Compose** untuk memastikan konsistensi lingkungan tes dengan development.
+4. **Jobs:**
+   - **`backend-tests`**: Membangun image Docker, menjalankan service `mysql`, melakukan migrasi, dan menjalankan `phpunit`.
+   - **`frontend-tests`**: Membangun image Docker, dan menjalankan `npm test` (Vitest).
+5. **Secrets:** Kredensial database, storage key, dll. dikelola melalui GitHub Secrets, bukan di kode.
+6. **Deployment:** Setelah tes lolos di `main`, deploy otomatis ke Vercel (frontend) dan Render (backend) via integrasi Git.
 
 ### 37.4 Monitoring & Backup
 
 | Aspek | Implementasi |
 |---|---|
-| Monitoring Aplikasi | Log error backend melalui Render Logs, monitoring uptime melalui layanan pemantauan (contoh: UptimeRobot) |
-| Backup Database | Backup otomatis harian oleh Supabase, ditambah fitur backup manual melalui Dashboard Owner |
-| Restore | Restore dilakukan melalui Dashboard Owner dengan konfirmasi berlapis (double confirmation) sebelum proses restore dijalankan |
+| Monitoring Aplikasi | Log error backend via Render Logs, monitoring uptime (contoh: UptimeRobot) |
+| Backup Database | Backup otomatis harian oleh penyedia layanan database, ditambah backup manual dari Dashboard Owner |
+| Restore | Restore manual oleh Owner dengan konfirmasi berlapis |

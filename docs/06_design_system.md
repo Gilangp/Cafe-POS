@@ -1,181 +1,114 @@
-# 06. DESIGN SYSTEM, SECURITY, SEO & PERFORMANCE
+# 06. DESIGN SYSTEM & PANDUAN UI
 
-## 30. DESIGN SYSTEM
+Dokumen ini adalah **sumber kebenaran tunggal (Single Source of Truth)** untuk semua aspek visual dan interaksi antarmuka. Tujuannya adalah untuk memastikan konsistensi, aksesibilitas, dan efisiensi dalam pengembangan UI, berdasarkan referensi visual `Nemu Space.jfif`.
 
-### 30.1 Filosofi Desain
+## 30. PALET WARNA
 
-Identitas visual NEMU Space mengusung nuansa **modern, minimalis, elegan, premium, hangat, dan profesional**, dengan pendekatan desain orisinal — bukan replika Starbucks, namun terinspirasi dari kualitas storytelling visualnya.
+Warna-warna ini didefinisikan dalam `tailwind.config.ts` dan `globals.css`. Gunakan kelas utilitas Tailwind (`bg-primary`, `text-accent`, dll.) alih-alih hardcoding nilai hex.
 
-### 30.2 Palet Warna
-
-> Palet warna mengacu pada referensi visual konsep landing page yang diberikan (nuansa hijau tua elegan bergaya "handcrafted coffee premium" dengan latar krem hangat), namun tetap disusun sebagai identitas visual orisinal milik NEMU Space — bukan reproduksi identitas merek Starbucks.
-
-| Token | Light Mode | Dark Mode | Penggunaan |
-|---|---|---|---|
-| `--color-primary` | #1E3D31 (Deep Forest Green) | #E8DCC8 (Warm Cream) | Warna utama merek: navbar/teks logo, judul besar, tombol utama (contoh: "Order Now"), footer |
-| `--color-primary-hover` | #163026 (Darker Forest Green) | #F2E9DA (Lighter Cream) | State hover pada tombol/tautan utama |
-| `--color-secondary` | #6F4E37 (Roasted Brown) | #A9825F (Muted Caramel) | Aksen sekunder, ikon kategori, garis pembatas dekoratif |
-| `--color-accent` | #C89B5C (Warm Gold) | #D9B675 (Soft Gold) | Highlight, badge "Bestseller", harga, aksen CTA sekunder |
-| `--color-background` | #FAF3E7 (Ivory Cream) | #14201A (Deep Pine Black-Green) | Latar belakang utama halaman |
-| `--color-surface` | #FFFFFF | #1E2B24 | Kartu produk, modal, panel, search bar |
-| `--color-surface-muted` | #F1E9DA (Beige Kertas) | #26332C | Latar section alternatif (contoh: section kategori dengan tekstur biji kopi) |
-| `--color-text-primary` | #1E3D31 (Forest Green Dark) | #F5EFE6 | Teks judul & teks utama |
-| `--color-text-secondary` | #5C5348 (Warm Grey Brown) | #B8A99A | Teks deskripsi, caption, label kecil |
-| `--color-border` | #E4D9C4 | #33413A | Garis pembatas, input border, kartu outline |
-| `--color-success` | #4C7A4C | #6FA96F | Status sukses/konfirmasi (reservasi dikonfirmasi) |
-| `--color-warning` | #C79A3C | #E0B75C | Status peringatan (stok menipis, tiket melewati batas waktu) |
-| `--color-danger` | #B23A34 | #D96A63 | Status error/tolak/void |
-
-**Prinsip penerapan warna pada Landing Page** (mengacu referensi visual):
-- **Hero Banner**: latar foto produk/suasana coffee shop dengan overlay tipis, judul besar menggunakan `--color-primary` (hijau tua) di atas latar krem/terang, tombol CTA solid hijau tua (`--color-primary`) dengan teks putih.
-- **Section Kategori ("Handcrafted Curations")**: latar gelap bertekstur (foto biji kopi close-up dengan overlay hijau tua transparan) agar ikon kategori berbentuk bulat/organik dengan foto produk tetap kontras dan menonjol.
-- **Section Menu Favorit ("Barista Recommends")**: latar krem/putih (`--color-background`), kartu produk `--color-surface` dengan bayangan lembut, harga ditonjolkan dengan `--color-primary` atau `--color-accent`, badge "Bestseller" menggunakan `--color-accent`.
-- **Footer**: latar solid `--color-primary` (hijau tua) dengan teks krem/putih, mengikuti pola pada referensi visual.
-
-### 30.3 Tipografi
-
-| Elemen | Font | Ukuran (Desktop) | Ukuran (Mobile) | Bobot |
+| Peran | Nama Token | Kelas Tailwind | Nilai Hex | Contoh Penggunaan |
 |---|---|---|---|---|
-| Heading 1 | Poppins / Playfair Display (untuk judul hero) | 48px | 32px | 700 |
-| Heading 2 | Poppins | 36px | 26px | 600 |
-| Heading 3 | Poppins | 24px | 20px | 600 |
-| Body Text | Inter | 16px | 14px | 400 |
-| Caption | Inter | 13px | 12px | 400 |
-| Button Text | Inter | 15px | 14px | 500 |
+| **Primer** | `primary` | `bg/text-primary` | `#1E3D31` | Latar belakang gelap, teks utama |
+| **Aksen** | `accent` | `bg/text-accent` | `#C89B5C` | Tombol utama, link, highlight harga |
+| **Latar Belakang** | `background` | `bg-background` | `#F8F6F2` | Latar belakang utama (mode terang) |
+| **Netral (Teks)** | `foreground` | `text-foreground` | `#1A2620` | Teks default di latar terang |
+| **Kartu** | `card` | `bg-card` | `#FFFFFF` | Latar belakang kartu, input |
+| **Batas** | `border` | `border-border` | `#E4D9C4` | Garis pemisah, border input |
+| **Fungsional: Error** | `destructive` | `bg/text-destructive` | `#ef4444` | Pesan error, tombol hapus |
+| **Fungsional: Sukses** | `success` | `bg/text-success` | `#22c55e` | Notifikasi sukses |
 
-### 30.4 Sistem Spacing
+## 31. TIPOGRAFI
 
-Menggunakan skala kelipatan **8px**: `4px (0.5x), 8px (1x), 16px (2x), 24px (3x), 32px (4x), 48px (6x), 64px (8x), 96px (12x)`.
+Sistem menggunakan dua jenis font utama yang didefinisikan di `globals.css` atau layout.
 
-### 30.5 Border Radius & Elevation
+| Peran | Font Family | Kelas Tailwind | Penggunaan |
+|---|---|---|---|
+| **Heading** | `font-heading` (misal: "Playfair Display") | `font-heading` | Judul besar, harga, nama menu yang menonjol |
+| **Body** | `font-body` (misal: "Inter", "Lato") | `font-sans` | Paragraf, label, teks UI, input |
 
-| Token | Nilai | Penggunaan |
+### Skala Tipografi
+
+| Elemen | Kelas Tailwind | Ukuran (px) | Berat Font | Catatan |
+|---|---|---|---|---|
+| Display (Hero) | `text-5xl font-bold font-heading` | 60 | 700 | Hanya untuk headline utama |
+| Judul Halaman (h1) | `text-3xl font-bold font-heading` | 36 | 700 | Judul utama setiap halaman |
+| Judul Section (h2) | `text-2xl font-bold font-heading` | 24 | 700 | Judul section (misal: "Barista Recommends") |
+| Judul Kartu (h3) | `text-lg font-semibold font-body` | 18 | 600 | Judul di dalam kartu |
+| Teks Body | `text-base font-normal font-body` | 16 | 400 | Paragraf, deskripsi |
+| Label / Teks Kecil | `text-sm font-medium font-body` | 14 | 500 | Label form, teks sekunder |
+| Teks Super Kecil | `text-xs font-semibold font-body` | 12 | 600 | Badge, tag, info meta |
+
+## 32. SPACING & LAYOUT
+
+Gunakan skala spacing berbasis kelipatan 4px untuk konsistensi. Ini sesuai dengan skala default Tailwind.
+
+| Penggunaan | Kelas Tailwind | Nilai (px) |
 |---|---|---|
-| `--radius-sm` | 6px | Input, badge kecil |
-| `--radius-md` | 12px | Card, tombol |
-| `--radius-lg` | 20px | Modal, section besar |
-| `--shadow-sm` | 0 1px 2px rgba(0,0,0,0.05) | Kartu ringan |
-| `--shadow-md` | 0 4px 12px rgba(0,0,0,0.08) | Kartu utama, dropdown |
-| `--shadow-lg` | 0 12px 32px rgba(0,0,0,0.12) | Modal, hero overlay |
+| Jarak antar elemen kecil | `gap-2`, `p-2` | 8px |
+| Padding di dalam input/tombol | `px-4 py-3` | 16px (horz), 12px (vert) |
+| Jarak antar item di grid | `gap-4`, `gap-6` | 16px, 24px |
+| Padding di dalam kartu | `p-6` | 24px |
+| Padding section utama | `py-16`, `py-20` | 64px, 80px |
 
-### 30.6 Iconography
+**Aturan Layout:**
+- **Lebar Konten Maksimal**: Gunakan `max-w-7xl mx-auto` untuk membungkus konten utama halaman agar tidak terlalu lebar di layar besar.
+- **Padding Halaman**: Beri padding horizontal `px-4` atau `px-6` pada kontainer utama.
 
-Seluruh ikon menggunakan **Lucide React** secara konsisten di seluruh halaman (publik maupun dashboard). Tidak diperkenankan menggunakan emoji dalam antarmuka maupun konten teks sistem.
+## 33. BORDER & SHADOW
 
-### 30.7 Motion & Animasi (Framer Motion)
+### Border Radius
 
-| Interaksi | Durasi | Easing |
+| Elemen | Kelas Tailwind | Nilai | Contoh |
+|---|---|---|---|
+| Kartu Utama, Modal | `rounded-2xl` | 16px | Kartu menu, modal pembayaran |
+| Tombol, Input | `rounded-lg` | 8px | Tombol "Proses Bayar", input pencarian |
+| Badge, Tag | `rounded-full` | 9999px | Badge "Best Seller" |
+
+### Shadow
+
+| Elevasi | Kelas Tailwind | Penggunaan |
 |---|---|---|
-| Fade in section saat scroll | 400ms | ease-out |
-| Hover pada kartu menu | 200ms | ease-in-out |
-| Transisi buka/tutup modal | 250ms | ease-in-out |
-| Slider Hero Banner | 600ms | ease-in-out (auto-slide 5 detik) |
-| Toggle Dark/Light Mode | 300ms | linear (crossfade warna) |
+| Rendah | `shadow-sm` | Elemen UI di dalam kartu |
+| Default | `shadow-md` | Kartu utama dalam keadaan normal |
+| Tinggi (Hover) | `shadow-lg`, `shadow-xl` | Kartu saat di-hover untuk memberi efek "mengangkat" |
+| Glow (Aksen) | `shadow-glow` (custom) | Efek khusus saat hover pada item penting |
 
----
+## 34. PANDUAN KOMPONEN INTI
 
-## 31. UI COMPONENTS
+Ini adalah aturan untuk komponen dasar yang paling sering digunakan, yang ada di `frontend/src/shared/components/ui/`.
 
-Komponen dibangun di atas **shadcn/ui** dengan kustomisasi token warna sesuai Design System.
+### Button
 
-| Komponen | Varian | Penggunaan |
+| Varian | Kelas Kunci | Penggunaan |
 |---|---|---|
-| Button | Primary, Secondary, Outline, Ghost, Destructive | CTA, aksi form, aksi tabel |
-| Card | Default, Elevated, Interactive (hover) | Menu, artikel, galeri, dashboard widget |
-| Modal/Dialog | Standard, Confirmation, Fullscreen (mobile) | Tambah/edit data, konfirmasi hapus |
-| Input, Textarea, Select | Default, Error State, Disabled | Seluruh form |
-| Data Table | Sortable, Filterable, Paginated | Daftar menu, transaksi, reservasi, inventory |
-| Badge | Status (Aktif/Nonaktif, Tersedia/Habis, Menunggu/Dikonfirmasi/Ditolak) | Indikator status |
-| Toast/Notification | Success, Error, Warning, Info | Feedback aksi pengguna |
-| Sidebar Navigation | Collapsible, Grouped Menu | Dashboard internal |
-| Navbar | Sticky, Transparent-to-Solid on scroll | Halaman publik |
-| Tabs | Underline style | Filter kategori menu/laporan |
-| Accordion | FAQ style | Section FAQ |
-| Carousel/Slider | Auto-play, Swipeable | Hero Banner, Testimoni |
-| Chart | Line, Bar, Donut (menggunakan Recharts) | Dashboard Owner |
-| Skeleton Loader | Shimmer effect | Loading state seluruh halaman |
-| Empty State | Ilustrasi + teks | Data kosong (contoh: belum ada reservasi) |
+| **Primer** | `bg-accent text-primary font-bold` | Aksi utama (Proses Bayar, Simpan) |
+| **Sekunder** | `bg-primary text-accent` | Aksi sekunder penting |
+| **Destruktif** | `bg-destructive text-destructive-foreground` | Aksi hapus, batal |
+| **Outline** | `border border-input bg-transparent` | Aksi tersier (Ekspor) |
+| **Ghost** | `hover:bg-accent/10` | Tombol ikon tanpa background |
 
----
+**Aturan Umum Button:**
+- **Padding**: `h-10 px-4 py-2` untuk ukuran standar.
+- **State**: Harus memiliki style yang jelas untuk `hover`, `focus`, dan `disabled` (`opacity-50 cursor-not-allowed`).
 
-## 32. RESPONSIVE DESIGN GUIDELINES
+### Input & Form
 
-### 32.1 Breakpoint
+- **Input Teks**: Harus memiliki `height` yang konsisten (misal: `h-10`), `padding` horizontal (`px-3`), dan `border` (`border-input`). Saat `focus`, border harus berubah warna menjadi `border-accent` (atau `ring-accent`).
+- **Label**: Harus menggunakan `text-sm font-medium` dan ditempatkan di atas inputnya.
 
-| Breakpoint | Lebar Layar | Target Perangkat |
-|---|---|---|
-| `xs` | < 480px | Mobile kecil |
-| `sm` | 480px – 767px | Mobile |
-| `md` | 768px – 1023px | Tablet |
-| `lg` | 1024px – 1439px | Laptop |
-| `xl` | ≥ 1440px | Desktop besar |
+### Kartu (`<Card />`)
 
-### 32.2 Prinsip Mobile First
+- **Padding Internal**: `p-6` secara default.
+- **Border & Shadow**: `border border-border rounded-2xl shadow-md`.
+- **Struktur**: Komponen harus terdiri dari `<CardHeader>`, `<CardContent>`, dan `<CardFooter>` untuk konsistensi struktur.
 
-1. Seluruh komponen dirancang untuk layar mobile terlebih dahulu, kemudian ditingkatkan (progressive enhancement) untuk layar lebih besar.
-2. Grid menu: 1 kolom (mobile), 2 kolom (tablet), 3–4 kolom (laptop/desktop).
-3. Sidebar dashboard otomatis menjadi **bottom navigation/drawer** pada mobile.
-4. Tabel data (Data Table) beralih menjadi tampilan **card list** pada layar mobile untuk mencegah horizontal scroll.
-5. Font size dan spacing menyesuaikan skala fluida agar tetap nyaman dibaca di seluruh ukuran layar.
-6. Tidak diperbolehkan adanya elemen yang menyebabkan horizontal scroll pada breakpoint manapun.
+## 35. CONTOH PENERAPAN (DOs and DON'Ts)
 
----
+- **DO**: Gunakan `gap-4` untuk membuat jarak antar kartu di grid.
+- **DON'T**: Jangan gunakan `margin-left: 15px` secara manual.
 
-## 33. ACCESSIBILITY GUIDELINES
+- **DO**: Gunakan `bg-primary` untuk latar belakang gelap dan `text-background` untuk teks di atasnya.
+- **DON'T**: Jangan hardcode `#1E3D31` di dalam komponen.
 
-1. Kontras warna teks terhadap latar belakang minimal memenuhi rasio **4.5:1** (WCAG 2.1 AA) baik pada Light Mode maupun Dark Mode.
-2. Seluruh elemen interaktif (tombol, tautan, input) dapat diakses menggunakan navigasi keyboard (`Tab`, `Enter`, `Esc`).
-3. Seluruh gambar wajib memiliki atribut `alt` deskriptif, diisi melalui CMS saat upload media.
-4. Formulir (form) wajib memiliki label yang terasosiasi dengan input (`label for`) dan pesan error yang jelas.
-5. Menggunakan elemen HTML semantik (`<nav>`, `<main>`, `<header>`, `<footer>`, `<section>`) untuk mendukung pembaca layar (screen reader).
-6. Ukuran target sentuh (tap target) minimal 44x44px pada tampilan mobile.
-7. Animasi/transisi menghormati preferensi pengguna `prefers-reduced-motion`.
-
----
-
-## 34. SECURITY GUIDELINES
-
-| Aspek | Implementasi |
-|---|---|
-| Authentication | Laravel Sanctum dengan token berbasis session/personal access token, masa berlaku token dikonfigurasi sesuai kebutuhan (auto-expire setelah tidak aktif) |
-| RBAC | Middleware role-based di setiap route API sesuai matriks pada Bab 25 |
-| Validasi Input | Form Request Validation di Laravel (backend) dan Zod schema (frontend) untuk seluruh input pengguna |
-| CSRF Protection | Token CSRF untuk seluruh request yang berasal dari sesi berbasis cookie (khusus SPA authentication Sanctum) |
-| XSS Protection | Sanitasi output HTML pada konten WYSIWYG (Artikel, Tentang Kami) menggunakan library sanitizer sebelum disimpan/ditampilkan |
-| SQL Injection Protection | Penggunaan Eloquent ORM/Query Builder dengan parameter binding, tidak ada raw query tanpa binding |
-| Audit Log | Mencatat seluruh aksi create/update/delete yang dilakukan pengguna internal, termasuk timestamp dan IP address |
-| Password Policy | Minimal 8 karakter, kombinasi huruf & angka, disimpan dengan hashing (bcrypt) |
-| Rate Limiting | Pembatasan jumlah percobaan login (contoh: maksimal 5x percobaan per 15 menit) untuk mencegah brute force |
-| File Upload Security | Validasi tipe MIME file, pembatasan ukuran, penamaan ulang file secara acak untuk mencegah path traversal |
-| HTTPS | Seluruh komunikasi Frontend ↔ Backend ↔ Database wajib menggunakan TLS/HTTPS |
-
----
-
-## 35. SEO GUIDELINES
-
-| Aspek | Implementasi |
-|---|---|
-| Meta Title | Dinamis per halaman (Landing Page, Menu, Artikel), dapat diatur melalui CMS, maksimal 60 karakter |
-| Meta Description | Dinamis per halaman, maksimal 160 karakter |
-| Open Graph | Tag `og:title`, `og:description`, `og:image`, `og:url` untuk seluruh halaman publik agar tampil optimal saat dibagikan di media sosial |
-| Twitter Card | Tag `twitter:card`, `twitter:title`, `twitter:image` |
-| Schema.org | Markup `LocalBusiness`/`Restaurant` (nama, alamat, jam operasional, rating) dan `Article` untuk halaman blog |
-| XML Sitemap | `sitemap.xml` digenerate otomatis mencakup seluruh halaman publik dan artikel yang dipublikasikan |
-| Robots.txt | Mengizinkan crawling halaman publik, melarang crawling halaman dashboard internal (`/admin`, `/kasir`, `/owner`) |
-| URL Slug | Slug otomatis dari judul (artikel, menu) namun dapat diedit manual oleh Admin |
-| Canonical URL | Diterapkan pada seluruh halaman untuk mencegah duplikasi konten |
-
----
-
-## 36. PERFORMANCE GUIDELINES
-
-| Aspek | Implementasi |
-|---|---|
-| Lazy Loading | Gambar dan komponen di luar viewport dimuat menggunakan lazy loading (`next/image` dengan `loading="lazy"`) |
-| Optimasi Gambar | Kompresi otomatis dan konversi ke format WebP saat upload ke Supabase Storage, penyediaan multiple resolusi (responsive image) |
-| Code Splitting | Pemisahan bundle JavaScript per route menggunakan fitur bawaan Next.js App Router |
-| Responsive Image | Penggunaan `srcset`/`sizes` melalui komponen `next/image` agar ukuran gambar sesuai perangkat |
-| Caching | Cache API response pada endpoint publik (contoh: `/menus`, `/landing-page`) menggunakan HTTP cache header & revalidasi ISR pada Next.js |
-| Database Indexing | Index pada kolom yang sering difilter/diurutkan (lihat Bab 26) |
-| CDN | Aset statis dan gambar dilayani melalui CDN Supabase Storage & Vercel Edge Network |
-| Monitoring | Pengukuran Core Web Vitals (LCP, FID/INP, CLS) secara berkala menggunakan Lighthouse/Vercel Analytics |
+- **DO**: Buat komponen `SectionTitle` yang menggunakan `text-2xl font-bold font-heading`.
+- **DON'T**: Jangan styling judul section secara manual di setiap halaman.

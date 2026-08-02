@@ -154,7 +154,7 @@ flowchart TD
     N --> O[Status Siap Tersinkron ke Dashboard Kasir]
 ```
 
-> Setiap transaksi yang berhasil dibayar secara otomatis membuat **tiket pesanan** (order ticket) yang dikirim ke Kitchen Display milik Dapur/Barista, berjalan paralel dengan proses pencetakan struk (lihat Bab 41 untuk detail spesifikasi Kitchen Display System).
+> Setiap transaksi yang berhasil dibayar otomatis membuat **order ticket** ke Kitchen Display (Bab 41). Kasir juga bisa mencetak **Struk Kasir** (pelanggan) dan **Tiket Dapur** (barista, tanpa harga) dari modal sukses POS — dual print, browser/thermal.
 
 ### 17.2 Fitur Detail POS
 
@@ -166,8 +166,9 @@ flowchart TD
 | Catatan Pesanan | Kolom catatan per item (contoh: "less sugar", "no ice") |
 | Diskon | Diskon nominal atau persentase, dapat diterapkan per transaksi atau per item |
 | Pembayaran | Metode: Tunai, QRIS, Kartu Debit/Kredit (dicatat manual oleh kasir, tanpa integrasi payment gateway) |
-| Cetak Struk | Cetak melalui printer thermal (browser print / integrasi driver printer thermal ESC/POS) |
-| Riwayat Transaksi | Daftar transaksi dengan filter tanggal, dapat dilihat detail per transaksi |
+| Cetak Struk Kasir | Struk untuk pelanggan, berisi detail harga & pembayaran (thermal print). |
+| Cetak Tiket Dapur | Struk untuk dapur/barista, **tanpa harga**, fokus pada item, kuantitas, varian, dan catatan pesanan. Berfungsi sebagai backup fisik untuk KDS. |
+| Riwayat Transaksi | Daftar transaksi dengan filter tanggal, dapat dilihat detail per transaksi. |
 
 ### 17.3 Aturan Bisnis POS
 
@@ -177,9 +178,26 @@ flowchart TD
 4. Transaksi yang telah dicetak struknya tidak dapat dihapus, hanya dapat dibatalkan (status `void`) oleh Admin/Owner dengan alasan wajib diisi.
 5. Kasir hanya dapat melihat riwayat transaksi miliknya sendiri pada shift berjalan; Admin/Owner dapat melihat seluruh riwayat transaksi.
 
-### 17.4 Struktur Struk
+### 17.4 Struktur Struk & Tiket Dapur
 
-Struk mencantumkan: nama coffee shop & logo, alamat, nomor invoice, tanggal & waktu transaksi, nama kasir, daftar item (nama, jumlah, harga satuan, subtotal), diskon, total pembayaran, metode pembayaran, dan catatan kaki (contoh: "Terima kasih telah berkunjung").
+#### 17.4.1 Struk Kasir (Untuk Pelanggan)
+
+Struk mencantumkan: nama coffee shop & logo, alamat, nomor invoice, tanggal & waktu transaksi, nama kasir, daftar item (nama, jumlah, harga satuan, subtotal), diskon, **pajak**, total pembayaran, metode pembayaran, dan catatan kaki (contoh: "Terima kasih telah berkunjung").
+
+#### 17.4.2 Tiket Dapur (Untuk Dapur/Barista)
+
+Tiket Dapur (versi cetak dari tiket pesanan KDS) mencantumkan informasi esensial untuk persiapan, **tanpa detail finansial**:
+
+- **Header Besar:** "BARISTA ORDER" atau "TIKET DAPUR"
+- **Nomor Order:** Nomor tiket/invoice (bisa disingkat)
+- **Waktu Pesanan:** Jam & menit
+- **Tipe Pesanan:** DINE IN (Meja X) atau TAKEAWAY
+- **Daftar Item:**
+    - **Jumlah x Nama Menu** (font besar)
+    - **Varian Terpilih** (di bawah nama menu, contoh: `- Large`, `- Oat Milk`)
+    - **Catatan Pesanan** (contoh: `- less ice`)
+- **Nama Pelanggan** (jika diisi)
+- **Catatan Umum Transaksi** (jika ada)
 
 ---
 
@@ -335,7 +353,7 @@ stateDiagram-v2
 
 ### 41.1 Tujuan
 
-Kitchen Display System (KDS) adalah antarmuka khusus untuk role **Dapur/Barista** yang menampilkan antrian pesanan secara real-time begitu transaksi berhasil dibuat di POS, menggantikan penggunaan struk kertas sebagai satu-satunya acuan dapur. Tujuannya adalah memastikan tidak ada pesanan yang terlewat, mempercepat proses penyajian, dan memberikan visibilitas status pesanan kepada Kasir maupun Admin/Owner.
+Kitchen Display System (KDS) adalah antarmuka digital khusus role **Dapur/Barista** yang menampilkan antrian pesanan real-time setelah transaksi POS berhasil. KDS adalah **saluran utama** dapur; **Tiket Dapur cetak** dari POS (Bab 17.4.2) adalah **backup fisik** opsional (printer thermal) bila layar KDS tidak dipakai, printer dapur terpisah, atau staf lebih nyaman kerja dari kertas. Keduanya memakai data pesanan yang sama (item, qty, varian, catatan) — Tiket Dapur **tanpa harga**.
 
 ### 41.2 Alur Sistem End-to-End
 

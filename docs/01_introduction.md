@@ -58,26 +58,40 @@ Tujuan utama pengembangan sistem NEMU Space adalah:
 
 | Kategori | Cakupan |
 |---|---|
-| Jenis Bisnis | Single Branch Coffee Shop (1 cabang, 1 lokasi fisik) |
-| Platform | Website Responsif (Mobile First) + PWA |
-| Modul Publik | Landing Page, Digital Menu, Promo, Galeri, Artikel, Reservasi, Kontak |
-| Modul Internal | POS, Dashboard Kasir, Dashboard Admin, Dashboard Owner, Inventory, Laporan |
-| Manajemen Konten | CMS penuh untuk seluruh konten website |
-| Manajemen Pengguna | RBAC (Role Based Access Control) untuk 4 peran: Pelanggan, Kasir, Admin, Owner |
-| Integrasi | WhatsApp (chat langsung), Google Maps (lokasi), Media Sosial (tautan) |
+| Jenis Bisnis | Single-location coffee shop (fokus 1 lokasi; store branch di FE ada untuk konteks multi-cabang **opsional/eksperimental**) |
+| Platform | Website responsif (mobile first) + PWA |
+| Modul Publik | Landing, menu, promo, galeri, artikel, reservasi (+ status), kontak; events/careers opsional konten |
+| Modul Internal | POS (kasir), KDS (Dapur/Barista), Admin CMS, inventory, procurement (PO/supplier/unit conversion), laporan, owner dashboard |
+| Varian menu | Size/topping (`variant_*`) + snapshot di transaksi POS |
+| Pajak POS | `tax_rate` / `tax_enabled` di settings → `tax_amount` di transaksi |
+| Manajemen konten | CMS dinamis (section landing, media upload) |
+| RBAC | Pelanggan (tanpa login) + Kasir, Dapur_Barista, Admin, Owner (multi-role per user dimungkinkan) |
+| Integrasi | WhatsApp, Google Maps, media sosial; Sanctum token API |
 
 ### 4.2 Di Luar Ruang Lingkup (Out-of-Scope)
 
-Sistem **TIDAK** mencakup hal-hal berikut:
+- **Order online / pemesanan jarak jauh** (halaman order publik, bayar dari rumah)
+- **QR order meja** sebagai channel order mandiri pelanggan
+- **Membership / loyalty / CRM poin** (member tier, accrue/redeem points, memberships admin)
+- Marketplace / multi-tenant multi-brand
+- Franchise orchestration penuh
+- Aplikasi native Android/iOS terpisah
+- Payment gateway online jarak jauh (pembayaran hanya di kasir/POS)
+- Integrasi ojek online / delivery partner
+- Public API pihak ketiga
+- Multi-currency / multi-language penuh (UI ID + Rp)
 
-- Marketplace atau multi-tenant (banyak coffee shop dalam satu platform)
-- Sistem Franchise atau Multi-Branch (banyak cabang dengan manajemen terpusat)
-- Aplikasi Mobile Native (Android/iOS terpisah) — cukup PWA
-- Payment Gateway online untuk pemesanan jarak jauh (pembayaran dilakukan langsung di kasir/POS)
-- Sistem Delivery/Ojek Online terintegrasi
-- Public API untuk pihak ketiga (integrasi eksternal)
-- Fitur loyalty/membership point yang kompleks (di luar cakupan versi 1.0)
-- Multi-currency dan multi-language (versi 1.0 hanya Bahasa Indonesia dan Rupiah)
+> Sisa folder/route di kode (`/order`, `/qr`, `admin/crm`, `admin/memberships`, dsb.) **bukan scope produk** — diabaikan, di-deprecate, atau dihapus di cleanup; **tidak** diuji sebagai fitur wajib.
+
+### 4.3 Sumber kebenaran implementasi
+
+| Lapisan | Lokasi |
+|---|---|
+| API routes | `backend/routes/api.php` (`/api/v1`) |
+| Schema | `backend/database/migrations/` + models `app/Models` |
+| UI routes | `frontend/src/app/` |
+| Domain FE | `frontend/src/features/`, `store/`, `shared/` |
+| Testing | `docs/08_testing_specification.md` |
 
 ---
 
