@@ -38,15 +38,17 @@ class AdminSettingController extends Controller
     public function updateSettings(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'site_name' => 'sometimes|required|string|max:150',
-            'site_tagline' => 'nullable|string|max:255',
-            'phone' => 'nullable|string|max:30',
-            'email' => 'nullable|email|max:100',
-            'address' => 'nullable|string',
+            'site_name'       => 'sometimes|required|string|max:150',
+            'site_tagline'    => 'nullable|string|max:255',
+            'phone'           => 'nullable|string|max:30',
+            'email'           => 'nullable|email|max:100',
+            'address'         => 'nullable|string',
+            'tax_rate'        => 'nullable|numeric|min:0|max:100',
+            'tax_enabled'     => 'nullable|boolean',
             'operating_hours' => 'nullable|string',
-            'seo_title' => 'nullable|string|max:150',
+            'seo_title'       => 'nullable|string|max:150',
             'seo_description' => 'nullable|string|max:300',
-            'seo_keywords' => 'nullable|string|max:255',
+            'seo_keywords'    => 'nullable|string|max:255',
         ]);
 
         $setting = Setting::first() ?? new Setting();

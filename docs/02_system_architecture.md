@@ -1,8 +1,17 @@
 # 02. ARSITEKTUR SISTEM & NAVIGASI
 
+| Metadata | Nilai |
+|---|---|
+| Versi | 1.1 |
+| Tanggal | 2026-08-03 |
+| Status | **Normatif** — spesifikasi mengikat, kode wajib menyesuaikan |
+| Bab tercakup | 10, 11, 29, 37 |
+
+> **Sifat dokumen:** Dokumen ini bersifat **preskriptif**, bukan deskriptif. Isi bab ini mendefinisikan struktur yang **harus** dipenuhi implementasi. Bila kode menyimpang, **kode yang salah** — bukan dokumen ini. Penyimpangan yang disadari & disepakati dicatat terpisah di `03_requirements.md` Lampiran A (Deviasi Diketahui) dengan owner dan target penutupan.
+
 ## 10. SITEMAP
 
-> **Catatan path:** URL publik & dashboard memakai **slug English** (sesuai implementasi Next.js). Label UI tetap Bahasa Indonesia.
+> **Ketentuan path:** URL publik & dashboard **wajib** memakai slug English. Label UI tetap Bahasa Indonesia.
 
 ```mermaid
 graph TD
@@ -57,7 +66,7 @@ graph TD
 
 ### 11.1 Struktur Navigasi Publik
 
-| Level 1 (UI) | Path aktual | Level 2 |
+| Level 1 (UI) | Path | Level 2 |
 |---|---|---|
 | Beranda | `/` | Hero, Tentang, Menu favorit, Promo, Testimoni, FAQ |
 | Menu | `/menu` | Filter kategori, pencarian |
@@ -73,14 +82,14 @@ graph TD
 
 ### 11.2 Struktur Navigasi Internal (Setelah Login)
 
-| Role | Path utama (aktual) | Menu |
+| Role | Path utama | Menu |
 |---|---|---|
 | Kasir | `/dashboard/pos` | POS, ringkasan shift, reservasi hari ini (via API) |
 | Dapur/Barista | `/dashboard/admin/kds` | Kitchen Display (antrian → proses → siap) |
 | Admin | `/dashboard/admin/*` | CMS, menu, kategori, promo, inventory, procurement, reservasi, riwayat orders POS, reports, users, settings, audit, backup, unit-conversions, KDS — **tanpa** CRM/membership |
 | Owner | `/dashboard/owner/*` + akses admin | Overview, sales, analytics, inventory, reports, settings; backup/user juga lewat admin UI + API `/owner/*` |
 
-> **Gap vs matriks ideal (Bab 25):** UI KDS, users, backup saat ini berada di tree `admin/`. API Owner (`/api/v1/owner/*`) sudah terpisah role `Owner`. Refactor path FE ke `/dashboard/kds`, `/dashboard/owner/users` dll. adalah backlog struktur — bukan blocker fungsional API.
+> **Ketentuan path dashboard:** KDS harus di `/dashboard/kds` (akses role Dapur/Barista + Admin + Owner), bukan di tree `admin/`. User management Owner harus di `/dashboard/owner/users`. Backup di `/dashboard/owner/backup`. API sudah benar (`/api/v1/owner/*`, `/api/v1/kds/*`). Path FE yang menyimpang dari struktur ini dicatat sebagai deviasi di Lampiran A `03_requirements.md`.
 
 ### 11.3 Prinsip Arsitektur Informasi
 
@@ -94,7 +103,7 @@ graph TD
 
 ## 29. FOLDER STRUCTURE (FRONTEND & BACKEND)
 
-### 29.1 Struktur Frontend (aktual — Next.js 14 + TypeScript)
+### 29.1 Struktur Frontend (Next.js 14 + TypeScript)
 
 ```
 frontend/
@@ -121,6 +130,7 @@ frontend/
 │   │   │   ├── page.tsx
 │   │   │   ├── layout.tsx
 │   │   │   ├── pos/                     # Kasir POS
+│   │   │   ├── kds/                     # Kitchen Display (Dapur/Barista + Admin + Owner)
 │   │   │   ├── admin/
 │   │   │   │   ├── cms/
 │   │   │   │   ├── menu/
@@ -132,14 +142,11 @@ frontend/
 │   │   │   │   ├── unit-conversions/
 │   │   │   │   ├── reservations/
 │   │   │   │   ├── orders/              # riwayat transaksi POS (bukan order online)
-│   │   │   │   ├── kds/                 # Kitchen Display (UI)
 │   │   │   │   ├── employees/
 │   │   │   │   # out-of-scope: crm/, memberships/
-│   │   │   │   ├── users/
 │   │   │   │   ├── reports/
 │   │   │   │   ├── analytics/
 │   │   │   │   ├── audit/
-│   │   │   │   ├── backup/
 │   │   │   │   └── settings/
 │   │   │   └── owner/
 │   │   │       ├── overview/
@@ -147,6 +154,8 @@ frontend/
 │   │   │       ├── analytics/
 │   │   │       ├── inventory/
 │   │   │       ├── reports/
+│   │   │       ├── users/               # manajemen user — eksklusif Owner
+│   │   │       ├── backup/              # backup/restore — eksklusif Owner
 │   │   │       └── settings/
 │   │   ├── layout.tsx
 │   │   └── middleware.ts
@@ -185,7 +194,7 @@ frontend/
 └── tsconfig.json                        # paths: @/*, @shared/*, @features/*, @store/*
 ```
 
-### 29.2 Struktur Backend (aktual — Laravel 10 + Sanctum)
+### 29.2 Struktur Backend (Laravel 10 + Sanctum)
 
 ```
 backend/
@@ -244,16 +253,16 @@ graph TB
         U[Browser / PWA Pengguna]
     end
 
-    subgraph vercel_sg["Vercel"]
+    subgraph vercel_sg["Vercel (Frontend)"]
         FE[Next.js 14 Frontend]
     end
 
-    subgraph hosting_sg["Cloud Hosting (Render.com)"]
+    subgraph render_sg["Render.com (Backend)"]
         BE[Laravel 10 REST API]
     end
 
-    subgraph db_sg["Database (MySQL)"]
-        DB[(MySQL 8.0 Database)]
+    subgraph db_sg["Database (MySQL 8.0)"]
+        DB[(MySQL 8.0)]
     end
     
     subgraph storage_sg["File Storage (Supabase)"]
@@ -266,6 +275,8 @@ graph TB
     BE -->|Upload/Fetch File| ST
     FE -.->|Fetch Gambar Langsung| ST
 ```
+
+> **Keputusan deployment:** Backend Laravel di **Render.com** (Docker, MySQL managed service). Frontend Next.js di **Vercel**. File `backend/vercel.json` + `api/index.php` diabaikan/dihapus — bukan target deployment produksi.
 
 ### 37.2 Lingkungan (Environments)
 

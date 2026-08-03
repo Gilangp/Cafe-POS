@@ -128,16 +128,49 @@
 
 > **Catatan Fleksibilitas Role:** Owner dapat menetapkan satu akun pengguna dengan **dua peran sekaligus** (Kasir + Dapur/Barista) melalui Manajemen User, sehingga staf yang merangkap tugas kasir dan barista tetap dapat login satu kali namun memiliki akses ke POS maupun Kitchen Display.
 
-### 25.1 Status implementasi middleware (audit)
+---
 
-Matriks di atas = **kebijakan target**. Kode API saat audit docs:
+## LAMPIRAN A — DEVIASI DIKETAHUI (KODE vs SPESIFIKASI)
 
-| Kebijakan | Status kode | Tindak lanjut |
+> **Cara membaca lampiran ini:** Matriks Bab 25 dan seluruh dokumen `docs/` bersifat **normatif**. Tabel di bawah mencatat titik di mana **kode menyimpang dari spesifikasi**. Setiap baris adalah utang yang harus ditutup di kode — bukan alasan untuk mengubah spesifikasi.
+
+### A.1 Deviasi RBAC (prioritas tinggi — celah keamanan)
+
+| ID | Spesifikasi (normatif) | Kondisi kode | Dampak | Penutup |
+|---|---|---|---|---|
+| **GAP-RBAC-01** | Void transaksi hanya Admin/Owner (Bab 25, `04` §17.3 poin 4) | Void berada di grup `role:Kasir,Admin,Owner` | Kasir dapat membatalkan transaksinya sendiri — risiko penyalahgunaan kas | Perbaiki middleware + tes `08` §12.1 poin 1–2 |
+| **GAP-RBAC-02** | Ubah status tiket KDS hanya Dapur/Barista (+Admin/Owner). Kasir **lihat saja** (Bab 25) | `PATCH` status KDS ikut mengizinkan role Kasir | Kasir dapat menandai pesanan "Siap" tanpa dapur mengerjakannya | Perbaiki middleware + tes `08` §12.1 poin 3–4 |
+
+### A.2 Deviasi struktur path frontend
+
+| ID | Spesifikasi (`02` §11.2, §29.1) | Kondisi kode | Penutup |
+|---|---|---|---|
+| **GAP-PATH-01** | KDS di `/dashboard/kds` | Berada di `/dashboard/admin/kds` | Pindahkan route FE |
+| **GAP-PATH-02** | Manajemen user di `/dashboard/owner/users` | Berada di `/dashboard/admin/users` | Pindahkan route FE |
+| **GAP-PATH-03** | Backup/restore di `/dashboard/owner/backup` | Berada di `/dashboard/admin/backup` | Pindahkan route FE |
+
+### A.3 Deviasi deployment
+
+| ID | Spesifikasi (`02` §37.1) | Kondisi kode | Penutup |
+|---|---|---|---|
+| **GAP-DEPLOY-01** | Backend Laravel di Render.com (Docker) | Terdapat `backend/vercel.json` + `backend/api/index.php` (target serverless Vercel) berdampingan dengan `Dockerfile` | Hapus artefak Vercel dari `backend/`. Vercel hanya untuk frontend. |
+
+### A.4 Kebersihan struktur backend
+
+| ID | Temuan | Tindakan |
 |---|---|---|
-| Void hanya Admin/Owner | ❌ void masih di grup `role:Kasir,Admin,Owner` | GAP-RBAC-01 — `05` §28.9 |
-| Ubah status KDS hanya Dapur(+Admin/Owner) | ❌ PATCH KDS ikut role Kasir | GAP-RBAC-02 |
-| POS Kasir/Admin/Owner | ✅ | — |
-| Admin CMS Admin/Owner | ✅ | — |
-| Owner dashboard/backup API | ✅ prefix `/owner` | UI backup/users masih di tree admin |
+| **GAP-STRUCT-01** | `app/Data/`, `app/Services/`, `app/Policies/`, `app/Listeners/` kosong | Isi sesuai kebutuhan atau hapus |
+| **GAP-STRUCT-02** | `app/Events/KdsOrderCreated.php` & `KdsOrderStatusUpdated.php` ada tanpa listener | Pastikan di-broadcast (FR-37, FR-40) atau tambahkan listener |
+| **GAP-STRUCT-03** | `RedirectIfAuthenticated.php` — middleware web pada proyek API-only | Hapus jika tidak dipakai |
 
-Detail endpoint & path FE: `05_database_and_api.md`, `02_system_architecture.md`.
+### A.5 Deviasi out-of-scope yang masih ada di kode
+
+Sesuai `01` §4.2, folder/route berikut **bukan scope produk** dan harus dihapus/di-deprecate: `/order`, `/qr/*`, `/account`, `admin/crm`, `admin/memberships`. Tidak diuji sebagai fitur wajib (`08` §4.1).
+
+### A.6 Konflik internal dokumen (diselesaikan)
+
+| ID | Konflik | Keputusan |
+|---|---|---|
+| ~~GAP-DOC-01~~ | `08` §2.2 SQLite in-memory vs §6.2 MySQL 8.0 Docker | **MySQL 8.0 Docker** — konsisten produksi, skema bergantung ENUM/DECIMAL/FK MySQL, CI pakai Docker |
+
+> Aturan penutupan: setiap ID di lampiran ini wajib punya owner dan target fase (lihat roadmap `07` Bab 38). Deviasi RBAC (A.1) harus ditutup sebelum UAT karena menyangkut kontrol akses.

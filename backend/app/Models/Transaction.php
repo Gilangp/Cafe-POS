@@ -21,6 +21,7 @@ class Transaction extends Model
         'customer_name',
         'subtotal',
         'discount',
+        'tax_amount',
         'total',
         'payment_method',
         'status',
@@ -28,10 +29,11 @@ class Transaction extends Model
     ];
 
     protected $casts = [
-        'subtotal' => 'decimal:2',
-        'discount' => 'decimal:2',
-        'total' => 'decimal:2',
-        'status' => 'string',
+        'subtotal'   => 'decimal:2',
+        'discount'   => 'decimal:2',
+        'tax_amount' => 'decimal:2',
+        'total'      => 'decimal:2',
+        'status'     => 'string',
     ];
 
     public function cashier(): BelongsTo

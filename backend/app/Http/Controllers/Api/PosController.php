@@ -9,6 +9,7 @@ use App\Models\Menu;
 use App\Models\OrderTicket;
 use App\Models\OrderTicketItem;
 use App\Models\Reservation;
+use App\Models\Setting;
 use App\Models\Transaction;
 use App\Models\TransactionItem;
 use App\Models\TransactionItemVariant;
@@ -165,21 +166,29 @@ class PosController extends Controller
                 ];
             }
 
-            $discount = (float)($validated['discount'] ?? 0);
-            $total = max(0, $subtotal - $discount);
+            $discount   = (float)($validated['discount'] ?? 0);
+
+            // Read tax settings from DB
+            $setting    = Setting::first();
+            $taxEnabled = $setting?->tax_enabled ?? false;
+            $taxRate    = $taxEnabled ? (float)($setting?->tax_rate ?? 0) : 0;
+            $taxAmount  = round(($subtotal - $discount) * $taxRate / 100, 2);
+
+            $total = max(0, $subtotal - $discount + $taxAmount);
             $invoiceNumber = 'INV-' . date('Ymd') . '-' . strtoupper(substr(uniqid(), -4));
 
             $transaction = Transaction::create([
                 'invoice_number' => $invoiceNumber,
-                'cashier_id' => $request->user()?->id,
-                'subtotal' => $subtotal,
-                'discount' => $discount,
-                'total' => $total,
+                'cashier_id'     => $request->user()?->id,
+                'subtotal'       => $subtotal,
+                'discount'       => $discount,
+                'tax_amount'     => $taxAmount,
+                'total'          => $total,
                 'payment_method' => $validated['payment_method'],
-                'order_type' => $validated['order_type'] ?? 'dine_in',
-                'table_number' => $validated['table_number'] ?? null,
-                'customer_name' => $validated['customer_name'] ?? 'Pelanggan',
-                'status' => 'selesai',
+                'order_type'     => $validated['order_type'] ?? 'dine_in',
+                'table_number'   => $validated['table_number'] ?? null,
+                'customer_name'  => $validated['customer_name'] ?? 'Pelanggan',
+                'status'         => 'selesai',
             ]);
 
             $ticket = OrderTicket::create([

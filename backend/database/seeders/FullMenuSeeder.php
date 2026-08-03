@@ -96,11 +96,12 @@ class FullMenuSeeder extends Seeder
         $displayOrder = 1;
 
         foreach ($menuData as $categoryName => $menus) {
-            // Create Category
-            $category = Category::create([
-                'name' => $categoryName,
-                'display_order' => $displayOrder++
-            ]);
+            // Create or get existing Category (avoid duplication)
+            $category = Category::firstOrCreate(
+                ['name' => $categoryName],
+                ['display_order' => $displayOrder]
+            );
+            $displayOrder++;
 
             // Create Menus for this Category
             foreach ($menus as $menuName) {

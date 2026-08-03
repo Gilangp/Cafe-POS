@@ -30,7 +30,7 @@ sequenceDiagram
     participant U as User Browser
     participant FE as Next.js Frontend
     participant BE as Laravel API
-    participant DB as PostgreSQL (Supabase)
+    participant DB as MySQL 8.0
 
     U->>FE: Akses halaman "/"
     FE->>BE: GET /api/landing-page
@@ -201,6 +201,138 @@ Tiket Dapur (versi cetak dari tiket pesanan KDS) mencantumkan informasi esensial
 
 ---
 
+### 17.5 OFFLINE POS SPECIFICATION
+
+Memenuhi FR-10 (PWA), NFR-11 (offline capability), NFR-12 (atomicity). Diuji oleh CP-06 (`08` §5.1) dan KAS-06 (`08` §7.2).
+
+#### 17.5.1 Ruang Lingkup Offline
+
+| Kemampuan | Status Offline | Alasan |
+|---|---|---|
+| Lihat katalog menu + gambar | ✅ Berfungsi | Di-cache saat online |
+| Tambah item ke keranjang, ubah qty, catatan | ✅ Berfungsi | Murni state lokal |
+| Terapkan diskon nominal/persentase | ✅ Berfungsi | Hitung lokal |
+| Selesaikan pembayaran (tunai/QRIS/kartu) | ✅ Berfungsi | Masuk antrian, sync nanti |
+| Cetak Struk Kasir & Tiket Dapur | ✅ Berfungsi | Nomor invoice sementara, lihat §17.5.4 |
+| Validasi stok bahan baku real-time | ❌ Tidak | Stok hanya otoritatif di server |
+| Tiket masuk ke KDS | ❌ Tidak | Baru terbit setelah sync |
+| Riwayat transaksi (selain milik device ini) | ❌ Tidak | Butuh server |
+| Void transaksi | ❌ Tidak | Wajib online, hanya Admin/Owner |
+| Login/ganti user | ❌ Tidak | Token wajib divalidasi server |
+
+> **Batas tegas:** Offline hanya untuk **melanjutkan penjualan saat jaringan mati**, bukan mode operasi normal. Kasir harus tetap login saat masih online sebelum shift dimulai.
+
+#### 17.5.2 Penyimpanan Antrian
+
+| Aspek | Ketentuan |
+|---|---|
+| Storage | **IndexedDB** (bukan `localStorage`) — antrian bisa besar & butuh transaksi atomik |
+| Nama DB / store | `nemu-pos` / object store `outbox` |
+| Kapasitas peringatan | Tampilkan banner peringatan bila antrian > 50 transaksi belum tersync |
+| Retensi | Entri sukses dihapus setelah server konfirmasi; entri gagal permanen dipindah ke store `outbox_failed`, **tidak boleh dihapus otomatis** |
+| Data sensitif | **Dilarang** menyimpan token auth, password, atau data kartu di IndexedDB |
+
+#### 17.5.3 Struktur Entri Antrian
+
+```jsonc
+{
+  "idempotency_key": "uuid-v4",        // dibuat SEKALI saat transaksi dibuat, tidak berubah saat retry
+  "client_created_at": "2026-08-03T10:15:00+07:00",
+  "local_invoice_number": "OFF-20260803-0001",
+  "cashier_id": "uuid",
+  "order_type": "dine_in",
+  "payment_method": "tunai",
+  "items": [
+    { "menu_id": "uuid", "quantity": 2, "note": "less ice",
+      "variant_option_ids": ["uuid"] }
+  ],
+  "discount": 5000,
+  "attempt_count": 0,
+  "last_error": null,
+  "status": "pending"                   // pending | syncing | synced | failed
+}
+```
+
+**Ketentuan `idempotency_key`:**
+
+1. Dibuat di client dengan UUID v4 **saat transaksi diselesaikan**, bukan saat sync.
+2. Tidak boleh berubah walau retry berkali-kali.
+3. Server menyimpannya pada kolom unik di `transactions` dan menolak duplikat.
+4. Berlaku juga untuk transaksi **online** — sehingga double-click "Bayar" tidak membuat 2 transaksi.
+
+#### 17.5.4 Nomor Invoice
+
+Nomor invoice final (`INV-YYYYMMDD-XXXX`, lihat §17.3 poin 2) **hanya boleh diterbitkan server** untuk menjamin keunikan.
+
+| Kondisi | Nomor |
+|---|---|
+| Online | Server terbitkan `INV-YYYYMMDD-XXXX` langsung |
+| Offline | Client pakai nomor sementara `OFF-YYYYMMDD-NNNN`, dicetak di struk dengan penanda **"BELUM TERSINKRON"** |
+| Setelah sync | Server terbitkan nomor `INV-*` final; client menyimpan pemetaan `local_invoice_number` → `invoice_number` untuk kebutuhan penelusuran |
+
+#### 17.5.5 Alur Sinkronisasi
+
+```mermaid
+flowchart TD
+    A[Transaksi selesai dibayar] --> B{Online?}
+    B -->|Ya| C[POST /pos/transactions]
+    B -->|Tidak| D[Simpan ke IndexedDB outbox]
+    D --> E[Cetak struk OFF- + penanda belum tersinkron]
+    E --> F[Tunggu event online]
+    F --> G[Sync berurutan FIFO, satu per satu]
+    G --> H{Respons server}
+    H -->|2xx| I[Tandai synced + simpan invoice final]
+    H -->|409 duplikat| I
+    H -->|422 validasi| J[Pindah ke outbox_failed + tampilkan ke kasir]
+    H -->|5xx / timeout| K[Retry backoff]
+    K --> L{attempt_count >= 5?}
+    L -->|Belum| G
+    L -->|Sudah| J
+    I --> M[Server buat tiket KDS + kurangi stok]
+```
+
+**Ketentuan sync:**
+
+1. **FIFO satu per satu**, tidak paralel — menjaga urutan nomor invoice & mutasi stok deterministik.
+2. **Trigger sync:** event `online` browser, saat aplikasi POS dibuka, dan polling tiap 30 detik selama ada entri `pending`.
+3. **Backoff:** 2s, 4s, 8s, 16s, 32s (maksimal 5 percobaan), lalu pindah ke `outbox_failed`.
+4. **Respons `409 Conflict`** karena `idempotency_key` sudah ada **diperlakukan sebagai sukses** — server sudah punya transaksinya.
+5. Kasir **tidak boleh** logout/tutup browser saat masih ada entri `pending` — tampilkan konfirmasi peringatan.
+
+#### 17.5.6 Resolusi Konflik
+
+| Konflik | Resolusi |
+|---|---|
+| Stok tidak cukup saat sync | **Transaksi tetap diterima** (konsisten dengan §18.3 poin 1). Stok jadi defisit, notifikasi ke Admin. Penjualan yang sudah terjadi secara fisik tidak boleh ditolak sistem. |
+| Menu sudah dihapus (soft delete) saat sync | Transaksi diterima; pakai `menu_name_snapshot` & `price_snapshot` dari payload client. |
+| Harga menu berubah saat offline | **Harga dari client yang menang** — itulah harga yang benar-benar dibayar pelanggan. Server mencatat selisih ke audit log. |
+| Promo sudah kedaluwarsa saat sync | Diskon dari client tetap dihormati; dicatat di audit log sebagai diskon manual. |
+| Dua device offline pakai nomor `OFF-` sama | Tidak masalah — keunikan dijamin `idempotency_key`, bukan nomor lokal. |
+| `idempotency_key` sama, isi payload berbeda | Server **tolak `422`** dan catat sebagai anomali; kemungkinan bug client. |
+
+> **Prinsip:** Uang yang sudah diterima kasir tidak boleh hilang karena konflik data. Sistem mencatat apa yang terjadi, lalu memunculkan selisihnya untuk ditinjau Admin — bukan menolak transaksi.
+
+#### 17.5.7 Cache PWA (NFR-11)
+
+| Aset | Strategi | Catatan |
+|---|---|---|
+| Shell aplikasi (JS/CSS) | Precache | Diperbarui saat service worker baru aktif |
+| Katalog menu + kategori | `stale-while-revalidate` | Wajib tersedia offline untuk POS |
+| Gambar menu | `cache-first`, maksimal 100 entri | Sesuai NFR-11 |
+| Landing Page publik | `stale-while-revalidate` | Sesuai NFR-11 |
+| Endpoint POS `POST` | **Jangan pernah di-cache** | Ditangani outbox IndexedDB |
+| Endpoint auth | **Jangan pernah di-cache** | Keamanan |
+
+#### 17.5.8 Indikator UI Wajib
+
+1. Badge status koneksi tetap terlihat di layar POS: **Online** / **Offline**.
+2. Penghitung antrian belum tersync (contoh: "3 transaksi menunggu sinkronisasi").
+3. Notifikasi sukses saat antrian habis tersync.
+4. Daftar `outbox_failed` yang dapat dilihat kasir/Admin, dengan aksi coba-ulang manual.
+5. Struk offline wajib mencantumkan penanda **"BELUM TERSINKRON"**.
+
+---
+
 ## 18. INVENTORY SPECIFICATION
 
 ### 18.1 Entitas Inventory
@@ -361,7 +493,7 @@ Kitchen Display System (KDS) adalah antarmuka digital khusus role **Dapur/Barist
 sequenceDiagram
     participant K as Kasir (POS)
     participant BE as Laravel API
-    participant DB as PostgreSQL
+    participant DB as MySQL 8.0
     participant D as Dapur/Barista (Kitchen Display)
 
     K->>BE: POST /pos/transactions (transaksi selesai dibayar)

@@ -56,6 +56,10 @@ export default function InventoryPage() {
   const [logs, setLogs] = useState<StockMovementLog[]>(initialLogs);
   const [logsLoading, setLogsLoading] = useState(false);
 
+  // BUG FIX 3: Fetch inventory categories from API
+  const [inventoryCategories, setInventoryCategories] = useState<{ id: string; name: string }[]>([]);
+  const [formCategoryId, setFormCategoryId] = useState('');
+
   // Fetch real logs from API
   useEffect(() => {
     if (usingLive) {
@@ -64,16 +68,27 @@ export default function InventoryPage() {
         api.get('/admin/inventories/logs')
           .then(res => {
             if (res.data?.data) {
-              const fetchedLogs = res.data.data.map((log: any) => ({
-                id: log.id || `LOG-${Date.now()}-${Math.random()}`,
-                timestamp: new Date(log.created_at).toLocaleString('id-ID'),
-                itemName: log.inventory?.name || 'Item Terhapus',
-                type: log.type || 'STOCK_IN',
-                quantityChange: Number(log.quantity),
-                unit: typeof log.inventory?.unit === 'object' && log.inventory?.unit ? log.inventory.unit.name : (log.inventory?.unit || 'satuan'),
-                reference: log.reference_number || log.notes || '-',
-                user: log.user?.name || 'Sistem',
-              }));
+              const fetchedLogs = res.data.data.map((log: any) => {
+                // BUG FIX 5: Normalize backend log types to frontend display types
+                const rawType = (log.type || '').toLowerCase();
+                let normalizedType: StockMovementLog['type'] = 'STOCK_IN';
+                if (rawType === 'keluar' || rawType === 'stock_out') normalizedType = 'STOCK_OUT_WASTE';
+                else if (rawType === 'masuk' || rawType === 'stock_in') normalizedType = 'STOCK_IN';
+                else if (rawType === 'adjustment' || rawType === 'penyesuaian') normalizedType = 'OPNAME';
+                // If reference is a Transaction UUID (from POS auto-deduct), it's BOM_AUTO_DEDUCT
+                else if (log.reference_type && log.reference_type.includes('Transaction')) normalizedType = 'BOM_AUTO_DEDUCT';
+
+                return {
+                  id: log.id || `LOG-${Date.now()}-${Math.random()}`,
+                  timestamp: new Date(log.created_at).toLocaleString('id-ID'),
+                  itemName: log.inventory?.name || 'Item Terhapus',
+                  type: normalizedType,
+                  quantityChange: rawType === 'keluar' || rawType === 'stock_out' ? -Number(log.quantity) : Number(log.quantity),
+                  unit: typeof log.inventory?.unit === 'object' && log.inventory?.unit ? log.inventory.unit.name : (log.inventory?.unit || 'satuan'),
+                  reference: log.reference_id || log.reference_number || log.notes || '-',
+                  user: log.user?.name || 'Sistem',
+                };
+              });
               setLogs(fetchedLogs);
             }
           })
@@ -83,10 +98,28 @@ export default function InventoryPage() {
     }
   }, [usingLive, activeTab]);
 
+  // BUG FIX 3: Fetch inventory categories from API on mount
+  useEffect(() => {
+    import('@/shared/api/axios').then(({ default: api }) => {
+      api.get('/admin/inventory-categories')
+        .then(res => {
+          if (res.data?.data && Array.isArray(res.data.data)) {
+            setInventoryCategories(res.data.data);
+            if (res.data.data.length > 0) {
+              setFormCategoryId(res.data.data[0].id);
+            }
+          }
+        })
+        .catch(() => {
+          // Fallback: inventory-categories not available, use item categories
+        });
+    });
+  }, [usingLive]);
+
   // Modal State for Add Item
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formName, setFormName] = useState('');
-  const [formCategory, setFormCategory] = useState('Kopi');
+  const [formCategory, setFormCategory] = useState('Kopi'); // kept for fallback display
   const [formStock, setFormStock] = useState('500');
   const [formUnit, setFormUnit] = useState('gram');
   const [formThreshold, setFormThreshold] = useState('100');
@@ -250,19 +283,40 @@ export default function InventoryPage() {
 
     setFormLoading(true);
     try {
-      await addItem({
-        name: formName,
-        category: formCategory,
-        stock: Number(formStock) || 0,
-        unit: formUnit,
-        threshold: Number(formThreshold) || 10,
-        cost: Number(formCost) || 10000,
-        sku: formSku || undefined,
-      });
+      // BUG FIX 3: Use category_id (UUID) from API if available, otherwise fall back to category string
+      if (usingLive && formCategoryId) {
+        // Live mode: send proper category_id UUID to backend
+        await import('@/shared/api/axios').then(async ({ default: api }) => {
+          await api.post('/admin/inventories', {
+            category_id: formCategoryId,
+            name: formName,
+            stock_quantity: Number(formStock) || 0,
+            unit: formUnit,
+            minimum_stock: Number(formThreshold) || 10,
+            sku: formSku || undefined,
+          });
+          refetch();
+        });
+      } else {
+        // Fallback mock mode
+        await addItem({
+          name: formName,
+          category: formCategory,
+          stock: Number(formStock) || 0,
+          unit: formUnit,
+          threshold: Number(formThreshold) || 10,
+          cost: Number(formCost) || 10000,
+          sku: formSku || undefined,
+        });
+      }
 
       setIsModalOpen(false);
       setFormName('');
       setFormSku('');
+      setFormStock('500');
+      setFormUnit('gram');
+      setFormThreshold('100');
+      setFormCost('15000');
       showNotification('Bahan baku baru berhasil ditambahkan ke inventaris!');
     } catch (err) {
       console.error('Add item error:', err);
@@ -834,17 +888,30 @@ export default function InventoryPage() {
                   <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-1">
                     Kategori <span className="text-red-500">*</span>
                   </label>
-                  <select
-                    value={formCategory}
-                    onChange={(e) => setFormCategory(e.target.value)}
-                    className="w-full rounded-2xl border border-gray-200 dark:border-white/15 bg-white dark:bg-black/35 px-3.5 py-3 text-xs font-bold focus:border-accent focus:outline-none"
-                  >
-                    {['Kopi', 'Dairy', 'Sirup', 'Baking', 'Bahan Dasar', 'Kemasan', 'Minuman'].map((c) => (
-                      <option key={c} value={c}>
-                        {c}
-                      </option>
-                    ))}
-                  </select>
+                  {/* BUG FIX 3: Use category_id from API when live, fallback to string when mock */}
+                  {inventoryCategories.length > 0 ? (
+                    <select
+                      value={formCategoryId}
+                      onChange={(e) => setFormCategoryId(e.target.value)}
+                      className="w-full rounded-2xl border border-gray-200 dark:border-white/15 bg-white dark:bg-black/35 px-3.5 py-3 text-xs font-bold focus:border-accent focus:outline-none"
+                    >
+                      {inventoryCategories.map((c) => (
+                        <option key={c.id} value={c.id}>
+                          {c.name}
+                        </option>
+                      ))}
+                    </select>
+                  ) : (
+                    <select
+                      value={formCategory}
+                      onChange={(e) => setFormCategory(e.target.value)}
+                      className="w-full rounded-2xl border border-gray-200 dark:border-white/15 bg-white dark:bg-black/35 px-3.5 py-3 text-xs font-bold focus:border-accent focus:outline-none"
+                    >
+                      {['Kopi', 'Dairy', 'Sirup', 'Baking', 'Bahan Dasar', 'Kemasan', 'Minuman'].map((c) => (
+                        <option key={c} value={c}>{c}</option>
+                      ))}
+                    </select>
+                  )}
                 </div>
               </div>
 

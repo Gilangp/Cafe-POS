@@ -5,6 +5,13 @@ import { Plus, Search, Phone, Mail, Package, Edit2, Trash2, Check, X, Loader2, B
 import { useProcurement, SupplierItem } from '@/features/inventory/hooks/use-procurement';
 import { PermissionGuard } from '@/shared/components/common/permission-guard';
 
+// Theme Constants
+const THEME_COLORS = {
+  primary: '#12100E',      // Dark brown
+  accent: '#BA935D',       // Gold
+  light: '#FAF6F0',        // Cream
+} as const;
+
 const categoryColor: Record<string, string> = {
   Kopi: 'bg-amber-100 text-amber-800',
   Dairy: 'bg-blue-100 text-blue-800',
@@ -140,7 +147,8 @@ export default function ProcurementSuppliersPage() {
         <PermissionGuard permission="procurement.create">
           <button
             onClick={handleOpenAdd}
-            className="flex items-center justify-center gap-2 rounded-xl bg-[#12100E] px-5 py-2.5 text-sm font-bold text-[#BA935D] hover:bg-[#1e1a17] transition-colors shadow-sm"
+            style={{ backgroundColor: THEME_COLORS.primary, color: THEME_COLORS.accent }}
+            className="flex items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-sm font-bold hover:bg-[#1e1a17] transition-colors shadow-sm"
           >
             <Plus size={16} /> Tambah Supplier
           </button>
@@ -162,28 +170,42 @@ export default function ProcurementSuppliersPage() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Cari nama supplier, kode, atau PIC..."
-          className="w-full rounded-xl border border-gray-200 bg-white py-2.5 pl-10 pr-4 text-sm focus:border-[#BA935D] focus:outline-none focus:ring-1 focus:ring-[#BA935D]"
+          className="w-full rounded-xl border border-gray-200 bg-white py-2.5 pl-10 pr-4 text-sm focus:outline-none focus:ring-1"
+          style={{
+            '--tw-ring-color': THEME_COLORS.accent,
+            '--tw-border-opacity': '1',
+          } as any}
+          onFocus={(e) => {
+            e.currentTarget.style.borderColor = THEME_COLORS.accent;
+          }}
+          onBlur={(e) => {
+            e.currentTarget.style.borderColor = '';
+          }}
         />
       </div>
 
-      {/* Suppliers Table */}
+      {/* Suppliers Table or Loading State */}
       {loading ? (
-        <div className="flex flex-col items-center justify-center py-20 text-gray-400 bg-white rounded-2xl border border-gray-100">
-          <Loader2 size={36} className="animate-spin mb-3 text-[#BA935D]" />
-          <p className="text-sm font-semibold">Memuat daftar supplier dari server...</p>
+        <div className="flex flex-col items-center justify-center py-20 bg-white rounded-2xl border border-gray-100">
+          <Loader2 size={36} className="animate-spin mb-3" style={{ color: THEME_COLORS.accent }} />
+          <p className="text-sm font-semibold text-gray-400">Memuat daftar supplier dari server...</p>
+        </div>
+      ) : filtered.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-20 bg-white rounded-2xl border border-gray-100">
+          <p className="text-sm font-semibold text-gray-400">Tidak ada supplier yang sesuai dengan pencarian Anda</p>
         </div>
       ) : (
         <div className="rounded-2xl bg-white border border-gray-100 shadow-sm overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="bg-gray-50 text-left text-[11px] uppercase tracking-wider text-gray-400 border-b border-gray-100">
-                  <th className="px-6 py-4">Kode & Supplier</th>
-                  <th className="px-6 py-4">Kategori</th>
-                  <th className="px-6 py-4">PIC & Kontak</th>
-                  <th className="px-6 py-4">Alamat / Lokasi</th>
-                  <th className="px-6 py-4">Status</th>
-                  <th className="px-6 py-4 text-center">Aksi</th>
+                <tr className="bg-gray-50 border-b border-gray-100">
+                  <th className="px-6 py-4 text-left text-[11px] uppercase tracking-wider text-gray-400">Kode & Supplier</th>
+                  <th className="px-6 py-4 text-left text-[11px] uppercase tracking-wider text-gray-400">Kategori</th>
+                  <th className="px-6 py-4 text-left text-[11px] uppercase tracking-wider text-gray-400">PIC & Kontak</th>
+                  <th className="px-6 py-4 text-left text-[11px] uppercase tracking-wider text-gray-400">Alamat / Lokasi</th>
+                  <th className="px-6 py-4 text-left text-[11px] uppercase tracking-wider text-gray-400">Status</th>
+                  <th className="px-6 py-4 text-left text-[11px] uppercase tracking-wider text-gray-400">Aksi</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
@@ -191,7 +213,7 @@ export default function ProcurementSuppliersPage() {
                   <tr key={s.id} className="hover:bg-gray-50/50 transition-colors">
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2.5">
-                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#FAF6F0] text-[#BA935D]">
+                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-[#BA935D]" style={{ backgroundColor: THEME_COLORS.light }}>
                           <Building2 size={20} />
                         </div>
                         <div>
@@ -392,7 +414,8 @@ export default function ProcurementSuppliersPage() {
                 <button
                   type="submit"
                   disabled={formLoading}
-                  className="flex items-center gap-2 rounded-xl bg-[#12100E] px-5 py-2 text-xs font-bold text-[#BA935D] hover:bg-[#1e1a17] transition-colors disabled:opacity-50"
+                  style={{ backgroundColor: THEME_COLORS.primary, color: THEME_COLORS.accent }}
+                  className="flex items-center gap-2 rounded-xl px-5 py-2 text-xs font-bold hover:bg-[#1e1a17] transition-colors disabled:opacity-50"
                 >
                   {formLoading && <Loader2 size={13} className="animate-spin" />}
                   {modalMode === 'add' ? 'Simpan Supplier' : 'Perbarui Supplier'}

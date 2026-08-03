@@ -149,12 +149,16 @@ export function useRealtimeOrders() {
     // Optimistic UI Update
     setOrders((prev) => prev.map((o) => (o.id === id ? { ...o, status: newStatus } : o)));
 
-    // Map UI status back to Laravel status
-    let laravelStatus = 'diterima';
-    if (newStatus === 'preparing') laravelStatus = 'diproses';
-    if (newStatus === 'ready') laravelStatus = 'siap';
-    if (newStatus === 'completed') laravelStatus = 'disajikan';
-    if (newStatus === 'cancelled') laravelStatus = 'dibatalkan';
+    // BUG FIX 2: Complete status mapping UI → Laravel (was missing 'confirmed' case)
+    const statusMap: Record<string, string> = {
+      pending: 'diterima',
+      confirmed: 'diterima',   // treat confirmed same as pending (both = diterima in backend)
+      preparing: 'diproses',
+      ready: 'siap',
+      completed: 'disajikan',
+      cancelled: 'dibatalkan',
+    };
+    const laravelStatus = statusMap[newStatus] ?? 'diterima';
 
     try {
       await api.patch(`/kds/tickets/${id}/status`, { status: laravelStatus });
