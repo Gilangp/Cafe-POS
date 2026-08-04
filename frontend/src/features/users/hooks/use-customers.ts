@@ -85,7 +85,7 @@ export function useCustomers() {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [fetchCustomers]); // Add fetchCustomers to dependency array
 
   const addCustomer = async (payload: { name: string; email: string; phone: string }) => {
     const avatar = payload.name

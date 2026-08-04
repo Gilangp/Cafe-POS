@@ -157,8 +157,8 @@ export function useProducts(options?: { includeInactive?: boolean }) {
       const catList = Array.isArray(catRes.data?.data)
         ? catRes.data.data
         : Array.isArray(catRes.data)
-        ? catRes.data
-        : [];
+          ? catRes.data
+          : [];
       if (isMounted && catList.length > 0) {
         setCategories(catList);
       }
@@ -169,8 +169,8 @@ export function useProducts(options?: { includeInactive?: boolean }) {
         const recList = Array.isArray(recRes.data?.data)
           ? recRes.data.data
           : Array.isArray(recRes.data)
-          ? recRes.data
-          : [];
+            ? recRes.data
+            : [];
         if (isMounted) setRecipes(recList);
       } catch (recErr) {
         // Recipe endpoint might not be populated or accessible
@@ -187,8 +187,8 @@ export function useProducts(options?: { includeInactive?: boolean }) {
       const rawProducts = Array.isArray(prodRes.data?.data)
         ? prodRes.data.data
         : Array.isArray(prodRes.data)
-        ? prodRes.data
-        : [];
+          ? prodRes.data
+          : [];
 
       if (isMounted && rawProducts.length > 0) {
         const mapped: CatalogProduct[] = rawProducts.map((p: any) => ({
@@ -219,7 +219,7 @@ export function useProducts(options?: { includeInactive?: boolean }) {
     } finally {
       if (isMounted) setLoading(false);
     }
-  }, [options?.includeInactive, activeBranchId]);
+  }, [options?.includeInactive]); // Remove activeBranchId - not used in function body
 
   useEffect(() => {
     let isMounted = true;
@@ -244,11 +244,11 @@ export function useProducts(options?: { includeInactive?: boolean }) {
         prev.map((p) =>
           p.id === productId
             ? {
-                ...p,
-                effective_price: data.price !== undefined ? data.price : p.effective_price,
-                is_available: data.is_available !== undefined ? data.is_available : p.is_available,
-                branch_stock_quantity: data.stock_quantity !== undefined ? data.stock_quantity : p.branch_stock_quantity,
-              }
+              ...p,
+              effective_price: data.price !== undefined ? data.price : p.effective_price,
+              is_available: data.is_available !== undefined ? data.is_available : p.is_available,
+              branch_stock_quantity: data.stock_quantity !== undefined ? data.stock_quantity : p.branch_stock_quantity,
+            }
             : p
         )
       );
@@ -289,16 +289,16 @@ export function useProducts(options?: { includeInactive?: boolean }) {
         prev.map((p) =>
           p.id === productId
             ? {
-                ...p,
-                name: payload.name || p.name,
-                category_id: payload.category_id || p.category_id,
-                category: categories.find((c) => String(c.id) === String(payload.category_id))?.name || p.category,
-                price: payload.base_price !== undefined ? Number(payload.base_price) : p.price,
-                effective_price: payload.base_price !== undefined ? Number(payload.base_price) : p.effective_price,
-                description: payload.description !== undefined ? payload.description : p.description,
-                sku: payload.sku !== undefined ? payload.sku : p.sku,
-                recipe_id: payload.recipe_id !== undefined ? payload.recipe_id : p.recipe_id,
-              }
+              ...p,
+              name: payload.name || p.name,
+              category_id: payload.category_id || p.category_id,
+              category: categories.find((c) => String(c.id) === String(payload.category_id))?.name || p.category,
+              price: payload.base_price !== undefined ? Number(payload.base_price) : p.price,
+              effective_price: payload.base_price !== undefined ? Number(payload.base_price) : p.effective_price,
+              description: payload.description !== undefined ? payload.description : p.description,
+              sku: payload.sku !== undefined ? payload.sku : p.sku,
+              recipe_id: payload.recipe_id !== undefined ? payload.recipe_id : p.recipe_id,
+            }
             : p
         )
       );
