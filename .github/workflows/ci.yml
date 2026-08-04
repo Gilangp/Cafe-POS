@@ -38,7 +38,13 @@ jobs:
 
       - name: Copy .env
         run: cp backend/.env.example backend/.env
-        
+
+      - name: Ensure bootstrap/cache and storage directories exist
+        working-directory: backend
+        run: |
+          mkdir -p bootstrap/cache storage/framework/{cache,sessions,views} storage/logs
+          chmod -R 775 bootstrap storage
+
       - name: Install Composer dependencies
         working-directory: backend
         run: composer install --no-progress --no-interaction --prefer-dist --optimize-autoloader
