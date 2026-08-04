@@ -117,9 +117,17 @@ jobs:
           extensions: mbstring
           coverage: none
 
+      - name: Ensure bootstrap/cache directory exists
+        working-directory: backend
+        run: mkdir -p bootstrap/cache storage/framework/{cache,sessions,views} storage/logs
+
       - name: Install Composer dependencies (Backend)
         working-directory: backend
-        run: composer install --no-progress --no-interaction --prefer-dist
+        run: composer install --no-progress --no-interaction --prefer-dist --no-scripts
+
+      - name: Discover packages
+        working-directory: backend
+        run: php artisan package:discover --ansi
 
       - name: Run Laravel Pint (Backend)
         working-directory: backend
