@@ -2,7 +2,9 @@
 
 namespace Tests\Feature;
 
+use App\Models\AuditLog;
 use App\Models\Category;
+use App\Models\Menu;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use Tests\WithRoles;
@@ -29,7 +31,7 @@ class AuditLogTest extends TestCase
             'user_id' => $admin->id,
         ]);
 
-        $log = \App\Models\AuditLog::where('user_id', $admin->id)->first();
+        $log = AuditLog::where('user_id', $admin->id)->first();
         $this->assertStringContainsString('POST', $log->action);
         $this->assertStringContainsString('categories', $log->module);
     }
@@ -76,7 +78,7 @@ class AuditLogTest extends TestCase
         $admin = $this->createAdmin();
         $kasir = $this->createKasir();
         $category = Category::factory()->create();
-        $menu = \App\Models\Menu::factory()->create(['category_id' => $category->id]);
+        $menu = Menu::factory()->create(['category_id' => $category->id]);
 
         $transactionResponse = $this->actingAs($kasir)->postJson('/api/v1/pos/transactions', [
             'payment_method' => 'tunai',
@@ -93,7 +95,7 @@ class AuditLogTest extends TestCase
             'user_id' => $admin->id,
         ]);
 
-        $log = \App\Models\AuditLog::where('user_id', $admin->id)->latest()->first();
+        $log = AuditLog::where('user_id', $admin->id)->latest()->first();
         $this->assertStringContainsString('void', $log->action);
     }
 }

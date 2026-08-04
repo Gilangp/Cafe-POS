@@ -25,7 +25,7 @@ class PublicMenuController extends Controller
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('description', 'like', "%{$search}%");
+                    ->orWhere('description', 'like', "%{$search}%");
             });
         }
 
@@ -54,7 +54,7 @@ class PublicMenuController extends Controller
             $q->where('status', 'aktif');
         }])->where('slug', $slug)->first();
 
-        if (!$menu) {
+        if (! $menu) {
             return response()->json([
                 'success' => false,
                 'message' => 'Menu tidak ditemukan.',

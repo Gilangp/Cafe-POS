@@ -8,7 +8,7 @@ return new class extends Migration
 {
     /**
      * Run the migrations.
-     * 
+     *
      * Tabel: variant_groups, variant_options, menu_variant_groups, transaction_item_variants
      * Sesuai dokumentasi Section 26.2 - Variants
      */

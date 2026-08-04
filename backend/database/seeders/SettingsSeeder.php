@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Setting;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
 
 class SettingsSeeder extends Seeder
 {
@@ -15,7 +16,7 @@ class SettingsSeeder extends Seeder
     public function run(): void
     {
         Setting::firstOrCreate(
-            ['id' => Setting::first()->id ?? \Illuminate\Support\Str::uuid()],
+            ['id' => Setting::first()->id ?? Str::uuid()],
             [
                 'site_name' => 'NEMU Space Coffee Shop',
                 'site_tagline' => 'Handcrafted Curations & Comfort Space',

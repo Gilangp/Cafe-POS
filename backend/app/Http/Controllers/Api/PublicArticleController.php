@@ -25,7 +25,7 @@ class PublicArticleController extends Controller
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('title', 'ilike', "%{$search}%")
-                  ->orWhere('content', 'ilike', "%{$search}%");
+                    ->orWhere('content', 'ilike', "%{$search}%");
             });
         }
 
@@ -55,7 +55,7 @@ class PublicArticleController extends Controller
             ->where('status', 'diterbitkan')
             ->first();
 
-        if (!$article) {
+        if (! $article) {
             return response()->json([
                 'success' => false,
                 'message' => 'Artikel tidak ditemukan.',

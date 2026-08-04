@@ -8,7 +8,7 @@ return new class extends Migration
 {
     /**
      * Run the migrations.
-     * 
+     *
      * Tabel: users, roles, user_roles
      * Sesuai dokumentasi Section 26.2 - Users & Roles
      */

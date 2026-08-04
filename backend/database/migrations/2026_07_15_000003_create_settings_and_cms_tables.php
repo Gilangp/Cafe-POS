@@ -8,7 +8,7 @@ return new class extends Migration
 {
     /**
      * Run the migrations.
-     * 
+     *
      * Tabel: settings, social_media, hero_banners, about_us, articles, article_categories,
      *        galleries, testimonials, faqs
      * Sesuai dokumentasi Section 26.1 - CMS Tables

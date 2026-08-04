@@ -22,12 +22,14 @@ class AdminReservationController extends Controller
         }
 
         $reservations = $query->latest()->get();
+
         return response()->json(['success' => true, 'message' => 'Daftar reservasi admin.', 'data' => $reservations, 'meta' => ['total' => $reservations->count()]]);
     }
 
     public function tables(): JsonResponse
     {
         $tables = Table::orderBy('table_number')->get();
+
         return response()->json(['success' => true, 'data' => $tables]);
     }
 
@@ -48,14 +50,14 @@ class AdminReservationController extends Controller
 
         $reservation = Reservation::create($validated);
 
-        if (!empty($validated['table_id'])) {
+        if (! empty($validated['table_id'])) {
             $table = Table::find($validated['table_id']);
             if ($table) {
                 $table->status = 'reservasi';
                 $table->save();
             }
         }
-        
+
         return response()->json(['success' => true, 'message' => 'Reservasi berhasil ditambahkan.', 'data' => $reservation->load('table'), 'meta' => null], 201);
     }
 
@@ -103,6 +105,7 @@ class AdminReservationController extends Controller
     public function destroy(Reservation $reservation): JsonResponse
     {
         $reservation->delete();
+
         return response()->json(['success' => true, 'message' => 'Reservasi berhasil dihapus.', 'data' => null, 'meta' => null]);
     }
 }

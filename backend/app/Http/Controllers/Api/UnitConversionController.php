@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-
 use App\Models\UnitConversion;
 use Illuminate\Http\Request;
 
@@ -53,6 +52,7 @@ class UnitConversionController extends Controller
     public function destroy(UnitConversion $unitConversion)
     {
         $unitConversion->delete();
+
         return response()->json(['message' => 'Deleted']);
     }
 }

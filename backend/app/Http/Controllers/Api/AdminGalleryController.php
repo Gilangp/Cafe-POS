@@ -16,6 +16,7 @@ class AdminGalleryController extends Controller
             $query->where('category', $request->category);
         }
         $galleries = $query->orderBy('display_order')->latest()->get();
+
         return response()->json(['success' => true, 'message' => 'Daftar galeri foto admin.', 'data' => $galleries, 'meta' => null]);
     }
 
@@ -29,6 +30,7 @@ class AdminGalleryController extends Controller
         ]);
 
         $gallery = Gallery::create($validated);
+
         return response()->json(['success' => true, 'message' => 'Foto galeri berhasil ditambahkan.', 'data' => $gallery, 'meta' => null], 201);
     }
 
@@ -47,12 +49,14 @@ class AdminGalleryController extends Controller
         ]);
 
         $gallery->update($validated);
+
         return response()->json(['success' => true, 'message' => 'Foto galeri berhasil diperbarui.', 'data' => $gallery, 'meta' => null]);
     }
 
     public function destroy(Gallery $gallery): JsonResponse
     {
         $gallery->delete();
+
         return response()->json(['success' => true, 'message' => 'Foto galeri berhasil dihapus.', 'data' => null, 'meta' => null]);
     }
 }

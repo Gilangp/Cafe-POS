@@ -8,7 +8,7 @@ return new class extends Migration
 {
     /**
      * Run the migrations.
-     * 
+     *
      * Tabel: unit_conversions
      * Sesuai dokumentasi Section 26.2 - Unit Conversions
      */

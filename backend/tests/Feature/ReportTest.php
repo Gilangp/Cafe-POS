@@ -3,6 +3,8 @@
 namespace Tests\Feature;
 
 use App\Models\Category;
+use App\Models\Inventory;
+use App\Models\InventoryCategory;
 use App\Models\Menu;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -52,7 +54,7 @@ class ReportTest extends TestCase
         ])->assertStatus(201);
 
         // Filter tanggal di masa depan -> tidak ada transaksi
-        $response = $this->actingAs($admin)->getJson('/api/v1/admin/reports/sales?from=' . now()->addDays(5)->toDateString());
+        $response = $this->actingAs($admin)->getJson('/api/v1/admin/reports/sales?from='.now()->addDays(5)->toDateString());
 
         $response->assertStatus(200)
             ->assertJsonPath('data.total_transactions', 0);
@@ -63,8 +65,8 @@ class ReportTest extends TestCase
     {
         $admin = $this->createAdmin();
 
-        \App\Models\Inventory::create([
-            'category_id' => \App\Models\InventoryCategory::create(['name' => 'Bahan'])->id,
+        Inventory::create([
+            'category_id' => InventoryCategory::create(['name' => 'Bahan'])->id,
             'name' => 'Gula Aren',
             'stock_quantity' => 5,
             'unit' => 'kg',

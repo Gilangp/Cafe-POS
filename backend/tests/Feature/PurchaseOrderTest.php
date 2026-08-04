@@ -129,7 +129,7 @@ class PurchaseOrderTest extends TestCase
                 ['purchase_order_item_id' => $poItem->id, 'received_quantity' => 10],
             ],
         ])->assertStatus(200)
-          ->assertJsonPath('status', 'PARTIAL');
+            ->assertJsonPath('status', 'PARTIAL');
     }
 
     /** PO cancel hanya untuk status DRAFT/ORDERED */

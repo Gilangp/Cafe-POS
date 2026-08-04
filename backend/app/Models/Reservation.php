@@ -16,7 +16,7 @@ class Reservation extends Model
         parent::boot();
         static::creating(function ($model) {
             if (empty($model->reservation_code)) {
-                $model->reservation_code = 'NEMU-' . strtoupper(substr(uniqid(), -5));
+                $model->reservation_code = 'NEMU-'.strtoupper(substr(uniqid(), -5));
             }
         });
     }

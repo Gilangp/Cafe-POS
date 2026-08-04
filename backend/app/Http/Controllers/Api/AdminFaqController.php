@@ -12,6 +12,7 @@ class AdminFaqController extends Controller
     public function index(): JsonResponse
     {
         $faqs = Faq::orderBy('display_order')->get();
+
         return response()->json(['success' => true, 'message' => 'Daftar FAQ admin.', 'data' => $faqs, 'meta' => null]);
     }
 
@@ -25,6 +26,7 @@ class AdminFaqController extends Controller
         ]);
 
         $faq = Faq::create($validated);
+
         return response()->json(['success' => true, 'message' => 'FAQ berhasil dibuat.', 'data' => $faq, 'meta' => null], 201);
     }
 
@@ -43,12 +45,14 @@ class AdminFaqController extends Controller
         ]);
 
         $faq->update($validated);
+
         return response()->json(['success' => true, 'message' => 'FAQ berhasil diperbarui.', 'data' => $faq, 'meta' => null]);
     }
 
     public function destroy(Faq $faq): JsonResponse
     {
         $faq->delete();
+
         return response()->json(['success' => true, 'message' => 'FAQ berhasil dihapus.', 'data' => null, 'meta' => null]);
     }
 }

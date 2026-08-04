@@ -8,7 +8,7 @@ return new class extends Migration
 {
     /**
      * Run the migrations.
-     * 
+     *
      * Tabel: categories, menus, promotions, menu_promotions
      * Sesuai dokumentasi Section 26.2 - Menus & Categories
      */

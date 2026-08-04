@@ -8,7 +8,7 @@ return new class extends Migration
 {
     /**
      * Run the migrations.
-     * 
+     *
      * Tabel: inventory_categories, suppliers, inventories, inventory_logs, menu_ingredients, audit_logs, media
      * Sesuai dokumentasi Section 26.2 - Inventories & Purchase Orders
      */

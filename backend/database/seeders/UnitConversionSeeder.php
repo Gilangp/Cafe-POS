@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\UnitConversion;
+use Illuminate\Database\Seeder;
 
 class UnitConversionSeeder extends Seeder
 {
@@ -21,7 +21,7 @@ class UnitConversionSeeder extends Seeder
                 'from_unit' => $conv['from_unit'],
                 'to_unit' => $conv['to_unit'],
             ], [
-                'multiplier' => $conv['multiplier']
+                'multiplier' => $conv['multiplier'],
             ]);
         }
     }

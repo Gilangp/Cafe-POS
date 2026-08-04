@@ -3,20 +3,19 @@
 namespace Database\Seeders;
 
 use App\Models\Category;
+use App\Models\Inventory;
 use App\Models\Menu;
+use App\Models\MenuVariantGroup;
 use App\Models\VariantGroup;
 use App\Models\VariantOption;
-use App\Models\MenuVariantGroup;
-use App\Models\Inventory;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Str;
 
 class MenuSeeder extends Seeder
 {
     /**
      * Seed Menu untuk testing: 10-15 menu dengan berbagai tipe
      * Sesuai dokumentasi Section 26.3 Point 5
-     * 
+     *
      * Data Kompleks:
      * - Menu Sederhana: 'Espresso' (hanya resep biji kopi)
      * - Menu dengan Resep: 'Kopi Susu Gula Aren' (resep: biji kopi, susu, gula aren)
@@ -32,8 +31,9 @@ class MenuSeeder extends Seeder
         $invPaperCup = Inventory::where('name', 'Paper Cup')->first();
         $invKopiRobusta = Inventory::where('name', 'Biji Kopi Robusta Temanggung')->first();
 
-        if (!$invKopiGayo || !$invSusu || !$invGulaAren || !$invPaperCup) {
+        if (! $invKopiGayo || ! $invSusu || ! $invGulaAren || ! $invPaperCup) {
             $this->command->error('Required inventories not found. Please run InventorySeeder first.');
+
             return;
         }
 
@@ -235,7 +235,7 @@ class MenuSeeder extends Seeder
                 'ingredients' => [
                     $invKopiGayo->id => 18,
                     $invPaperCup->id => 1,
-                ]
+                ],
             ],
             [
                 'name' => 'Cappuccino',
@@ -247,7 +247,7 @@ class MenuSeeder extends Seeder
                     $invKopiGayo->id => 18,
                     $invSusu->id => 150,
                     $invPaperCup->id => 1,
-                ]
+                ],
             ],
             [
                 'name' => 'Mocha',
@@ -259,7 +259,7 @@ class MenuSeeder extends Seeder
                     $invKopiGayo->id => 18,
                     $invSusu->id => 180,
                     $invPaperCup->id => 1,
-                ]
+                ],
             ],
             [
                 'name' => 'Matcha Latte',
@@ -270,7 +270,7 @@ class MenuSeeder extends Seeder
                 'ingredients' => [
                     $invSusu->id => 200,
                     $invPaperCup->id => 1,
-                ]
+                ],
             ],
             [
                 'name' => 'Chocolate Latte',
@@ -281,7 +281,7 @@ class MenuSeeder extends Seeder
                 'ingredients' => [
                     $invSusu->id => 200,
                     $invPaperCup->id => 1,
-                ]
+                ],
             ],
             [
                 'name' => 'French Fries',
@@ -289,7 +289,7 @@ class MenuSeeder extends Seeder
                 'category_id' => $catFood->id,
                 'price' => 22000,
                 'description' => 'Kentang goreng renyah dengan saus',
-                'ingredients' => []
+                'ingredients' => [],
             ],
         ];
 
@@ -300,13 +300,13 @@ class MenuSeeder extends Seeder
             $menu = Menu::firstOrCreate(
                 ['slug' => $menuData['slug']],
                 array_merge($menuData, [
-                    'image' => '/images/menu/' . $menuData['slug'] . '.jpg',
+                    'image' => '/images/menu/'.$menuData['slug'].'.jpg',
                     'status' => 'tersedia',
                     'is_best_seller' => false,
                 ])
             );
 
-            if (!empty($ingredients)) {
+            if (! empty($ingredients)) {
                 $sync = [];
                 foreach ($ingredients as $invId => $qty) {
                     $sync[$invId] = ['quantity_used' => $qty];

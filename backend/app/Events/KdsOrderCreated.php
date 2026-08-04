@@ -15,8 +15,7 @@ class KdsOrderCreated implements ShouldBroadcastNow
 
     public function __construct(
         public OrderTicket $ticket
-    ) {
-    }
+    ) {}
 
     public function broadcastOn(): array
     {

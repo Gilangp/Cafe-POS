@@ -8,7 +8,7 @@ return new class extends Migration
 {
     /**
      * Run the migrations.
-     * 
+     *
      * Tabel: tables, reservations, transactions, transaction_items, order_tickets, order_ticket_items
      * Sesuai dokumentasi Section 26.2 - POS & Kitchen Tables
      */

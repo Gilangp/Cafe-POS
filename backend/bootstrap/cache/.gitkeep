@@ -1,2 +1,0 @@
-# This file ensures the bootstrap/cache directory exists in git.
-# Without it, composer install fails because the directory is missing.

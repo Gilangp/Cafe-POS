@@ -10,10 +10,10 @@ trait WithRoles
     protected function createUserWithRole(string $roleName, array $userAttributes = []): User
     {
         $role = Role::firstOrCreate(['name' => $roleName]);
-        
+
         $user = User::factory()->create($userAttributes);
         $user->roles()->attach($role->id);
-        
+
         return $user->load('roles');
     }
 

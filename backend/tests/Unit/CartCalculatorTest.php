@@ -7,7 +7,7 @@ use PHPUnit\Framework\TestCase;
 
 /**
  * Unit test untuk CartCalculator
- * 
+ *
  * Sesuai dokumentasi §08 Testing Specification §2.1
  * Logic bisnis wajib di-test: hitung total, diskon, pajak
  */
@@ -324,7 +324,7 @@ class CartCalculatorTest extends TestCase
             ['price' => 33.333, 'quantity' => 3, 'variants' => []],
         ];
         $subtotal = CartCalculator::calculateSubtotal($items);
-        
+
         // 33.333 * 3 = 99.999, CartCalculator rounds to 100
         $this->assertEquals(100.00, $subtotal);
     }

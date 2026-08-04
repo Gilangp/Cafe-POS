@@ -12,14 +12,14 @@ class RoleMiddleware
      * Handle an incoming request and check if user has any of the required roles.
      * Supports multi-role users (e.g., staff who has both Kasir and Dapur_Barista roles).
      *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+     * @param  Closure(Request): (Response)  $next
      * @param  string  ...$roles
      */
     public function handle(Request $request, Closure $next, ...$roles): Response
     {
         $user = $request->user();
 
-        if (!$user) {
+        if (! $user) {
             return response()->json([
                 'success' => false,
                 'message' => 'Autentikasi diperlukan. Silakan login terlebih dahulu.',
@@ -28,7 +28,7 @@ class RoleMiddleware
             ], 401);
         }
 
-        if (!$user->is_active) {
+        if (! $user->is_active) {
             return response()->json([
                 'success' => false,
                 'message' => 'Akun Anda dinonaktifkan. Silakan hubungi Administrator.',
@@ -45,10 +45,10 @@ class RoleMiddleware
         }
 
         // Check multi-role authorization
-        if (!$user->hasRole($parsedRoles)) {
+        if (! $user->hasRole($parsedRoles)) {
             return response()->json([
                 'success' => false,
-                'message' => 'Akses ditolak. Anda tidak memiliki otorisasi peran (' . implode('/', $parsedRoles) . ') untuk mengakses modul ini.',
+                'message' => 'Akses ditolak. Anda tidak memiliki otorisasi peran ('.implode('/', $parsedRoles).') untuk mengakses modul ini.',
                 'data' => null,
                 'meta' => null,
             ], 403);

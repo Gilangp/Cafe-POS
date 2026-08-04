@@ -4,18 +4,19 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\VariantGroup;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class AdminVariantController extends Controller
 {
     public function index(): JsonResponse
     {
         $groups = VariantGroup::with('options')->orderBy('created_at', 'desc')->get();
+
         return response()->json([
             'success' => true,
             'message' => 'Daftar Master Varian',
-            'data' => $groups
+            'data' => $groups,
         ]);
     }
 
@@ -34,7 +35,7 @@ class AdminVariantController extends Controller
 
         $group = VariantGroup::create([
             'name' => $validated['name'],
-            'type' => $validated['type']
+            'type' => $validated['type'],
         ]);
 
         foreach ($validated['options'] as $opt) {
@@ -50,16 +51,17 @@ class AdminVariantController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Grup varian berhasil dibuat',
-            'data' => $group->load('options')
+            'data' => $group->load('options'),
         ], 201);
     }
 
     public function show(string $id): JsonResponse
     {
         $group = VariantGroup::with('options')->findOrFail($id);
+
         return response()->json([
             'success' => true,
-            'data' => $group
+            'data' => $group,
         ]);
     }
 
@@ -81,7 +83,7 @@ class AdminVariantController extends Controller
 
         $group->update([
             'name' => $validated['name'],
-            'type' => $validated['type']
+            'type' => $validated['type'],
         ]);
 
         $existingOptionIds = $group->options()->pluck('id')->toArray();
@@ -111,14 +113,14 @@ class AdminVariantController extends Controller
 
         // Delete options that were removed
         $optionsToDelete = array_diff($existingOptionIds, $updatedOptionIds);
-        if (!empty($optionsToDelete)) {
+        if (! empty($optionsToDelete)) {
             $group->options()->whereIn('id', $optionsToDelete)->delete();
         }
 
         return response()->json([
             'success' => true,
             'message' => 'Grup varian berhasil diperbarui',
-            'data' => $group->load('options')
+            'data' => $group->load('options'),
         ]);
     }
 
@@ -131,7 +133,7 @@ class AdminVariantController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Grup varian berhasil dihapus'
+            'message' => 'Grup varian berhasil dihapus',
         ]);
     }
 }

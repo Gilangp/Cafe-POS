@@ -4,7 +4,7 @@ namespace App\Services;
 
 /**
  * CartCalculator - Pure function untuk kalkulasi cart POS
- * 
+ *
  * Sesuai dokumentasi §08 Testing Specification
  * Unit test wajib untuk logic bisnis: hitung total, diskon, pajak
  */
@@ -12,30 +12,29 @@ class CartCalculator
 {
     /**
      * Calculate subtotal from cart items
-     * 
-     * @param array $items Format: [['price' => float, 'quantity' => int, 'variants' => [['additional_price' => float]]]]
-     * @return float
+     *
+     * @param  array  $items  Format: [['price' => float, 'quantity' => int, 'variants' => [['additional_price' => float]]]]
      */
     public static function calculateSubtotal(array $items): float
     {
         $subtotal = 0;
 
         foreach ($items as $item) {
-            $price = (float)($item['price'] ?? 0);
-            $quantity = (int)($item['quantity'] ?? 0);
-            
+            $price = (float) ($item['price'] ?? 0);
+            $quantity = (int) ($item['quantity'] ?? 0);
+
             // Base item price
             $itemSubtotal = $price * $quantity;
-            
+
             // Add variant additional prices
-            if (!empty($item['variants']) && is_array($item['variants'])) {
+            if (! empty($item['variants']) && is_array($item['variants'])) {
                 $variantsTotal = 0;
                 foreach ($item['variants'] as $variant) {
-                    $variantsTotal += (float)($variant['additional_price'] ?? 0);
+                    $variantsTotal += (float) ($variant['additional_price'] ?? 0);
                 }
                 $itemSubtotal += ($variantsTotal * $quantity);
             }
-            
+
             $subtotal += $itemSubtotal;
         }
 
@@ -44,32 +43,24 @@ class CartCalculator
 
     /**
      * Calculate tax amount based on subtotal after discount
-     * 
-     * @param float $subtotal
-     * @param float $discount
-     * @param float $taxRate Percentage (e.g., 11 for 11%)
-     * @param bool $taxEnabled
-     * @return float
+     *
+     * @param  float  $taxRate  Percentage (e.g., 11 for 11%)
      */
     public static function calculateTax(float $subtotal, float $discount, float $taxRate, bool $taxEnabled = true): float
     {
-        if (!$taxEnabled || $taxRate <= 0) {
+        if (! $taxEnabled || $taxRate <= 0) {
             return 0;
         }
 
         $taxableAmount = max(0, $subtotal - $discount);
+
         return round($taxableAmount * $taxRate / 100, 2);
     }
 
     /**
      * Calculate final total
-     * 
+     *
      * Formula: max(0, subtotal - discount + tax)
-     * 
-     * @param float $subtotal
-     * @param float $discount
-     * @param float $taxAmount
-     * @return float
      */
     public static function calculateTotal(float $subtotal, float $discount, float $taxAmount): float
     {
@@ -78,11 +69,11 @@ class CartCalculator
 
     /**
      * Calculate all cart values in one go
-     * 
-     * @param array $items Cart items
-     * @param float $discount Discount amount
-     * @param float $taxRate Tax rate percentage
-     * @param bool $taxEnabled Whether tax is enabled
+     *
+     * @param  array  $items  Cart items
+     * @param  float  $discount  Discount amount
+     * @param  float  $taxRate  Tax rate percentage
+     * @param  bool  $taxEnabled  Whether tax is enabled
      * @return array ['subtotal' => float, 'discount' => float, 'tax_amount' => float, 'total' => float]
      */
     public static function calculate(array $items, float $discount = 0, float $taxRate = 11, bool $taxEnabled = true): array
@@ -101,10 +92,6 @@ class CartCalculator
 
     /**
      * Validate discount does not exceed subtotal
-     * 
-     * @param float $discount
-     * @param float $subtotal
-     * @return bool
      */
     public static function isDiscountValid(float $discount, float $subtotal): bool
     {
@@ -113,10 +100,10 @@ class CartCalculator
 
     /**
      * Calculate ingredient deductions for menu items
-     * 
-     * @param array $menuIngredients Format: [['inventory_id' => string, 'quantity_used' => float]]
-     * @param array $variants Format: [['inventory_item_id' => string, 'inventory_action' => string, 'inventory_action_value' => float]]
-     * @param int $quantity Item quantity
+     *
+     * @param  array  $menuIngredients  Format: [['inventory_id' => string, 'quantity_used' => float]]
+     * @param  array  $variants  Format: [['inventory_item_id' => string, 'inventory_action' => string, 'inventory_action_value' => float]]
+     * @param  int  $quantity  Item quantity
      * @return array ['inventory_id' => total_quantity_to_deduct]
      */
     public static function calculateIngredientDeductions(array $menuIngredients, array $variants, int $quantity): array
@@ -126,8 +113,8 @@ class CartCalculator
         // Base ingredients from menu recipe
         foreach ($menuIngredients as $ingredient) {
             $invId = $ingredient['inventory_id'] ?? null;
-            $qtyUsed = (float)($ingredient['quantity_used'] ?? 0);
-            
+            $qtyUsed = (float) ($ingredient['quantity_used'] ?? 0);
+
             if ($invId) {
                 $deductions[$invId] = $qtyUsed;
             }
@@ -137,9 +124,9 @@ class CartCalculator
         foreach ($variants as $variant) {
             $invId = $variant['inventory_item_id'] ?? null;
             $action = $variant['inventory_action'] ?? 'none';
-            $value = (float)($variant['inventory_action_value'] ?? 0);
+            $value = (float) ($variant['inventory_action_value'] ?? 0);
 
-            if (!$invId || $action === 'none') {
+            if (! $invId || $action === 'none') {
                 continue;
             }
 

@@ -4,13 +4,14 @@ namespace Database\Seeders;
 
 use App\Models\Faq;
 use App\Models\HeroBanner;
+use App\Models\Inventory;
 use App\Models\Menu;
+use App\Models\Reservation;
 use App\Models\SocialMedia;
 use App\Models\Table;
-use App\Models\User;
 use App\Models\Transaction;
 use App\Models\TransactionItem;
-use App\Models\Reservation;
+use App\Models\User;
 use App\Models\VariantGroup;
 use App\Models\VariantOption;
 use Illuminate\Database\Seeder;
@@ -20,7 +21,7 @@ class DatabaseSeeder extends Seeder
 {
     /**
      * Seed the application's database.
-     * 
+     *
      * Urutan sesuai dokumentasi Section 26.3:
      * 1. RolesSeeder
      * 2. UsersSeeder
@@ -38,19 +39,19 @@ class DatabaseSeeder extends Seeder
         // 1. Seed Roles (Owner, Admin, Kasir, Dapur/Barista)
         $this->command->info('1️⃣  Seeding Roles...');
         $this->call(RolesSeeder::class);
-        
+
         // 2. Seed Users (4 users dengan email @nemuspace.test)
         $this->command->info('2️⃣  Seeding Users...');
         $this->call(UsersSeeder::class);
-        
+
         // 3. Seed Settings (tax_rate=11%, tax_enabled=true)
         $this->command->info('3️⃣  Seeding Settings...');
         $this->call(SettingsSeeder::class);
-        
+
         // 4. Seed Inventory (Categories, Suppliers, Bahan Baku)
         $this->command->info('4️⃣  Seeding Inventory...');
         $this->call(InventorySeeder::class);
-        
+
         // 5. Seed Menu (10-15 menu untuk testing)
         $this->command->info('5️⃣  Seeding Test Menus...');
         $this->call(MenuSeeder::class);
@@ -168,7 +169,7 @@ class DatabaseSeeder extends Seeder
             ['name' => 'Tambahan (Add-ons)'],
             ['type' => 'multiple']
         );
-        $invKopiGayo = \App\Models\Inventory::where('name', 'Biji Kopi Gayo')->first();
+        $invKopiGayo = Inventory::where('name', 'Biji Kopi Gayo')->first();
         if ($invKopiGayo) {
             VariantOption::firstOrCreate(
                 ['variant_group_id' => $vgAddon->id, 'name' => 'Extra Espresso Shot'],
@@ -176,7 +177,7 @@ class DatabaseSeeder extends Seeder
                     'additional_price' => 5000,
                     'inventory_item_id' => $invKopiGayo->id,
                     'inventory_action' => 'add',
-                    'inventory_action_value' => 10
+                    'inventory_action_value' => 10,
                 ]
             );
         }
@@ -231,7 +232,7 @@ class DatabaseSeeder extends Seeder
         // 14. Seed Dummy Transactions (Past 30 Days) for Dashboard
         $this->command->info('💰 Seeding Dummy Transactions...');
         $kasir = User::where('email', 'kasir@nemuspace.test')->first();
-        if (!$kasir) {
+        if (! $kasir) {
             $kasir = User::where('email', 'kasir@nemuspace.id')->first();
         }
 
@@ -248,7 +249,7 @@ class DatabaseSeeder extends Seeder
                     $tableNum = $orderType === 'dine_in' ? $tables[array_rand($tables)]->table_number : null;
 
                     $transaction = Transaction::create([
-                        'invoice_number' => 'INV-' . $randomDate->format('Ymd') . '-' . strtoupper(Str::random(4)),
+                        'invoice_number' => 'INV-'.$randomDate->format('Ymd').'-'.strtoupper(Str::random(4)),
                         'cashier_id' => $kasir->id,
                         'order_type' => $orderType,
                         'table_number' => $tableNum,
@@ -286,7 +287,7 @@ class DatabaseSeeder extends Seeder
                     $transaction->update([
                         'subtotal' => $subtotal,
                         'tax_amount' => $taxAmount,
-                        'total' => $subtotal + $taxAmount
+                        'total' => $subtotal + $taxAmount,
                     ]);
                 }
             }
@@ -297,13 +298,13 @@ class DatabaseSeeder extends Seeder
         for ($k = 0; $k < 10; $k++) {
             $isToday = $k < 4;
             $resDate = $isToday ? now() : now()->addDays(rand(1, 7));
-            $resTime = str_pad(rand(10, 20), 2, '0', STR_PAD_LEFT) . ':00:00';
+            $resTime = str_pad(rand(10, 20), 2, '0', STR_PAD_LEFT).':00:00';
             $table = $tables[array_rand($tables)];
 
             Reservation::create([
-                'customer_name' => 'Pelanggan ' . ($k + 1),
-                'customer_email' => 'pelanggan' . ($k + 1) . '@email.com',
-                'customer_phone' => '081234567' . rand(100, 999),
+                'customer_name' => 'Pelanggan '.($k + 1),
+                'customer_email' => 'pelanggan'.($k + 1).'@email.com',
+                'customer_phone' => '081234567'.rand(100, 999),
                 'reservation_date' => $resDate->toDateString(),
                 'reservation_time' => $resTime,
                 'party_size' => rand(2, 6),

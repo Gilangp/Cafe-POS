@@ -28,21 +28,21 @@ class InventorySeeder extends Seeder
             ['name' => 'PT Kopi Nusantara Raya'],
             [
                 'phone' => '081234567890',
-                'address' => 'Gudang Kopi Jakarta'
+                'address' => 'Gudang Kopi Jakarta',
             ]
         );
         $supplierSusu = Supplier::firstOrCreate(
             ['name' => 'CV Susu Segar Indonesia'],
             [
                 'phone' => '081234567891',
-                'address' => 'Pabrik Susu Bandung'
+                'address' => 'Pabrik Susu Bandung',
             ]
         );
         $supplierPackaging = Supplier::firstOrCreate(
             ['name' => 'Bintang Packaging'],
             [
                 'phone' => '081234567892',
-                'address' => 'Jakarta Barat'
+                'address' => 'Jakarta Barat',
             ]
         );
 

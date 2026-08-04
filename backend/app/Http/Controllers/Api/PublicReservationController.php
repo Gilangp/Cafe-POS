@@ -28,7 +28,7 @@ class PublicReservationController extends Controller
 
         // Auto-assign table if not provided or check table capacity/availability
         $tableId = $validated['table_id'] ?? null;
-        if (!$tableId) {
+        if (! $tableId) {
             $table = Table::where('status', 'tersedia')
                 ->where('capacity', '>=', $validated['guest_count'])
                 ->orderBy('capacity', 'asc')
@@ -40,7 +40,7 @@ class PublicReservationController extends Controller
         }
 
         $reservation = Reservation::create([
-            'reservation_code' => 'NEMU-' . strtoupper(substr(uniqid(), -5)),
+            'reservation_code' => 'NEMU-'.strtoupper(substr(uniqid(), -5)),
             'table_id' => $tableId,
             'customer_name' => $validated['name'],
             'customer_phone' => $validated['phone'],
@@ -75,7 +75,7 @@ class PublicReservationController extends Controller
             ->where('reservation_code', strtoupper($request->code))
             ->first();
 
-        if (!$reservations) {
+        if (! $reservations) {
             return response()->json([
                 'success' => false,
                 'message' => 'Tidak ditemukan reservasi dengan nomor HP dan kode tersebut.',

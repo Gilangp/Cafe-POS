@@ -2,8 +2,6 @@
 
 namespace Tests\Feature;
 
-use App\Models\Category;
-use App\Models\Menu;
 use App\Models\Promotion;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;

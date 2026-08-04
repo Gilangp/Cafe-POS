@@ -20,8 +20,9 @@ class UsersSeeder extends Seeder
         $kasirRole = Role::where('name', 'Kasir')->first();
         $dapurRole = Role::where('name', 'Dapur_Barista')->first();
 
-        if (!$ownerRole || !$adminRole || !$kasirRole || !$dapurRole) {
+        if (! $ownerRole || ! $adminRole || ! $kasirRole || ! $dapurRole) {
             $this->command->error('Roles not found. Please run RolesSeeder first.');
+
             return;
         }
 
@@ -35,7 +36,7 @@ class UsersSeeder extends Seeder
                 'is_active' => true,
             ]
         );
-        if (!$owner->roles->contains($ownerRole->id)) {
+        if (! $owner->roles->contains($ownerRole->id)) {
             $owner->roles()->attach($ownerRole->id);
         }
 
@@ -49,7 +50,7 @@ class UsersSeeder extends Seeder
                 'is_active' => true,
             ]
         );
-        if (!$admin->roles->contains($adminRole->id)) {
+        if (! $admin->roles->contains($adminRole->id)) {
             $admin->roles()->attach($adminRole->id);
         }
 
@@ -63,7 +64,7 @@ class UsersSeeder extends Seeder
                 'is_active' => true,
             ]
         );
-        if (!$kasir->roles->contains($kasirRole->id)) {
+        if (! $kasir->roles->contains($kasirRole->id)) {
             $kasir->roles()->attach($kasirRole->id);
         }
 
@@ -77,7 +78,7 @@ class UsersSeeder extends Seeder
                 'is_active' => true,
             ]
         );
-        if (!$dapur->roles->contains($dapurRole->id)) {
+        if (! $dapur->roles->contains($dapurRole->id)) {
             $dapur->roles()->attach($dapurRole->id);
         }
 

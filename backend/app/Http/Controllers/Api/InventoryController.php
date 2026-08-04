@@ -162,6 +162,7 @@ class InventoryController extends Controller
     public function stockIn(Request $request, string $id): JsonResponse
     {
         $request->merge(['type' => 'stock_in']);
+
         return $this->adjust($request, $id);
     }
 
@@ -171,6 +172,7 @@ class InventoryController extends Controller
     public function stockOut(Request $request, string $id): JsonResponse
     {
         $request->merge(['type' => 'stock_out']);
+
         return $this->adjust($request, $id);
     }
 
@@ -188,7 +190,7 @@ class InventoryController extends Controller
         $inventory = Inventory::findOrFail($id);
 
         return DB::transaction(function () use ($inventory, $validated, $request) {
-            $change = (float)$validated['quantity'];
+            $change = (float) $validated['quantity'];
 
             if ($validated['type'] === 'stock_out') {
                 if ($inventory->stock_quantity < $change) {
@@ -244,7 +246,7 @@ class InventoryController extends Controller
             $query->where('type', $request->type);
         }
 
-        $limit = (int)$request->input('limit', 50);
+        $limit = (int) $request->input('limit', 50);
         $logs = $query->latest()->limit($limit)->get();
 
         return response()->json([

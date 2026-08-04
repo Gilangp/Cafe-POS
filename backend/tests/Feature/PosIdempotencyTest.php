@@ -3,6 +3,8 @@
 namespace Tests\Feature;
 
 use App\Models\Category;
+use App\Models\Inventory;
+use App\Models\InventoryCategory;
 use App\Models\Menu;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -61,8 +63,8 @@ class PosIdempotencyTest extends TestCase
     /** CP-06: stok tidak boleh terpotong dua kali untuk key yang sama */
     public function test_duplicate_submission_does_not_deduct_stock_twice(): void
     {
-        $inventory = \App\Models\Inventory::create([
-            'category_id' => \App\Models\InventoryCategory::create(['name' => 'Bahan Baku'])->id,
+        $inventory = Inventory::create([
+            'category_id' => InventoryCategory::create(['name' => 'Bahan Baku'])->id,
             'name' => 'Biji Kopi',
             'stock_quantity' => 100,
             'unit' => 'gram',

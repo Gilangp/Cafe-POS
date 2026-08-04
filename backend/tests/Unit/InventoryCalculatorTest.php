@@ -7,7 +7,7 @@ use PHPUnit\Framework\TestCase;
 
 /**
  * Unit test untuk InventoryCalculator (FEFO/COGS)
- * 
+ *
  * Sesuai dokumentasi §08 Testing Specification §2.1
  * Logic bisnis wajib di-test: FEFO, COGS, weighted average
  */

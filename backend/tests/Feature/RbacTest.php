@@ -25,7 +25,7 @@ class RbacTest extends TestCase
         $kasir = $this->createKasir();
 
         $transaction = Transaction::create([
-            'invoice_number' => 'INV-TEST-' . uniqid(),
+            'invoice_number' => 'INV-TEST-'.uniqid(),
             'cashier_id' => $kasir->id,
             'order_type' => 'dine_in',
             'subtotal' => 25000,
@@ -36,7 +36,7 @@ class RbacTest extends TestCase
 
         OrderTicket::create([
             'transaction_id' => $transaction->id,
-            'ticket_number' => 'TKT-' . uniqid(),
+            'ticket_number' => 'TKT-'.uniqid(),
             'status' => 'diterima',
             'received_at' => now(),
         ]);

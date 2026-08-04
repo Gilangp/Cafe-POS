@@ -17,11 +17,11 @@ class AuditController extends Controller
         $query = AuditLog::with('user:id,name,email');
 
         if ($request->filled('module')) {
-            $query->where('module', 'like', '%' . $request->module . '%');
+            $query->where('module', 'like', '%'.$request->module.'%');
         }
 
         if ($request->filled('action')) {
-            $query->where('action', 'like', '%' . $request->action . '%');
+            $query->where('action', 'like', '%'.$request->action.'%');
         }
 
         if ($request->filled('user_id')) {
