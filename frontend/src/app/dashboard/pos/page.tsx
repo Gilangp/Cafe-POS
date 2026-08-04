@@ -3,6 +3,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { getPosMenus, PosMenu, createOrder } from '@/shared/services/pos.service';
 import { useCartStore } from '@/store/cart.store';
+import api from '@/shared/api/axios';
 import { 
   Search, 
   Coffee, 
@@ -21,6 +22,13 @@ import {
   MapPin
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+
+interface StoreSettings {
+  store_name: string;
+  address: string;
+  phone: string;
+  instagram?: string;
+}
 
 export default function PosPage() {
   const [menus, setMenus] = useState<PosMenu[]>([]);
@@ -43,11 +51,44 @@ export default function PosPage() {
   const [selectedMenuForVariants, setSelectedMenuForVariants] = useState<PosMenu | null>(null);
   const [selectedVariants, setSelectedVariants] = useState<Record<string, any>>({});
 
+  // BUG FIX 1: Store settings from DB instead of hardcoded
+  const [storeSettings, setStoreSettings] = useState<StoreSettings>({
+    store_name: 'NEMU COFFEE',
+    address: 'Jl. Mawar No.10 Kediri',
+    phone: '0812-3456-7890',
+    instagram: '@nemucoffee',
+  });
+
   const cart = useCartStore();
 
   useEffect(() => {
     fetchMenus();
+    fetchStoreSettings();
   }, []);
+
+  const fetchStoreSettings = async () => {
+    try {
+      const res = await api.get('/settings');
+      const data = res.data?.data;
+      if (data) {
+        // BUG FIX 1: settings API returns { general: {...}, social_media: [...] }
+        const general = data.general || data;
+        const instagramEntry = Array.isArray(data.social_media)
+          ? data.social_media.find((s: any) => s.platform?.toLowerCase() === 'instagram')
+          : null;
+
+        setStoreSettings({
+          store_name: general.site_name || general.store_name || 'NEMU COFFEE',
+          address: general.address || 'Jl. Mawar No.10 Kediri',
+          phone: general.phone || '0812-3456-7890',
+          instagram: instagramEntry?.url || instagramEntry?.handle || '',
+        });
+      }
+    } catch (err) {
+      // Silently fallback to defaults
+      console.warn('Could not fetch store settings, using defaults.');
+    }
+  };
 
   const fetchMenus = async () => {
     try {
@@ -83,6 +124,239 @@ export default function PosPage() {
       minimumFractionDigits: 0,
       maximumFractionDigits: 0
     }).format(amount);
+  };
+
+  const handlePrint = () => {
+    if (!completedTransaction) return;
+
+    const fmtNum = (amount: number) => new Intl.NumberFormat('id-ID', {
+      minimumFractionDigits: 0, maximumFractionDigits: 0
+    }).format(amount);
+
+    const itemsHtml = (completedTransaction.items || []).map((item: any) => `
+      <div class="item-row">
+        <span class="item-name">${item.menu_name_snapshot}</span>
+        <span class="item-qty">x${item.quantity}</span>
+        <span class="item-price">${fmtNum(item.subtotal)}</span>
+      </div>
+      ${item.note ? `<div class="item-note">  - Catatan: ${item.note}</div>` : ''}
+    `).join('');
+
+    const discountHtml = completedTransaction.discount > 0
+      ? `<div class="row"><span>Diskon</span><span>-${fmtNum(completedTransaction.discount)}</span></div>` : '';
+
+    const taxAmount = parseFloat(completedTransaction.tax_amount || '0');
+    const taxHtml = taxAmount > 0
+      ? `<div class="row"><span>PPN</span><span>${fmtNum(taxAmount)}</span></div>` : '';
+
+    const cashHtml = completedTransaction.payment_method === 'tunai' ? `
+      <div class="row"><span>Bayar</span><span>${fmtNum(completedTransaction.cashGiven || completedTransaction.total)}</span></div>
+      <div class="row"><span>Kembali</span><span>${fmtNum(completedTransaction.changeAmount || 0)}</span></div>
+    ` : '';
+
+    const d = new Date(completedTransaction.created_at || Date.now());
+    const tanggal = d.toLocaleDateString('id-ID', { weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric' });
+    const jam = d.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+    const kasir = completedTransaction.cashier?.name || 'Kasir';
+    const pelanggan = completedTransaction.customer_name || 'Pelanggan';
+
+    // BUG FIX 1: Use dynamic store settings
+    const storeName = storeSettings.store_name.toUpperCase();
+    const storeAddress = storeSettings.address;
+    const storePhone = storeSettings.phone;
+    const storeInstagram = storeSettings.instagram || '';
+
+    const html = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Struk ${completedTransaction.invoice_number}</title>
+  <style>
+    @page { size: 80mm auto; margin: 0; }
+    * { margin: 0; padding: 0; box-sizing: border-box; color: #000000; }
+    html, body {
+      width: 80mm;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 11px;
+      font-weight: bold;
+      line-height: 1.4;
+      color: #000000;
+      background: #ffffff;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    .receipt {
+      width: 72mm;
+      margin: 6mm auto 8mm auto;
+      word-break: break-word;
+    }
+    .header { text-align: center; margin-bottom: 4mm; }
+    .header h1 { font-size: 15px; font-weight: bold; letter-spacing: 1px; margin-bottom: 1mm; }
+    .header p { font-size: 10px; }
+    hr { border: none; border-top: 1px dashed #000; margin: 2mm 0; }
+    .meta { margin: 2mm 0; }
+    .row { display: flex; justify-content: space-between; gap: 2mm; margin: 0.8mm 0; }
+    .item-row { display: flex; justify-content: space-between; gap: 2mm; margin: 1mm 0; }
+    .item-name { flex: 1; text-align: left; }
+    .item-qty { width: 30px; text-align: center; }
+    .item-price { width: 70px; text-align: right; }
+    .item-note { font-size: 10px; font-style: italic; margin-bottom: 1mm; }
+    .summary { margin-top: 2mm; }
+    .footer { text-align: center; margin-top: 5mm; font-size: 10px; line-height: 1.5; }
+    .upper { text-transform: uppercase; }
+  </style>
+</head>
+<body>
+  <div class="receipt">
+    <div class="header">
+      <h1>${storeName}</h1>
+      <p>${storeAddress}</p>
+      <p>${storePhone}</p>
+    </div>
+    <hr>
+    <div class="meta">
+      <div class="row"><span>Invoice : ${completedTransaction.invoice_number}</span></div>
+      <div class="row"><span>Tanggal : ${tanggal}</span></div>
+      <div class="row"><span>Jam     : ${jam}</span></div>
+      <div class="row"><span>Kasir   : ${kasir}</span></div>
+      <div class="row"><span>Pelanggan: ${pelanggan}</span></div>
+    </div>
+    <hr>
+    <div class="items">${itemsHtml}</div>
+    <hr>
+    <div class="summary">
+      <div class="row"><span>Subtotal</span><span>${fmtNum(completedTransaction.subtotal)}</span></div>
+      ${discountHtml}
+      ${taxHtml}
+      <div class="row" style="font-size:12px; font-weight:bold;"><span>Total</span><span>${fmtNum(completedTransaction.total)}</span></div>
+      <br>
+      ${cashHtml}
+      <div class="row"><span>Metode Bayar</span><span class="upper">${completedTransaction.payment_method}</span></div>
+    </div>
+    <hr>
+    <div class="footer">
+      <p>Terima kasih</p>
+      <p>Sampai jumpa kembali</p>
+      ${storeInstagram ? `<br><p>Instagram: ${storeInstagram}</p>` : ''}
+    </div>
+  </div>
+</body>
+</html>`;
+
+    const w = window.open('', '_blank', 'width=350,height=600');
+    if (!w) { alert('Pop-up diblokir. Izinkan pop-up untuk mencetak struk.'); return; }
+    w.document.open();
+    w.document.write(html);
+    w.document.close();
+    w.focus();
+    setTimeout(() => { w.print(); w.close(); }, 400);
+  };
+
+  const handlePrintKitchen = () => {
+    if (!completedTransaction) return;
+
+    const itemsHtml = (completedTransaction.items || []).map((item: any) => {
+      let variantsList = '';
+      if (item.variants && Array.isArray(item.variants) && item.variants.length > 0) {
+        variantsList = item.variants.map((v: any) => `  - ${v.variant_option_name || v.name}`).join('<br>');
+      }
+      return `
+        <div class="kitchen-item">
+          <div class="item-name">${item.quantity}x ${item.menu_name_snapshot}</div>
+          ${variantsList ? `<div class="item-sub">${variantsList}</div>` : ''}
+          ${item.note ? `<div class="item-sub">  - ${item.note}</div>` : ''}
+        </div>
+      `;
+    }).join('');
+
+    const d = new Date(completedTransaction.created_at || Date.now());
+    const jam = d.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+    const orderTypeLabel = completedTransaction.order_type === 'takeaway' 
+      ? 'Take Away' 
+      : `Dine In ${completedTransaction.table_number ? `(Meja ${completedTransaction.table_number})` : ''}`;
+    
+    const customer = completedTransaction.customer_name || 'Pelanggan';
+    const invoiceShort = completedTransaction.invoice_number ? completedTransaction.invoice_number.slice(-4) : '001';
+
+    const html = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Barista Order #${invoiceShort}</title>
+  <style>
+    @page { size: 80mm auto; margin: 0; }
+    * { margin: 0; padding: 0; box-sizing: border-box; color: #000000; }
+    html, body {
+      width: 80mm;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 12px;
+      font-weight: bold;
+      line-height: 1.4;
+      color: #000000;
+      background: #ffffff;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    .receipt {
+      width: 72mm;
+      margin: 6mm auto 8mm auto;
+      word-break: break-word;
+    }
+    .border-line { text-align: center; letter-spacing: 0px; font-weight: bold; }
+    .header-title { text-align: center; font-size: 15px; font-weight: bold; margin: 2mm 0; }
+    .order-info { margin: 3mm 0; }
+    .order-info .order-id { font-size: 14px; font-weight: bold; margin-bottom: 1mm; }
+    .order-info .order-type { font-size: 13px; font-weight: bold; margin-top: 2mm; }
+    hr { border: none; border-top: 1px dashed #000; margin: 3mm 0; }
+    .kitchen-item { margin: 3mm 0; }
+    .item-name { font-size: 14px; font-weight: bold; }
+    .item-sub { font-size: 12px; font-weight: normal; margin-top: 1mm; white-space: pre-wrap; }
+    .meta-section { margin: 2mm 0; display: flex; justify-content: space-between; align-items: flex-start; }
+    .meta-label { font-size: 13px; font-weight: bold; }
+    .meta-val { font-size: 13px; font-weight: bold; text-align: right; }
+  </style>
+</head>
+<body>
+  <div class="receipt">
+    <div class="border-line">******************************</div>
+    <div class="header-title">BARISTA ORDER</div>
+    <div class="border-line">******************************</div>
+    
+    <div class="order-info">
+      <div class="order-id">Order #${invoiceShort}</div>
+      <div style="font-size: 12px; font-weight: normal; margin-top: 1mm;">${jam}</div>
+      <div class="order-type">${orderTypeLabel}</div>
+    </div>
+    
+    <hr>
+    <div class="items">${itemsHtml}</div>
+    <hr>
+    
+    <div class="meta-section">
+      <div class="meta-label">Customer</div>
+      <div class="meta-val">${customer}</div>
+    </div>
+    
+    ${completedTransaction.note ? `
+    <hr>
+    <div class="meta-section">
+      <div class="meta-label">Note</div>
+      <div class="meta-val">${completedTransaction.note}</div>
+    </div>
+    ` : ''}
+
+    <div class="border-line" style="margin-top: 4mm;">******************************</div>
+  </div>
+</body>
+</html>`;
+
+    const w = window.open('', '_blank', 'width=350,height=600');
+    if (!w) { alert('Pop-up diblokir. Izinkan pop-up untuk mencetak struk.'); return; }
+    w.document.open();
+    w.document.write(html);
+    w.document.close();
+    w.focus();
+    setTimeout(() => { w.print(); w.close(); }, 400);
   };
 
   const handleProcessOrder = async () => {
@@ -173,73 +447,9 @@ export default function PosPage() {
   return (
     <div className="flex flex-col lg:flex-row h-auto lg:h-[calc(100vh-80px)] lg:min-h-[650px] gap-6">
       
-      {/* Print Styles for Thermal Printer */}
-      <style dangerouslySetInnerHTML={{__html: `
-        @media print {
-          /* Sembunyikan elemen dashboard (sidebar, header, dsb) */
-          aside, header, nav {
-            display: none !important;
-          }
-          
-          /* Sembunyikan semua elemen di halaman POS kecuali modal receipt */
-          .pos-content-left, .pos-content-right {
-            display: none !important;
-          }
+      {/* Struk dicetak lewat handlePrint() — window baru, bukan @media print */}
 
-          /* Reset semua layout wrapper agar tingginya auto (menghilangkan sisa space kosong) */
-          *, body, html {
-            height: auto !important;
-            min-height: 0 !important;
-            max-height: none !important;
-          }
 
-          /* Tampilkan modal receipt di pojok kiri atas seperti dokumen biasa */
-          .receipt-modal-overlay {
-            position: static !important;
-            background: white !important;
-            padding: 0 !important;
-            display: block !important;
-          }
-          
-          .receipt-modal-content {
-            box-shadow: none !important;
-            max-width: 100% !important;
-            width: 100% !important;
-            margin: 0 !important;
-            padding: 0 !important;
-          }
-
-          #receipt-area {
-            overflow: visible !important;
-            padding: 0 2mm !important; /* Jarak aman 2mm di sisi kiri dan kanan */
-            color: black !important;
-            max-height: none !important;
-            width: 100% !important; 
-            max-width: 100% !important; 
-            margin: 0 !important;
-            box-sizing: border-box !important;
-          }
-
-          /* Perkecil semua teks dan jarak khusus untuk 58mm printer */
-          #receipt-area h2 { font-size: 14px !important; line-height: 1.2 !important; margin-bottom: 2px !important; }
-          #receipt-area .text-xs, #receipt-area .text-sm { font-size: 10px !important; line-height: 1.2 !important; }
-          #receipt-area .text-lg { font-size: 12px !important; }
-          #receipt-area .text-xl { font-size: 14px !important; }
-          
-          /* Perkecil padding dan margin bawaan Tailwind */
-          #receipt-area .mb-6 { margin-bottom: 3mm !important; }
-          #receipt-area .mb-4 { margin-bottom: 2mm !important; }
-          #receipt-area .py-3 { padding-top: 2mm !important; padding-bottom: 2mm !important; }
-          #receipt-area .pt-3 { padding-top: 2mm !important; }
-          #receipt-area .mt-2 { margin-top: 1mm !important; }
-          #receipt-area .mt-8 { margin-top: 4mm !important; }
-
-          @page {
-            margin: 0;
-            size: auto; /* Memaksa browser mengikuti tinggi konten jika didukung driver */
-          }
-        }
-      `}} />
 
       <div className="pos-content-left lg:w-[70%] flex-1 flex flex-col min-h-0 bg-white dark:bg-[#1A2620] rounded-3xl border border-gray-200 dark:border-white/10 shadow-sm overflow-hidden">
         
@@ -808,14 +1018,14 @@ export default function PosPage() {
               </div>
               
               {/* Printable Area */}
-              <div id="receipt-area" className="p-6 bg-white text-gray-900 flex-1 overflow-y-auto">
-                <div className="text-center mb-6">
-                  <h2 className="text-xl font-extrabold tracking-widest uppercase mb-1">NEMU Space</h2>
-                  <p className="text-xs text-gray-500">Jl. Senopati Raya No. 88, Jakarta</p>
-                  <p className="text-xs text-gray-500">Telp: 0811-2345-6789</p>
+              <div id="receipt-area" className="p-6 bg-white text-black font-mono flex-1 overflow-y-auto">
+                <div className="text-center mb-4">
+                  <h2 className="text-base font-bold uppercase tracking-wider mb-0.5 text-black">NEMU Space</h2>
+                  <p className="text-[11px] text-black">Jl. Senopati Raya No. 88, Jakarta</p>
+                  <p className="text-[11px] text-black">Telp: 0811-2345-6789</p>
                 </div>
                 
-                <div className="border-t border-b border-dashed border-gray-300 py-3 mb-4 text-xs font-mono text-gray-600 space-y-1">
+                <div className="border-t border-b border-dashed border-black py-2 mb-3 text-[11px] font-mono text-black space-y-0.5">
                   <div className="flex justify-between"><span>No. Struk</span><span>{completedTransaction.invoice_number}</span></div>
                   <div className="flex justify-between"><span>Tanggal</span><span>{new Date(completedTransaction.created_at).toLocaleString('id-ID')}</span></div>
                   <div className="flex justify-between"><span>Kasir</span><span>{completedTransaction.cashier?.name || 'Kasir'}</span></div>
@@ -824,45 +1034,45 @@ export default function PosPage() {
                   )}
                 </div>
 
-                <div className="space-y-3 mb-4">
+                <div className="space-y-2 mb-3">
                   {completedTransaction.items?.map((item: any) => (
-                    <div key={item.id} className="text-sm">
+                    <div key={item.id} className="text-[11px] text-black">
                       <div className="font-bold">{item.menu_name_snapshot}</div>
-                      <div className="flex justify-between text-gray-600 mt-1">
+                      <div className="flex justify-between text-black mt-0.5">
                         <span>{item.quantity} x {formatCurrency(item.price_snapshot)}</span>
                         <span>{formatCurrency(item.subtotal)}</span>
                       </div>
-                      {item.note && <div className="text-xs text-gray-400 italic">Catatan: {item.note}</div>}
+                      {item.note && <div className="text-[10px] text-black italic">Catatan: {item.note}</div>}
                     </div>
                   ))}
                 </div>
 
-                <div className="border-t border-dashed border-gray-300 pt-3 text-sm space-y-1">
-                  <div className="flex justify-between text-gray-600">
+                <div className="border-t border-dashed border-black pt-2 text-[11px] text-black space-y-1">
+                  <div className="flex justify-between text-black">
                     <span>Subtotal</span>
                     <span>{formatCurrency(completedTransaction.subtotal)}</span>
                   </div>
                   {completedTransaction.discount > 0 && (
-                    <div className="flex justify-between text-gray-600">
+                    <div className="flex justify-between text-black">
                       <span>Diskon</span>
                       <span>-{formatCurrency(completedTransaction.discount)}</span>
                     </div>
                   )}
-                  <div className="flex justify-between font-bold text-lg mt-2 pt-2 border-t border-gray-200">
-                    <span>Total</span>
+                  <div className="flex justify-between font-bold text-[13px] text-black mt-1.5 pt-1.5 border-t border-dashed border-black">
+                    <span>TOTAL</span>
                     <span>{formatCurrency(completedTransaction.total)}</span>
                   </div>
-                  <div className="flex justify-between text-gray-600 mt-2">
+                  <div className="flex justify-between text-black mt-1">
                     <span>Metode Bayar</span>
                     <span className="uppercase">{completedTransaction.payment_method}</span>
                   </div>
                   {completedTransaction.payment_method === 'tunai' && (
                     <>
-                      <div className="flex justify-between text-gray-600 mt-1">
+                      <div className="flex justify-between text-black mt-0.5">
                         <span>Tunai Diterima</span>
                         <span>{formatCurrency(completedTransaction.cashGiven || 0)}</span>
                       </div>
-                      <div className="flex justify-between font-bold text-gray-800 mt-1">
+                      <div className="flex justify-between font-bold text-black mt-0.5">
                         <span>Kembalian</span>
                         <span>{formatCurrency(completedTransaction.changeAmount || 0)}</span>
                       </div>
@@ -870,24 +1080,30 @@ export default function PosPage() {
                   )}
                 </div>
                 
-                <div className="mt-8 text-center text-xs text-gray-500">
-                  <p>Terima kasih atas kunjungan Anda!</p>
-                  <p>-- nemudespace.id --</p>
+                <div className="mt-6 text-center text-[10px] text-black space-y-0.5">
+                  <p className="font-bold">Terima kasih atas kunjungan Anda!</p>
+                  <p>www.nemuspace.id</p>
                 </div>
               </div>
 
-              <div className="p-4 border-t grid grid-cols-2 gap-3 print:hidden bg-gray-50">
+              <div className="p-4 border-t flex flex-col sm:flex-row gap-2 print:hidden bg-gray-50">
                 <button
                   onClick={() => setCompletedTransaction(null)}
-                  className="py-3 px-4 rounded-xl border border-gray-300 font-bold text-gray-700 hover:bg-gray-100 transition-colors"
+                  className="py-3 px-2 sm:px-4 rounded-xl border border-gray-300 font-bold text-gray-700 hover:bg-gray-100 transition-colors flex-1 whitespace-nowrap"
                 >
                   Tutup
                 </button>
                 <button
-                  onClick={() => window.print()}
-                  className="py-3 px-4 rounded-xl bg-accent text-primary font-bold hover:bg-[#b88c4d] transition-colors flex items-center justify-center gap-2"
+                  onClick={handlePrint}
+                  className="py-3 px-2 sm:px-4 rounded-xl bg-accent text-primary font-bold hover:bg-[#b88c4d] transition-colors flex items-center justify-center gap-1 sm:gap-2 flex-1 text-xs whitespace-nowrap"
                 >
-                  <Printer size={18} /> Cetak Struk
+                  <Printer size={16} /> Struk Kasir
+                </button>
+                <button
+                  onClick={handlePrintKitchen}
+                  className="py-3 px-2 sm:px-4 rounded-xl bg-amber-800 text-white font-bold hover:bg-amber-900 transition-colors flex items-center justify-center gap-1 sm:gap-2 flex-1 text-xs whitespace-nowrap"
+                >
+                  <Coffee size={16} /> Tiket Dapur
                 </button>
               </div>
             </motion.div>

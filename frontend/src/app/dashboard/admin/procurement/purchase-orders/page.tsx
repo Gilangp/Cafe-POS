@@ -97,8 +97,9 @@ export default function PurchaseOrdersPage() {
           setOrderDate(new Date().toISOString().split('T')[0]);
           setPoItems(criticalInventory.map(item => ({
             inventory_item_id: item.id,
-            quantity: item.min_stock ? (item.min_stock * 2).toString() : '10',
+            quantity: item.threshold ? (item.threshold * 2).toString() : '10',
             unit: item.unit || 'satuan',
+            conversion_multiplier: '1',
             unit_price: (item.cost || 0).toString(),
           })));
           setPoNotes('Auto-generated PO untuk item dengan stok kritis');

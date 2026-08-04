@@ -18,7 +18,7 @@ class MediaController extends Controller
     {
         $query = Media::with('uploader:id,name,email');
         if ($request->filled('mime_type')) {
-            $query->where('mime_type', 'like', '%' . $request->mime_type . '%');
+            $query->where('mime_type', 'like', '%'.$request->mime_type.'%');
         }
         $media = $query->latest()->get();
 
@@ -45,7 +45,7 @@ class MediaController extends Controller
         $size = $file->getSize();
 
         // Store in public/media or external storage
-        $storedPath = $file->storeAs('media/' . date('Y/m'), Str::uuid() . '.' . $file->getClientOriginalExtension(), 'public');
+        $storedPath = $file->storeAs('media/'.date('Y/m'), Str::uuid().'.'.$file->getClientOriginalExtension(), 'public');
         $publicUrl = Storage::disk('public')->url($storedPath);
 
         $media = Media::create([
@@ -98,6 +98,7 @@ class MediaController extends Controller
     public function show(string $id): JsonResponse
     {
         $media = Media::with('uploader:id,name,email')->findOrFail($id);
+
         return response()->json(['success' => true, 'message' => 'Detail media.', 'data' => $media, 'meta' => null]);
     }
 

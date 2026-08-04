@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Inventory;
+use App\Models\Reservation;
 use App\Models\Transaction;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -62,8 +63,8 @@ class ReportController extends Controller
             'message' => 'Laporan penjualan dan menu terlaris.',
             'data' => [
                 'total_transactions' => $totalTransactions,
-                'total_revenue' => (float)$totalRevenue,
-                'average_order_value' => round((float)$averageOrderValue, 2),
+                'total_revenue' => (float) $totalRevenue,
+                'average_order_value' => round((float) $averageOrderValue, 2),
                 'payment_methods_breakdown' => $paymentMethods,
                 'top_menus' => $topProducts,
             ],
@@ -77,7 +78,7 @@ class ReportController extends Controller
     public function inventory(Request $request): JsonResponse
     {
         $totalItems = Inventory::count();
-        
+
         $lowStockItems = Inventory::with(['category', 'supplier'])
             ->whereColumn('stock_quantity', '<=', 'minimum_stock')
             ->where('stock_quantity', '>', 0)
@@ -108,7 +109,7 @@ class ReportController extends Controller
      */
     public function revenue(Request $request): JsonResponse
     {
-        $days = (int)$request->input('days', 30);
+        $days = (int) $request->input('days', 30);
         $startDate = now()->subDays($days)->toDateString();
 
         $dailyTrend = DB::table('transactions')
@@ -131,9 +132,9 @@ class ReportController extends Controller
             'success' => true,
             'message' => 'Laporan analitik pendapatan toko.',
             'data' => [
-                'today_revenue' => (float)$todayRevenue,
-                'this_month_revenue' => (float)$monthRevenue,
-                'all_time_revenue' => (float)$totalAllTime,
+                'today_revenue' => (float) $todayRevenue,
+                'this_month_revenue' => (float) $monthRevenue,
+                'all_time_revenue' => (float) $totalAllTime,
                 'daily_trend' => $dailyTrend,
             ],
             'meta' => null,
@@ -145,7 +146,7 @@ class ReportController extends Controller
      */
     public function reservations(Request $request): JsonResponse
     {
-        $query = \App\Models\Reservation::query();
+        $query = Reservation::query();
 
         if ($request->filled('from')) {
             $query->whereDate('reservation_date', '>=', $request->from);
@@ -157,7 +158,7 @@ class ReportController extends Controller
 
         $totalReservations = (clone $query)->count();
         $confirmedCount = (clone $query)->whereIn('status', ['dikonfirmasi', 'selesai'])->count();
-        $totalGuests = (clone $query)->whereIn('status', ['dikonfirmasi', 'selesai'])->sum('guest_count');
+        $totalGuests = (clone $query)->whereIn('status', ['dikonfirmasi', 'selesai'])->sum('party_size');
 
         return response()->json([
             'success' => true,
@@ -165,7 +166,7 @@ class ReportController extends Controller
             'data' => [
                 'total_reservations' => $totalReservations,
                 'confirmed_reservations' => $confirmedCount,
-                'total_guests_hosted' => (int)$totalGuests,
+                'total_guests_hosted' => (int) $totalGuests,
                 'reservations_list' => (clone $query)->latest('reservation_date')->limit(50)->get(),
             ],
             'meta' => null,
@@ -187,7 +188,7 @@ class ReportController extends Controller
                 'export_type' => $type,
                 'report_type' => $reportType,
                 'generated_at' => now()->toIso8601String(),
-                'download_url' => "https://api.nemuspace.id/exports/{$reportType}_" . now()->format('YmdHis') . ".{$type}",
+                'download_url' => "https://api.nemuspace.id/exports/{$reportType}_".now()->format('YmdHis').".{$type}",
             ],
             'meta' => null,
         ]);

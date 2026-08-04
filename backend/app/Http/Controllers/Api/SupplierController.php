@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Supplier;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class SupplierController extends Controller
 {
@@ -14,14 +15,14 @@ class SupplierController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        \Illuminate\Support\Facades\Log::info('SupplierController::index called', ['user' => $request->user()?->id]);
+        Log::info('SupplierController::index called', ['user' => $request->user()?->id]);
         $query = Supplier::withCount('inventories');
 
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'ilike', "%{$search}%")
-                  ->orWhere('phone', 'ilike', "%{$search}%");
+                    ->orWhere('phone', 'ilike', "%{$search}%");
             });
         }
 

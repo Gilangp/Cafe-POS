@@ -7,7 +7,6 @@ use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
@@ -23,7 +22,7 @@ class AuthController extends Controller
 
         $user = User::with('roles')->where('email', $request->email)->first();
 
-        if (!$user || !Hash::check($request->password, $user->password)) {
+        if (! $user || ! Hash::check($request->password, $user->password)) {
             return response()->json([
                 'success' => false,
                 'message' => 'Kredensial email atau password yang Anda masukkan salah.',
@@ -32,7 +31,7 @@ class AuthController extends Controller
             ], 401);
         }
 
-        if (!$user->is_active) {
+        if (! $user->is_active) {
             return response()->json([
                 'success' => false,
                 'message' => 'Akun Anda telah dinonaktifkan. Silakan hubungi Administrator atau Owner.',
@@ -100,7 +99,7 @@ class AuthController extends Controller
             $token->delete();
         }
 
-        if (!$user->is_active) {
+        if (! $user->is_active) {
             return response()->json([
                 'success' => false,
                 'message' => 'Akun Anda telah dinonaktifkan.',
@@ -140,7 +139,7 @@ class AuthController extends Controller
         if (array_key_exists('phone', $validated)) {
             $user->phone = $validated['phone'];
         }
-        if (!empty($validated['password'])) {
+        if (! empty($validated['password'])) {
             $user->password = Hash::make($validated['password']);
         }
 

@@ -22,6 +22,7 @@ class AdminMenuController extends Controller
         }
 
         $menus = $query->orderBy('name')->get();
+
         return response()->json(['success' => true, 'message' => 'Daftar menu admin.', 'data' => $menus, 'meta' => ['total' => $menus->count()]]);
     }
 
@@ -43,7 +44,7 @@ class AdminMenuController extends Controller
             'variant_groups.*.is_required' => 'boolean',
         ]);
 
-        $validated['slug'] = Str::slug($validated['name']) . '-' . substr(uniqid(), -4);
+        $validated['slug'] = Str::slug($validated['name']).'-'.substr(uniqid(), -4);
         $menu = Menu::create($validated);
 
         if ($request->has('ingredients')) {
@@ -68,6 +69,7 @@ class AdminMenuController extends Controller
     public function show(string $id): JsonResponse
     {
         $menu = Menu::with(['category', 'promotions', 'ingredients', 'variantGroups'])->withTrashed()->findOrFail($id);
+
         return response()->json(['success' => true, 'message' => 'Detail menu.', 'data' => $menu, 'meta' => null]);
     }
 
@@ -92,7 +94,7 @@ class AdminMenuController extends Controller
         ]);
 
         if (isset($validated['name']) && $validated['name'] !== $menu->name) {
-            $validated['slug'] = Str::slug($validated['name']) . '-' . substr(uniqid(), -4);
+            $validated['slug'] = Str::slug($validated['name']).'-'.substr(uniqid(), -4);
         }
 
         $menu->update($validated);
@@ -120,6 +122,7 @@ class AdminMenuController extends Controller
     {
         $menu = Menu::findOrFail($id);
         $menu->delete();
+
         return response()->json(['success' => true, 'message' => 'Menu berhasil dihapus (soft delete).', 'data' => null, 'meta' => null]);
     }
 
@@ -127,6 +130,7 @@ class AdminMenuController extends Controller
     {
         $menu = Menu::onlyTrashed()->findOrFail($id);
         $menu->restore();
+
         return response()->json(['success' => true, 'message' => 'Menu berhasil dipulihkan.', 'data' => $menu->load('category'), 'meta' => null]);
     }
 }

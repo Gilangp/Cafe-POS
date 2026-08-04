@@ -12,6 +12,7 @@ class AdminBannerController extends Controller
     public function index(): JsonResponse
     {
         $banners = HeroBanner::orderBy('display_order')->get();
+
         return response()->json(['success' => true, 'message' => 'Daftar hero banner.', 'data' => $banners, 'meta' => null]);
     }
 
@@ -28,16 +29,21 @@ class AdminBannerController extends Controller
         ]);
 
         $banner = HeroBanner::create($validated);
+
         return response()->json(['success' => true, 'message' => 'Hero banner berhasil dibuat.', 'data' => $banner, 'meta' => null], 201);
     }
 
-    public function show(HeroBanner $heroBanner): JsonResponse
+    public function show($id): JsonResponse
     {
-        return response()->json(['success' => true, 'message' => 'Detail hero banner.', 'data' => $heroBanner, 'meta' => null]);
+        $banner = HeroBanner::findOrFail($id);
+
+        return response()->json(['success' => true, 'message' => 'Detail hero banner.', 'data' => $banner, 'meta' => null]);
     }
 
-    public function update(Request $request, HeroBanner $heroBanner): JsonResponse
+    public function update(Request $request, $id): JsonResponse
     {
+        $banner = HeroBanner::findOrFail($id);
+
         $validated = $request->validate([
             'title' => 'sometimes|required|string|max:150',
             'subtitle' => 'nullable|string|max:255',
@@ -45,16 +51,28 @@ class AdminBannerController extends Controller
             'button_text' => 'nullable|string|max:50',
             'button_link' => 'nullable|string|max:255',
             'display_order' => 'nullable|integer',
-            'is_active' => 'boolean',
         ]);
 
-        $heroBanner->update($validated);
-        return response()->json(['success' => true, 'message' => 'Hero banner berhasil diperbarui.', 'data' => $heroBanner, 'meta' => null]);
+        // Handle is_active separately - accept 0/1/true/false
+        if ($request->has('is_active')) {
+            $banner->is_active = in_array($request->input('is_active'), [1, '1', true, 'true'], true) ? true : false;
+        }
+
+        // Update other fields
+        foreach ($validated as $key => $value) {
+            $banner->$key = $value;
+        }
+
+        $banner->save();
+
+        return response()->json(['success' => true, 'message' => 'Hero banner berhasil diperbarui.', 'data' => $banner->fresh(), 'meta' => null]);
     }
 
-    public function destroy(HeroBanner $heroBanner): JsonResponse
+    public function destroy($id): JsonResponse
     {
-        $heroBanner->delete();
+        $banner = HeroBanner::findOrFail($id);
+        $banner->delete();
+
         return response()->json(['success' => true, 'message' => 'Hero banner berhasil dihapus.', 'data' => null, 'meta' => null]);
     }
 }

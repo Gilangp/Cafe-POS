@@ -22,6 +22,7 @@ class ProcurementSeeder extends Seeder
 
         if ($suppliers->isEmpty() || $inventories->isEmpty()) {
             $this->command->warn('Suppliers or Inventories are empty. Please run DatabaseSeeder first.');
+
             return;
         }
 
@@ -48,12 +49,12 @@ class ProcurementSeeder extends Seeder
 
             $po = PurchaseOrder::create([
                 'id' => Str::uuid(),
-                'po_number' => 'PO-' . $orderDate->format('Ymd') . '-' . str_pad($i, 3, '0', STR_PAD_LEFT),
+                'po_number' => 'PO-'.$orderDate->format('Ymd').'-'.str_pad($i, 3, '0', STR_PAD_LEFT),
                 'supplier_id' => $supplier->id,
                 'order_date' => $orderDate,
                 'expected_delivery_date' => $expectedDate,
                 'status' => $status,
-                'notes' => 'Seeded PO untuk testing ' . $i,
+                'notes' => 'Seeded PO untuk testing '.$i,
                 'total_cents' => 0,
             ]);
 
@@ -63,10 +64,10 @@ class ProcurementSeeder extends Seeder
                 $qty = rand(10, 50);
                 $unitPrice = $item->unit_price ?? 10000;
                 $receivedQty = 0;
-                
+
                 if ($status === 'RECEIVED') {
                     $receivedQty = $qty;
-                } else if ($status === 'PARTIAL') {
+                } elseif ($status === 'PARTIAL') {
                     $receivedQty = rand(1, $qty - 1);
                 }
 

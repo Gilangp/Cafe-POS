@@ -54,11 +54,10 @@ export function PublicNavbar({ settings }: { settings?: any }) {
 
   return (
     <header
-      className={`fixed left-0 right-0 top-0 z-50 transition-all duration-300 ${
-        scrolled
+      className={`fixed left-0 right-0 top-0 z-50 transition-all duration-300 ${scrolled
           ? 'bg-[#1E3D31]/95 py-3.5 shadow-2xl backdrop-blur-xl border-b border-[#C89B5C]/25 dark:bg-[#14201A]/95'
           : 'bg-[#1E3D31]/90 py-4 border-b border-white/10 backdrop-blur-md dark:bg-[#14201A]/90'
-      }`}
+        }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-4">
         {/* Left: Brand Logo */}
@@ -99,11 +98,10 @@ export function PublicNavbar({ settings }: { settings?: any }) {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`relative px-3.5 py-1.5 rounded-full text-[13px] font-medium tracking-wide transition-all duration-200 flex items-center gap-1.5 ${
-                  isActive
+                className={`relative px-3.5 py-1.5 rounded-full text-[13px] font-medium tracking-wide transition-all duration-200 flex items-center gap-1.5 ${isActive
                     ? 'bg-[#C89B5C] text-[#1E3D31] font-bold shadow-sm'
                     : 'text-white/85 hover:text-white hover:bg-white/10'
-                }`}
+                  }`}
               >
                 <span>{item.label}</span>
               </Link>
@@ -157,11 +155,10 @@ export function PublicNavbar({ settings }: { settings?: any }) {
                   key={item.href}
                   href={item.href}
                   onClick={() => setMobileOpen(false)}
-                  className={`flex min-h-[46px] items-center gap-3 rounded-2xl px-4 text-sm font-semibold tracking-wide transition-all ${
-                    isActive
+                  className={`flex min-h-[46px] items-center gap-3 rounded-2xl px-4 text-sm font-semibold tracking-wide transition-all ${isActive
                       ? 'bg-[#C89B5C] text-[#1E3D31] font-bold shadow-md'
                       : 'text-white/90 hover:bg-white/10 hover:text-[#C89B5C]'
-                  }`}
+                    }`}
                 >
                   <Icon size={18} className={isActive ? 'text-[#1E3D31]' : 'text-[#C89B5C]'} />
                   <span>{item.label}</span>
@@ -188,14 +185,14 @@ export function PublicNavbar({ settings }: { settings?: any }) {
 export function PublicFooter({ settings }: { settings?: any }) {
   const general = settings?.general;
   const socialMedia = settings?.social_media || [];
-  
+
   const siteName = general?.site_name || 'NEMU Space';
   const siteTagline = general?.site_tagline || 'Handcrafted Coffee Curations';
-  
+
   // address handling
   const address = general?.address || 'Jl. Kopi Specialty No. 88, Senopati\nJakarta Selatan, 12190';
   const operatingHours = general?.operating_hours || 'Senin - Jumat: 08:00 - 22:00\nSabtu - Minggu: 07:00 - 23:00';
-  
+
   const phone = general?.phone || '+62 21 555 0123';
   const email = general?.email || 'hello@nemuspace.id';
 
@@ -235,9 +232,9 @@ export function PublicFooter({ settings }: { settings?: any }) {
                   className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-full border border-white/20 bg-white/5 text-white/90 hover:border-[#C89B5C] hover:bg-[#C89B5C] hover:text-[#1E3D31] transition-all"
                 >
                   {social.platform.toLowerCase() === 'instagram' ? <Instagram size={18} /> :
-                   social.platform.toLowerCase() === 'facebook' ? <Facebook size={18} /> :
-                   social.platform.toLowerCase() === 'twitter' ? <Twitter size={18} /> :
-                   <Globe size={18} />}
+                    social.platform.toLowerCase() === 'facebook' ? <Facebook size={18} /> :
+                      social.platform.toLowerCase() === 'twitter' ? <Twitter size={18} /> :
+                        <Globe size={18} />}
                 </a>
               )) : (
                 <>
@@ -277,7 +274,7 @@ export function PublicFooter({ settings }: { settings?: any }) {
               Kunjungi Kami
               <span className="absolute -bottom-2 left-0 w-12 h-1 bg-[#C89B5C] rounded-full"></span>
             </h4>
-            
+
             <div className="space-y-4 pt-2 text-sm text-white/90">
               <div className="flex items-start gap-3">
                 <MapPin size={18} className="text-[#C89B5C] shrink-0 mt-0.5" />
@@ -287,7 +284,7 @@ export function PublicFooter({ settings }: { settings?: any }) {
                   ))}
                 </span>
               </div>
-              
+
               <div className="flex items-start gap-3">
                 <Clock size={18} className="text-[#C89B5C] shrink-0 mt-0.5" />
                 <div className="space-y-1 text-white/80">
@@ -301,7 +298,7 @@ export function PublicFooter({ settings }: { settings?: any }) {
                 <Phone size={18} className="text-[#C89B5C] shrink-0" />
                 <span className="text-white/80">{phone}</span>
               </div>
-              
+
               <div className="flex items-center gap-3">
                 <Mail size={18} className="text-[#C89B5C] shrink-0" />
                 <span className="text-white/80">{email}</span>

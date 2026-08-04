@@ -25,8 +25,8 @@ class OwnerController extends Controller
             'success' => true,
             'message' => 'Ringkasan bisnis eksekutif (Owner).',
             'data' => [
-                'today_revenue' => (float)$todayRevenue,
-                'this_month_revenue' => (float)$monthRevenue,
+                'today_revenue' => (float) $todayRevenue,
+                'this_month_revenue' => (float) $monthRevenue,
                 'total_transactions_all_time' => $totalTransactions,
                 'today_reservations_count' => $todayReservations,
             ],
@@ -94,7 +94,7 @@ class OwnerController extends Controller
      */
     public function backup(): JsonResponse
     {
-        $filename = 'backup_nemuspace_' . now()->format('Ymd_His') . '.sql';
+        $filename = 'backup_nemuspace_'.now()->format('Ymd_His').'.sql';
 
         return response()->json([
             'success' => true,

@@ -3,9 +3,10 @@
 namespace Database\Seeders;
 
 use App\Models\Category;
+use App\Models\Inventory;
 use App\Models\Menu;
-use App\Models\VariantGroup;
 use App\Models\MenuVariantGroup;
+use App\Models\VariantGroup;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
 
@@ -16,49 +17,49 @@ class FullMenuSeeder extends Seeder
         // 1. Data Kategori & Menu
         $menuData = [
             'Coffee' => [
-                'Espresso', 'Americano', 'Long Black', 'Cappuccino', 'Cafe Latte', 
-                'Flat White', 'Piccolo Latte', 'Mocha Latte', 'Caramel Latte', 
-                'Hazelnut Latte', 'Vanilla Latte', 'Brown Sugar Latte', 'Sea Salt Latte', 
-                'Coconut Latte', 'Affogato', 'Honey Coffee', 'V60', 'Japanese Iced Coffee'
+                'Espresso', 'Americano', 'Long Black', 'Cappuccino', 'Cafe Latte',
+                'Flat White', 'Piccolo Latte', 'Mocha Latte', 'Caramel Latte',
+                'Hazelnut Latte', 'Vanilla Latte', 'Brown Sugar Latte', 'Sea Salt Latte',
+                'Coconut Latte', 'Affogato', 'Honey Coffee', 'V60', 'Japanese Iced Coffee',
             ],
             'Non Coffee' => [
-                'Matcha Latte', 'Matcha Cream', 'Chocolate Latte', 'Dark Chocolate', 
-                'Belgian Chocolate', 'Taro Latte', 'Red Velvet Latte', 'Vanilla Milk', 
-                'Strawberry Milk', 'Cookies & Cream', 'Caramel Milk', 'Banana Milk', 
-                'Brown Sugar Milk', 'Honey Milk', 'Avocado Milk'
+                'Matcha Latte', 'Matcha Cream', 'Chocolate Latte', 'Dark Chocolate',
+                'Belgian Chocolate', 'Taro Latte', 'Red Velvet Latte', 'Vanilla Milk',
+                'Strawberry Milk', 'Cookies & Cream', 'Caramel Milk', 'Banana Milk',
+                'Brown Sugar Milk', 'Honey Milk', 'Avocado Milk',
             ],
             'Tea' => [
-                'Lemon Tea', 'Lychee Tea', 'Peach Tea', 'Earl Grey Tea', 'Chamomile Tea', 
-                'Jasmine Tea', 'Green Tea', 'Thai Tea', 'Milk Tea', 'Black Tea'
+                'Lemon Tea', 'Lychee Tea', 'Peach Tea', 'Earl Grey Tea', 'Chamomile Tea',
+                'Jasmine Tea', 'Green Tea', 'Thai Tea', 'Milk Tea', 'Black Tea',
             ],
             'Refreshment' => [
-                'Blue Ocean', 'Summer Breeze', 'Passion Spark', 'Tropical Sunrise', 
-                'Lemon Mojito', 'Strawberry Mojito', 'Mango Soda', 'Kiwi Sparkling', 
-                'Berry Splash', 'Orange Fizz', 'Apple Cooler', 'Lime Soda'
+                'Blue Ocean', 'Summer Breeze', 'Passion Spark', 'Tropical Sunrise',
+                'Lemon Mojito', 'Strawberry Mojito', 'Mango Soda', 'Kiwi Sparkling',
+                'Berry Splash', 'Orange Fizz', 'Apple Cooler', 'Lime Soda',
             ],
             'Snack' => [
-                'French Fries', 'Truffle Fries', 'Chicken Wings', 'Onion Rings', 
-                'Chicken Popcorn', 'Chicken Karaage', 'Sosis Bakar', 'Tahu Crispy', 
-                'Singkong Goreng', 'Pisang Goreng', 'Cireng', 'Mix Platter', 'Nachos', 
-                'Kentang Goreng Keju', 'Mozzarella Stick'
+                'French Fries', 'Truffle Fries', 'Chicken Wings', 'Onion Rings',
+                'Chicken Popcorn', 'Chicken Karaage', 'Sosis Bakar', 'Tahu Crispy',
+                'Singkong Goreng', 'Pisang Goreng', 'Cireng', 'Mix Platter', 'Nachos',
+                'Kentang Goreng Keju', 'Mozzarella Stick',
             ],
             'Main Course' => [
-                'Chicken Katsu Rice', 'Chicken Teriyaki Rice', 'Chicken Salted Egg Rice', 
-                'Beef Black Pepper Rice', 'Beef Teriyaki Rice', 'Nasi Goreng Kampung', 
-                'Nasi Goreng Seafood', 'Spaghetti Bolognese', 'Spaghetti Carbonara', 
-                'Aglio Olio', 'Chicken Steak', 'Beef Steak', 'Chicken Sambal Matah', 
-                'Dori Sambal Matah', 'Chicken Curry Rice', 'Creamy Chicken Pasta', 
-                'Fried Rice Special', 'Grilled Chicken Rice'
+                'Chicken Katsu Rice', 'Chicken Teriyaki Rice', 'Chicken Salted Egg Rice',
+                'Beef Black Pepper Rice', 'Beef Teriyaki Rice', 'Nasi Goreng Kampung',
+                'Nasi Goreng Seafood', 'Spaghetti Bolognese', 'Spaghetti Carbonara',
+                'Aglio Olio', 'Chicken Steak', 'Beef Steak', 'Chicken Sambal Matah',
+                'Dori Sambal Matah', 'Chicken Curry Rice', 'Creamy Chicken Pasta',
+                'Fried Rice Special', 'Grilled Chicken Rice',
             ],
             'Breakfast' => [
-                'American Breakfast', 'Toast & Egg', 'Butter Toast', 'Kaya Toast', 
-                'Scrambled Egg Toast', 'Pancake', 'French Toast', 'Granola Bowl'
+                'American Breakfast', 'Toast & Egg', 'Butter Toast', 'Kaya Toast',
+                'Scrambled Egg Toast', 'Pancake', 'French Toast', 'Granola Bowl',
             ],
             'Seasonal Menu' => [
-                'Mango Matcha', 'Strawberry Matcha', 'Sakura Latte', 'Pumpkin Latte', 
-                'Christmas Chocolate', 'Summer Berry Soda', 'Winter Chocolate', 
-                'Tropical Coconut', 'Melon Breeze', 'Peach Blossom'
-            ]
+                'Mango Matcha', 'Strawberry Matcha', 'Sakura Latte', 'Pumpkin Latte',
+                'Christmas Chocolate', 'Summer Berry Soda', 'Winter Chocolate',
+                'Tropical Coconut', 'Melon Breeze', 'Peach Blossom',
+            ],
         ];
 
         // 2. Pricing Logic (Base Prices by Category)
@@ -82,25 +83,26 @@ class FullMenuSeeder extends Seeder
         $vgAddon = VariantGroup::where('name', 'Tambahan (Add-ons)')->first();
 
         // Ambil Inventory untuk HPP
-        $invKopiArabica = \App\Models\Inventory::where('name', 'Biji Kopi Arabica Gayo (Roast)')->first();
-        $invKopiRobusta = \App\Models\Inventory::where('name', 'Biji Kopi Robusta Temanggung')->first();
-        $invSusuUHT = \App\Models\Inventory::where('name', 'Susu Cair UHT Full Cream')->first();
-        $invGulaAren = \App\Models\Inventory::where('name', 'Sirup Gula Aren Asli')->first();
-        $invTehMelati = \App\Models\Inventory::where('name', 'Teh Daun Melati')->first();
-        $invBeras = \App\Models\Inventory::where('name', 'Beras Putih Premium')->first();
-        $invTelur = \App\Models\Inventory::where('name', 'Telur Ayam Horn')->first();
-        $invAyam = \App\Models\Inventory::where('name', 'Daging Ayam Potong')->first();
-        $invCupEs = \App\Models\Inventory::where('name', 'Gelas Plastik Es 16oz')->first();
-        $invKardusMakan = \App\Models\Inventory::where('name', 'Kotak Makan Kertas Kraft')->first();
+        $invKopiArabica = Inventory::where('name', 'Biji Kopi Arabica Gayo (Roast)')->first();
+        $invKopiRobusta = Inventory::where('name', 'Biji Kopi Robusta Temanggung')->first();
+        $invSusuUHT = Inventory::where('name', 'Susu Cair UHT Full Cream')->first();
+        $invGulaAren = Inventory::where('name', 'Sirup Gula Aren Asli')->first();
+        $invTehMelati = Inventory::where('name', 'Teh Daun Melati')->first();
+        $invBeras = Inventory::where('name', 'Beras Putih Premium')->first();
+        $invTelur = Inventory::where('name', 'Telur Ayam Horn')->first();
+        $invAyam = Inventory::where('name', 'Daging Ayam Potong')->first();
+        $invCupEs = Inventory::where('name', 'Gelas Plastik Es 16oz')->first();
+        $invKardusMakan = Inventory::where('name', 'Kotak Makan Kertas Kraft')->first();
 
         $displayOrder = 1;
 
         foreach ($menuData as $categoryName => $menus) {
-            // Create Category
-            $category = Category::create([
-                'name' => $categoryName,
-                'display_order' => $displayOrder++
-            ]);
+            // Create or get existing Category (avoid duplication)
+            $category = Category::firstOrCreate(
+                ['name' => $categoryName],
+                ['display_order' => $displayOrder]
+            );
+            $displayOrder++;
 
             // Create Menus for this Category
             foreach ($menus as $menuName) {
@@ -115,8 +117,8 @@ class FullMenuSeeder extends Seeder
                 $menu = Menu::create([
                     'category_id' => $category->id,
                     'name' => $menuName,
-                    'slug' => Str::slug($menuName) . '-' . strtolower(Str::random(4)),
-                    'description' => 'Menu premium dari NEMU Space: ' . $menuName,
+                    'slug' => Str::slug($menuName).'-'.strtolower(Str::random(4)),
+                    'description' => 'Menu premium dari NEMU Space: '.$menuName,
                     'price' => $finalPrice,
                     'image' => '/images/menu/kopi-aren.jpg', // Menggunakan dummy image
                     'status' => 'tersedia',
@@ -135,57 +137,88 @@ class FullMenuSeeder extends Seeder
                 // 5. Attach HPP / BOM (Ingredients)
                 $ingredients = [];
                 $nameLower = strtolower($menuName);
-                
+
                 if (in_array($categoryName, ['Coffee'])) {
-                    if ($invKopiArabica) $ingredients[$invKopiArabica->id] = ['quantity_used' => 18];
+                    if ($invKopiArabica) {
+                        $ingredients[$invKopiArabica->id] = ['quantity_used' => 18];
+                    }
                     if (str_contains($nameLower, 'latte') || str_contains($nameLower, 'cappuccino') || str_contains($nameLower, 'white')) {
-                        if ($invSusuUHT) $ingredients[$invSusuUHT->id] = ['quantity_used' => 150];
+                        if ($invSusuUHT) {
+                            $ingredients[$invSusuUHT->id] = ['quantity_used' => 150];
+                        }
                     }
                     if (str_contains($nameLower, 'sugar') || str_contains($nameLower, 'caramel') || str_contains($nameLower, 'honey')) {
-                        if ($invGulaAren) $ingredients[$invGulaAren->id] = ['quantity_used' => 20];
+                        if ($invGulaAren) {
+                            $ingredients[$invGulaAren->id] = ['quantity_used' => 20];
+                        }
                     }
-                    if ($invCupEs) $ingredients[$invCupEs->id] = ['quantity_used' => 1];
-                } 
-                elseif (in_array($categoryName, ['Non Coffee'])) {
-                    if ($invSusuUHT) $ingredients[$invSusuUHT->id] = ['quantity_used' => 200];
+                    if ($invCupEs) {
+                        $ingredients[$invCupEs->id] = ['quantity_used' => 1];
+                    }
+                } elseif (in_array($categoryName, ['Non Coffee'])) {
+                    if ($invSusuUHT) {
+                        $ingredients[$invSusuUHT->id] = ['quantity_used' => 200];
+                    }
                     if (str_contains($nameLower, 'sugar') || str_contains($nameLower, 'caramel') || str_contains($nameLower, 'honey')) {
-                        if ($invGulaAren) $ingredients[$invGulaAren->id] = ['quantity_used' => 30];
+                        if ($invGulaAren) {
+                            $ingredients[$invGulaAren->id] = ['quantity_used' => 30];
+                        }
                     }
-                    if ($invCupEs) $ingredients[$invCupEs->id] = ['quantity_used' => 1];
-                }
-                elseif (in_array($categoryName, ['Tea'])) {
-                    if ($invTehMelati) $ingredients[$invTehMelati->id] = ['quantity_used' => 15];
+                    if ($invCupEs) {
+                        $ingredients[$invCupEs->id] = ['quantity_used' => 1];
+                    }
+                } elseif (in_array($categoryName, ['Tea'])) {
+                    if ($invTehMelati) {
+                        $ingredients[$invTehMelati->id] = ['quantity_used' => 15];
+                    }
                     if (str_contains($nameLower, 'milk')) {
-                        if ($invSusuUHT) $ingredients[$invSusuUHT->id] = ['quantity_used' => 100];
+                        if ($invSusuUHT) {
+                            $ingredients[$invSusuUHT->id] = ['quantity_used' => 100];
+                        }
                     }
-                    if ($invCupEs) $ingredients[$invCupEs->id] = ['quantity_used' => 1];
-                }
-                elseif (in_array($categoryName, ['Refreshment', 'Seasonal Menu'])) {
-                    if ($invCupEs) $ingredients[$invCupEs->id] = ['quantity_used' => 1];
+                    if ($invCupEs) {
+                        $ingredients[$invCupEs->id] = ['quantity_used' => 1];
+                    }
+                } elseif (in_array($categoryName, ['Refreshment', 'Seasonal Menu'])) {
+                    if ($invCupEs) {
+                        $ingredients[$invCupEs->id] = ['quantity_used' => 1];
+                    }
                     if (str_contains($nameLower, 'latte') || str_contains($nameLower, 'chocolate')) {
-                        if ($invSusuUHT) $ingredients[$invSusuUHT->id] = ['quantity_used' => 150];
+                        if ($invSusuUHT) {
+                            $ingredients[$invSusuUHT->id] = ['quantity_used' => 150];
+                        }
                     }
-                }
-                elseif (in_array($categoryName, ['Main Course', 'Breakfast'])) {
+                } elseif (in_array($categoryName, ['Main Course', 'Breakfast'])) {
                     if (str_contains($nameLower, 'rice') || str_contains($nameLower, 'nasi')) {
-                        if ($invBeras) $ingredients[$invBeras->id] = ['quantity_used' => 200];
+                        if ($invBeras) {
+                            $ingredients[$invBeras->id] = ['quantity_used' => 200];
+                        }
                     }
                     if (str_contains($nameLower, 'chicken') || str_contains($nameLower, 'ayam') || str_contains($nameLower, 'katsu')) {
-                        if ($invAyam) $ingredients[$invAyam->id] = ['quantity_used' => 150];
+                        if ($invAyam) {
+                            $ingredients[$invAyam->id] = ['quantity_used' => 150];
+                        }
                     }
                     if (str_contains($nameLower, 'egg') || str_contains($nameLower, 'goreng')) {
-                        if ($invTelur) $ingredients[$invTelur->id] = ['quantity_used' => 1];
+                        if ($invTelur) {
+                            $ingredients[$invTelur->id] = ['quantity_used' => 1];
+                        }
                     }
-                    if ($invKardusMakan) $ingredients[$invKardusMakan->id] = ['quantity_used' => 1];
-                }
-                elseif (in_array($categoryName, ['Snack'])) {
+                    if ($invKardusMakan) {
+                        $ingredients[$invKardusMakan->id] = ['quantity_used' => 1];
+                    }
+                } elseif (in_array($categoryName, ['Snack'])) {
                     if (str_contains($nameLower, 'chicken') || str_contains($nameLower, 'wings') || str_contains($nameLower, 'karaage')) {
-                        if ($invAyam) $ingredients[$invAyam->id] = ['quantity_used' => 150];
+                        if ($invAyam) {
+                            $ingredients[$invAyam->id] = ['quantity_used' => 150];
+                        }
                     }
-                    if ($invKardusMakan) $ingredients[$invKardusMakan->id] = ['quantity_used' => 1];
+                    if ($invKardusMakan) {
+                        $ingredients[$invKardusMakan->id] = ['quantity_used' => 1];
+                    }
                 }
 
-                if (!empty($ingredients)) {
+                if (! empty($ingredients)) {
                     $menu->ingredients()->sync($ingredients);
                 }
             }

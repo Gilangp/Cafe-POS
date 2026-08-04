@@ -7,12 +7,14 @@ use App\Models\AboutUs;
 use App\Models\Faq;
 use App\Models\HeroBanner;
 use App\Models\Menu;
+use App\Models\Promotion;
 use App\Models\Setting;
 use App\Models\SocialMedia;
 use App\Models\Testimonial;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+
 class LandingPageController extends Controller
 {
     /**
@@ -53,7 +55,7 @@ class LandingPageController extends Controller
      */
     public function promotions(): JsonResponse
     {
-        $promotions = \App\Models\Promotion::where('status', 'aktif')
+        $promotions = Promotion::where('status', 'aktif')
             ->whereDate('start_date', '<=', now())
             ->whereDate('end_date', '>=', now())
             ->latest()

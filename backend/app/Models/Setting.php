@@ -15,11 +15,18 @@ class Setting extends Model
         'phone',
         'email',
         'address',
+        'tax_rate',
+        'tax_enabled',
         'operating_hours',
         'seo_title',
         'seo_description',
         'seo_keywords',
         'logo',
         'favicon',
+    ];
+
+    protected $casts = [
+        'tax_rate' => 'decimal:2',
+        'tax_enabled' => 'boolean',
     ];
 }

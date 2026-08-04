@@ -12,6 +12,7 @@ class AdminPromotionController extends Controller
     public function index(): JsonResponse
     {
         $promotions = Promotion::with('menus')->latest()->get();
+
         return response()->json(['success' => true, 'message' => 'Daftar promo admin.', 'data' => $promotions, 'meta' => null]);
     }
 
@@ -37,7 +38,7 @@ class AdminPromotionController extends Controller
             'status' => $validated['status'],
         ]);
 
-        if (!empty($validated['menu_ids'])) {
+        if (! empty($validated['menu_ids'])) {
             $promotion->menus()->sync($validated['menu_ids']);
         }
 
@@ -75,6 +76,7 @@ class AdminPromotionController extends Controller
     {
         $promotion->menus()->detach();
         $promotion->delete();
+
         return response()->json(['success' => true, 'message' => 'Promo berhasil dihapus.', 'data' => null, 'meta' => null]);
     }
 }

@@ -43,13 +43,15 @@ class AdminSettingController extends Controller
             'phone' => 'nullable|string|max:30',
             'email' => 'nullable|email|max:100',
             'address' => 'nullable|string',
+            'tax_rate' => 'nullable|numeric|min:0|max:100',
+            'tax_enabled' => 'nullable|boolean',
             'operating_hours' => 'nullable|string',
             'seo_title' => 'nullable|string|max:150',
             'seo_description' => 'nullable|string|max:300',
             'seo_keywords' => 'nullable|string|max:255',
         ]);
 
-        $setting = Setting::first() ?? new Setting();
+        $setting = Setting::first() ?? new Setting;
         $setting->fill($validated);
         $setting->save();
 
@@ -68,6 +70,7 @@ class AdminSettingController extends Controller
         ]);
 
         $sm = SocialMedia::create($validated);
+
         return response()->json(['success' => true, 'message' => 'Social media berhasil ditambahkan.', 'data' => $sm, 'meta' => null], 201);
     }
 
@@ -82,12 +85,14 @@ class AdminSettingController extends Controller
         ]);
 
         $socialMedia->update($validated);
+
         return response()->json(['success' => true, 'message' => 'Social media berhasil diperbarui.', 'data' => $socialMedia, 'meta' => null]);
     }
 
     public function destroySocialMedia(SocialMedia $socialMedia): JsonResponse
     {
         $socialMedia->delete();
+
         return response()->json(['success' => true, 'message' => 'Social media berhasil dihapus.', 'data' => null, 'meta' => null]);
     }
 
@@ -103,6 +108,7 @@ class AdminSettingController extends Controller
         ]);
 
         $about = AboutUs::create($validated);
+
         return response()->json(['success' => true, 'message' => 'Bagian Tentang Kami berhasil ditambahkan.', 'data' => $about, 'meta' => null], 201);
     }
 
@@ -117,12 +123,14 @@ class AdminSettingController extends Controller
         ]);
 
         $aboutUs->update($validated);
+
         return response()->json(['success' => true, 'message' => 'Bagian Tentang Kami berhasil diperbarui.', 'data' => $aboutUs, 'meta' => null]);
     }
 
     public function destroyAboutUs(AboutUs $aboutUs): JsonResponse
     {
         $aboutUs->delete();
+
         return response()->json(['success' => true, 'message' => 'Bagian Tentang Kami berhasil dihapus.', 'data' => null, 'meta' => null]);
     }
 }

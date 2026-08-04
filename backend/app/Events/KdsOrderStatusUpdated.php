@@ -2,7 +2,7 @@
 
 namespace App\Events;
 
-use App\Models\Order;
+use App\Models\OrderTicket;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
@@ -14,14 +14,13 @@ class KdsOrderStatusUpdated implements ShouldBroadcastNow
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public function __construct(
-        public Order $order
-    ) {
-    }
+        public OrderTicket $ticket
+    ) {}
 
     public function broadcastOn(): array
     {
         return [
-            new Channel('branch.' . $this->order->branch_id . '.kitchen'),
+            new Channel('kitchen'),
         ];
     }
 
@@ -33,12 +32,10 @@ class KdsOrderStatusUpdated implements ShouldBroadcastNow
     public function broadcastWith(): array
     {
         return [
-            'id' => $this->order->id,
-            'order_number' => $this->order->order_number,
-            'branch_id' => $this->order->branch_id,
-            'status' => $this->order->status,
-            'kitchen_status' => $this->order->kitchen_status ?? 'PENDING',
-            'updated_at' => $this->order->updated_at?->toIso8601String() ?? now()->toIso8601String(),
+            'id' => $this->ticket->id,
+            'ticket_number' => $this->ticket->ticket_number,
+            'status' => $this->ticket->status,
+            'updated_at' => $this->ticket->updated_at?->toIso8601String() ?? now()->toIso8601String(),
         ];
     }
 }

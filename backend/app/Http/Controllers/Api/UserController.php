@@ -26,7 +26,7 @@ class UserController extends Controller
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'ilike', "%{$search}%")
-                  ->orWhere('email', 'ilike', "%{$search}%");
+                    ->orWhere('email', 'ilike', "%{$search}%");
             });
         }
 
@@ -63,7 +63,7 @@ class UserController extends Controller
             'is_active' => $validated['is_active'] ?? true,
         ]);
 
-        if (!empty($validated['role_ids'])) {
+        if (! empty($validated['role_ids'])) {
             $user->roles()->sync($validated['role_ids']);
         }
 
@@ -81,6 +81,7 @@ class UserController extends Controller
     public function show(string $id): JsonResponse
     {
         $user = User::with('roles')->findOrFail($id);
+
         return response()->json(['success' => true, 'message' => 'Detail pengguna.', 'data' => $user, 'meta' => null]);
     }
 
@@ -93,7 +94,7 @@ class UserController extends Controller
 
         $validated = $request->validate([
             'name' => 'sometimes|required|string|max:255',
-            'email' => 'sometimes|required|email|max:255|unique:users,email,' . $user->id,
+            'email' => 'sometimes|required|email|max:255|unique:users,email,'.$user->id,
             'password' => 'nullable|string|min:8',
             'phone' => 'nullable|string|max:25',
             'is_active' => 'boolean',
@@ -101,11 +102,21 @@ class UserController extends Controller
             'role_ids.*' => 'uuid|exists:roles,id',
         ]);
 
-        if (isset($validated['name'])) $user->name = $validated['name'];
-        if (isset($validated['email'])) $user->email = $validated['email'];
-        if (array_key_exists('phone', $validated)) $user->phone = $validated['phone'];
-        if (isset($validated['is_active'])) $user->is_active = $validated['is_active'];
-        if (!empty($validated['password'])) $user->password = Hash::make($validated['password']);
+        if (isset($validated['name'])) {
+            $user->name = $validated['name'];
+        }
+        if (isset($validated['email'])) {
+            $user->email = $validated['email'];
+        }
+        if (array_key_exists('phone', $validated)) {
+            $user->phone = $validated['phone'];
+        }
+        if (isset($validated['is_active'])) {
+            $user->is_active = $validated['is_active'];
+        }
+        if (! empty($validated['password'])) {
+            $user->password = Hash::make($validated['password']);
+        }
 
         $user->save();
 
@@ -139,6 +150,7 @@ class UserController extends Controller
     public function roles(): JsonResponse
     {
         $roles = Role::orderBy('name')->get();
+
         return response()->json(['success' => true, 'message' => 'Daftar peran sistem.', 'data' => $roles, 'meta' => null]);
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Events\KdsOrderStatusUpdated;
 use App\Http\Controllers\Controller;
 use App\Models\OrderTicket;
 use App\Models\OrderTicketItem;
@@ -27,6 +28,7 @@ class KdsController extends Controller
 
         $tickets = $query->get()->map(function ($ticket) {
             $ticket->elapsed_minutes = $ticket->received_at ? now()->diffInMinutes($ticket->received_at) : 0;
+
             return $ticket;
         });
 
@@ -89,6 +91,8 @@ class KdsController extends Controller
             }
 
             $ticket->save();
+
+            event(new KdsOrderStatusUpdated($ticket));
 
             return response()->json([
                 'success' => true,

@@ -39,7 +39,7 @@ export default function UnitConversionsPage() {
   };
 
   return (
-    <PermissionGuard requiredPermission="manage_inventory">
+    <PermissionGuard permission="manage_inventory">
       <div className="p-6">
         <div className="flex justify-between items-center mb-6">
           <div className="flex items-center gap-3">

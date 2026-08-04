@@ -33,7 +33,7 @@
 ### 2.2 Aturan teknis
 
 1. **Frontend:** Vitest + React Testing Library (`npm test` di `frontend/`).
-2. **Backend:** PHPUnit Feature/Unit (`php vendor/bin/phpunit` di `backend/`). DB testing: SQLite in-memory (`phpunit.xml`) — migration harus **SQLite-safe** (hindari raw `MODIFY ENUM` MySQL tanpa guard).
+2. **Backend:** PHPUnit Feature/Unit (`php vendor/bin/phpunit` di `backend/`). DB testing: **MySQL 8.0 via Docker** (keputusan GAP-DOC-01). Migration harus tetap kompatibel SQLite untuk fleksibilitas lokal, tapi suite utama berjalan di MySQL. Hindari raw `MODIFY ENUM` MySQL tanpa guard driver.
 3. **Naming:**  
    - FE: `*.test.ts` / `*.test.tsx` di `frontend/tests/`  
    - BE: `*Test.php` di `backend/tests/Feature` atau `Unit`
@@ -206,7 +206,9 @@ flowchart LR
 ### 6.2 Backend (PHPUnit)
 
 **Perintah:** `cd backend && php vendor/bin/phpunit`  
-**Env test:** MySQL 8.0 (via Docker service di CI). Environment lokal disarankan memakai Docker. Konfigurasi `phpunit.xml` akan menunjuk ke DB tes ini, bukan SQLite `:memory:`.
+**Env test:** MySQL 8.0 via Docker (keputusan GAP-DOC-01 — konsisten produksi, skema §26 bergantung ENUM/DECIMAL/FK MySQL, CI sudah pakai Docker).
+
+**Konfigurasi:**
 
 | File Feature (existing) | Cakupan yang dimaksud | Catatan |
 |---|---|---|
@@ -453,7 +455,7 @@ npx playwright test
 | Topik | Dokumen |
 |---|---|
 | FR / NFR / matriks role | `03_requirements.md` (+ §25.1 gap middleware) |
-| Arsitektur path FE/BE aktual | `02_system_architecture.md` |
+| Arsitektur path FE/BE (normatif) | `02_system_architecture.md` |
 | Spesifikasi modul & alur | `04_modules_specification.md` |
 | Tabel & API (+ GAP-RBAC) | `05_database_and_api.md` |
 | Roadmap + acceptance | `07_roadmap_and_testing.md` |
@@ -476,4 +478,4 @@ Setelah perbaikan middleware, wajib ada Feature test:
 - **Tidak diuji / out of scope:** order online, QR order, membership/CRM loyalty.  
 - **Alur wajib:** CP-01…CP-08 (P0).  
 - **Automated:** ya — Vitest, PHPUnit, Playwright (target).  
-- **Docs = kode aktual** + gap RBAC tercatat, bukan disembunyikan.
+- **Docs = spesifikasi normatif**; kode wajib menyesuaikan. Deviasi tercatat di `03` Lampiran A, bukan disembunyikan atau dinormalisasi ke docs.

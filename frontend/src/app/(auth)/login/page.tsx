@@ -272,28 +272,28 @@ export default function LoginPage() {
             <div className="grid grid-cols-2 gap-2">
               <button
                 type="button"
-                onClick={() => { setEmail('owner@nemuspace.id'); setPassword('password'); setErrorMessage(''); setStatus('default'); }}
+                onClick={() => { setEmail('owner@nemuspace.test'); setPassword('password'); setErrorMessage(''); setStatus('default'); }}
                 className="py-2 px-2 text-xs font-semibold rounded-lg bg-gray-50 hover:bg-[#E4D9C4]/30 dark:bg-[#1A2620] dark:hover:bg-[#1E3D31] text-[#1E3D31] dark:text-gray-300 transition-all border border-transparent hover:border-[#C89B5C]/50"
               >
                 Owner
               </button>
               <button
                 type="button"
-                onClick={() => { setEmail('admin@nemuspace.id'); setPassword('password'); setErrorMessage(''); setStatus('default'); }}
+                onClick={() => { setEmail('admin@nemuspace.test'); setPassword('password'); setErrorMessage(''); setStatus('default'); }}
                 className="py-2 px-2 text-xs font-semibold rounded-lg bg-gray-50 hover:bg-[#E4D9C4]/30 dark:bg-[#1A2620] dark:hover:bg-[#1E3D31] text-[#1E3D31] dark:text-gray-300 transition-all border border-transparent hover:border-[#C89B5C]/50"
               >
                 Admin
               </button>
               <button
                 type="button"
-                onClick={() => { setEmail('kasir@nemuspace.id'); setPassword('password'); setErrorMessage(''); setStatus('default'); }}
+                onClick={() => { setEmail('kasir@nemuspace.test'); setPassword('password'); setErrorMessage(''); setStatus('default'); }}
                 className="py-2 px-2 text-xs font-semibold rounded-lg bg-gray-50 hover:bg-[#E4D9C4]/30 dark:bg-[#1A2620] dark:hover:bg-[#1E3D31] text-[#1E3D31] dark:text-gray-300 transition-all border border-transparent hover:border-[#C89B5C]/50"
               >
                 Kasir
               </button>
               <button
                 type="button"
-                onClick={() => { setEmail('dapur@nemuspace.id'); setPassword('password'); setErrorMessage(''); setStatus('default'); }}
+                onClick={() => { setEmail('dapur@nemuspace.test'); setPassword('password'); setErrorMessage(''); setStatus('default'); }}
                 className="py-2 px-2 text-xs font-semibold rounded-lg bg-gray-50 hover:bg-[#E4D9C4]/30 dark:bg-[#1A2620] dark:hover:bg-[#1E3D31] text-[#1E3D31] dark:text-gray-300 transition-all border border-transparent hover:border-[#C89B5C]/50"
               >
                 Dapur / Barista

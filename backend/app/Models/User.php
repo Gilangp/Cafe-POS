@@ -60,9 +60,6 @@ class User extends Authenticatable
 
     /**
      * Check if user has a specific role or any of specific roles.
-     *
-     * @param string|array $roles
-     * @return bool
      */
     public function hasRole(string|array $roles): bool
     {
@@ -73,9 +70,6 @@ class User extends Authenticatable
 
     /**
      * Check if user has all specified roles.
-     *
-     * @param array $roles
-     * @return bool
      */
     public function hasAllRoles(array $roles): bool
     {

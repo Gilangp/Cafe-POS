@@ -37,6 +37,7 @@ class HandleCorsManual
         $response = response('', 200);
         $this->addCorsHeaders($response, $origin);
         $response->headers->set('Access-Control-Max-Age', '86400');
+
         return $response;
     }
 

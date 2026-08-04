@@ -1,5 +1,36 @@
 # 01. PENDAHULUAN & RUANG LINGKUP
 
+| Metadata | Nilai |
+|---|---|
+| Versi | 1.1 |
+| Tanggal | 2026-08-03 |
+| Status | **Normatif** — spesifikasi mengikat, kode wajib menyesuaikan |
+
+## PETA DOKUMEN
+
+| File | Bab | Isi |
+|---|---|---|
+| `01_introduction.md` | 1–9 | Pendahuluan, ruang lingkup, stakeholder, persona, user story |
+| `02_system_architecture.md` | 10–11, 29, 37 | Sitemap, navigasi, folder structure, deployment |
+| `03_requirements.md` | 12–13, 25 | FR, NFR, permission matrix, deviasi diketahui |
+| `04_modules_specification.md` | 14–24, 41 | Spesifikasi tiap modul (Landing, CMS, POS, KDS, Inventory, dst.) |
+| `05_database_and_api.md` | 26–28 | Skema DB, ERD, seeder, spesifikasi endpoint API |
+| `06_design_system.md` | 30–35 | Palet warna, tipografi, spacing, komponen UI |
+| `07_roadmap_and_testing.md` | 38–40 | Roadmap, strategi testing, acceptance criteria |
+| `08_testing_specification.md` | — | Ketentuan testing, critical paths, backlog otomasi |
+
+> **Sumber kebenaran implementasi** (dari §4.3):
+>
+> | Lapisan | Lokasi |
+> |---|---|
+> | API routes | `backend/routes/api.php` (`/api/v1`) |
+> | Schema DB | `backend/database/migrations/` + `app/Models/` |
+> | UI routes | `frontend/src/app/` |
+> | Domain FE | `frontend/src/features/`, `store/`, `shared/` |
+> | Testing | `docs/08_testing_specification.md` |
+
+---
+
 ## 1. PENDAHULUAN
 
 **NEMU Space** adalah sebuah sistem digital terintegrasi untuk coffee shop berskala single branch (satu cabang), yang menggabungkan tiga fungsi utama dalam satu ekosistem:
@@ -61,6 +92,7 @@ Tujuan utama pengembangan sistem NEMU Space adalah:
 | Jenis Bisnis | Single-location coffee shop (fokus 1 lokasi; store branch di FE ada untuk konteks multi-cabang **opsional/eksperimental**) |
 | Platform | Website responsif (mobile first) + PWA |
 | Modul Publik | Landing, menu, promo, galeri, artikel, reservasi (+ status), kontak; events/careers opsional konten |
+| Offline POS | Penjualan tetap berjalan saat jaringan mati; antrian IndexedDB + idempotency (lihat `04` §17.5) |
 | Modul Internal | POS (kasir), KDS (Dapur/Barista), Admin CMS, inventory, procurement (PO/supplier/unit conversion), laporan, owner dashboard |
 | Varian menu | Size/topping (`variant_*`) + snapshot di transaksi POS |
 | Pajak POS | `tax_rate` / `tax_enabled` di settings → `tax_amount` di transaksi |
