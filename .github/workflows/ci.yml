@@ -47,7 +47,11 @@ jobs:
 
       - name: Install Composer dependencies
         working-directory: backend
-        run: composer install --no-progress --no-interaction --prefer-dist --optimize-autoloader
+        run: composer install --no-progress --no-interaction --prefer-dist --optimize-autoloader --no-scripts
+
+      - name: Discover packages
+        working-directory: backend
+        run: php artisan package:discover --ansi
 
       - name: Generate application key
         working-directory: backend
