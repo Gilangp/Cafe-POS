@@ -94,13 +94,13 @@ export function BaristaRecommendsSection({ menus }: { menus?: MenuData[] }) {
           <div className="space-y-3 max-w-2xl">
             <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[#1E3D31] dark:text-[#C89B5C] bg-[#1E3D31]/10 dark:bg-[#C89B5C]/15 px-3.5 py-1.5 rounded-full">
               <Coffee size={14} className="text-[#C89B5C]" />
-              <span>{t.landing.barista.badge}</span>
+              <span>{t.barista.badge}</span>
             </div>
             <h2 className="font-heading text-3xl sm:text-5xl font-bold tracking-tight text-[#1E3D31] dark:text-[#F5EFE6] leading-tight">
-              {t.landing.barista.title}
+              {t.barista.title}
             </h2>
             <p className="text-sm sm:text-base text-[#5C5348] dark:text-[#B8A99A] leading-relaxed">
-              {t.landing.barista.desc}
+              {t.barista.desc}
             </p>
           </div>
 
@@ -134,7 +134,7 @@ export function BaristaRecommendsSection({ menus }: { menus?: MenuData[] }) {
                   />
                   <div className="absolute top-3 left-3 z-10 flex flex-col gap-1.5">
                     <Badge variant="bestseller" className="px-3 py-1 shadow-md text-xs">
-                      {t.landing.barista.bestSeller}
+                      {t.barista.bestSeller}
                     </Badge>
                   </div>
                   {menu.category?.name && (
@@ -150,7 +150,7 @@ export function BaristaRecommendsSection({ menus }: { menus?: MenuData[] }) {
                     {menu.name}
                   </h3>
                   <p className="text-xs text-[#5C5348] dark:text-[#B8A99A] leading-relaxed line-clamp-2 min-h-[36px]">
-                    {menu.description || 'Menu pilihan bernuansa rasa khas NEMU Space dengan standar penyajian tertinggi.'}
+                    {menu.description || t.barista.defaultMenuDesc}
                   </p>
                 </div>
               </div>
@@ -158,7 +158,7 @@ export function BaristaRecommendsSection({ menus }: { menus?: MenuData[] }) {
               {/* Price & Action */}
               <div className="p-5 flex flex-wrap xl:flex-nowrap items-center justify-between gap-3 border-t border-[#E4D9C4]/40 dark:border-[#33413A]/40 mt-auto">
                 <div className="flex flex-col min-w-0">
-                  <span className="text-[10px] uppercase text-[#5C5348] dark:text-[#B8A99A] font-semibold">Harga</span>
+                  <span className="text-[10px] uppercase text-[#5C5348] dark:text-[#B8A99A] font-semibold">{t.barista.price}</span>
                   <span className="font-heading text-lg font-extrabold text-[#1E3D31] dark:text-[#C89B5C] truncate">
                     {formatPrice(menu.price)}
                   </span>

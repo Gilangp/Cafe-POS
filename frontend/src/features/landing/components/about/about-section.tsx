@@ -35,10 +35,10 @@ export function AboutSection({ aboutData }: { aboutData?: AboutUsItem[] }) {
   const defaultAboutData: AboutUsItem[] = [
     {
       id: 1,
-      title: t.landing.about.defaultItem.title,
-      description: t.landing.about.defaultItem.description,
+      title: t.about.defaultItem.title,
+      description: t.about.defaultItem.description,
       image_url: 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=800&q=80',
-      points: t.landing.about.points,
+      points: t.about.points,
     },
   ];
   
@@ -71,7 +71,7 @@ export function AboutSection({ aboutData }: { aboutData?: AboutUsItem[] }) {
               </div>
               <div className="mt-3 text-center">
                 <span className="font-heading text-xs sm:text-sm font-bold text-[#1E3D31] dark:text-[#F5EFE6]">
-                  {t.landing.about.polaroid1}
+                  {t.about.polaroid1}
                 </span>
               </div>
             </div>
@@ -88,7 +88,7 @@ export function AboutSection({ aboutData }: { aboutData?: AboutUsItem[] }) {
               </div>
               <div className="mt-3.5 text-center">
                 <span className="font-heading text-sm sm:text-base font-bold text-[#1E3D31] dark:text-[#F5EFE6]">
-                  {t.landing.about.polaroid2}
+                  {t.about.polaroid2}
                 </span>
               </div>
             </div>
@@ -99,8 +99,8 @@ export function AboutSection({ aboutData }: { aboutData?: AboutUsItem[] }) {
                 <Award size={26} />
               </div>
               <div>
-                <span className="block font-heading text-xl font-bold text-[#C89B5C]">{t.landing.about.badgeTitle}</span>
-                <span className="text-xs uppercase tracking-wider text-white/90">{t.landing.about.badgeDesc}</span>
+                <span className="block font-heading text-xl font-bold text-[#C89B5C]">{t.about.badgeTitle}</span>
+                <span className="text-xs uppercase tracking-wider text-white/90">{t.about.badgeDesc}</span>
               </div>
             </div>
           </div>
@@ -110,7 +110,7 @@ export function AboutSection({ aboutData }: { aboutData?: AboutUsItem[] }) {
             <div className="space-y-3">
               <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[#C89B5C] bg-[#C89B5C]/15 px-3 py-1 rounded-full">
                 <Coffee size={14} />
-                <span>{t.landing.about.badge}</span>
+                <span>{t.about.badge}</span>
               </div>
               <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-[#1E3D31] dark:text-[#F5EFE6] leading-tight">
                 {item.title}
@@ -150,8 +150,8 @@ export function AboutSection({ aboutData }: { aboutData?: AboutUsItem[] }) {
                   </div>
                 </div>
                 <div className="text-xs">
-                  <span className="block font-bold text-[#1E3D31] dark:text-[#F5EFE6]">{t.landing.about.certification}</span>
-                  <span className="text-[#5C5348] dark:text-[#B8A99A]">{t.landing.about.certDesc}</span>
+                  <span className="block font-bold text-[#1E3D31] dark:text-[#F5EFE6]">{t.about.certification}</span>
+                  <span className="text-[#5C5348] dark:text-[#B8A99A]">{t.about.certDesc}</span>
                 </div>
               </div>
             </div>

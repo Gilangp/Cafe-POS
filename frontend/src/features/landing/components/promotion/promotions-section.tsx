@@ -66,13 +66,13 @@ export function PromotionsSection({ promotions }: { promotions?: PromotionData[]
           <div className="space-y-3 max-w-2xl">
             <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[#1E3D31] dark:text-[#C89B5C] bg-[#1E3D31]/10 dark:bg-[#C89B5C]/15 px-3.5 py-1.5 rounded-full">
               <Tag size={14} className="text-[#C89B5C]" />
-              <span>{t.landing.promotions.badge}</span>
+              <span>{t.promotions.badge}</span>
             </div>
             <h2 className="font-heading text-3xl sm:text-5xl font-bold tracking-tight text-[#1E3D31] dark:text-[#F5EFE6] leading-tight">
-              {t.landing.promotions.title}
+              {t.promotions.title}
             </h2>
             <p className="text-sm sm:text-base text-[#5C5348] dark:text-[#B8A99A]">
-              {t.landing.promotions.desc}
+              {t.promotions.desc}
             </p>
           </div>
         </div>
@@ -116,7 +116,7 @@ export function PromotionsSection({ promotions }: { promotions?: PromotionData[]
               <div className="p-6 pt-0 flex items-center justify-between border-t border-[#E4D9C4]/40 dark:border-[#33413A]/40 mt-3 pt-4">
                 <div className="flex items-center gap-1.5 text-xs text-[#5C5348] dark:text-[#B8A99A]">
                   <Calendar size={14} className="text-[#C89B5C]" />
-                  <span>{t.landing.promotions.validUntil} {promo.end_date ? new Date(promo.end_date).toLocaleDateString('id-ID', { month: 'short', year: 'numeric' }) : 'Terbatas'}</span>
+                  <span>{t.promotions.validUntil} {promo.end_date ? new Date(promo.end_date).toLocaleDateString('id-ID', { month: 'short', year: 'numeric' }) : t.promotions.limited}</span>
                 </div>
               </div>
             </Card>

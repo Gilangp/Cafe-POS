@@ -76,16 +76,16 @@ export function TestimonialsSection({ testimonials }: { testimonials?: Testimoni
       const res = await api.post<any>('/testimonials', formData);
       if (res.data?.success) {
         toast({
-          title: locale === 'id' ? 'Berhasil Mengirim Ulasan' : 'Review Submitted Successfully',
-          description: locale === 'id' ? 'Ulasan Anda sedang diproses oleh admin.' : 'Your review is being processed by the admin.',
+          title: t.testimonials.reviewSubmitted,
+          description: t.testimonials.reviewSubmittedDesc,
         });
         setIsOpen(false);
         setFormData({ name: '', role: '', rating: 5, content: '' });
       }
     } catch (err) {
       toast({
-        title: locale === 'id' ? 'Gagal Mengirim Ulasan' : 'Failed to Submit Review',
-        description: locale === 'id' ? 'Silakan coba lagi.' : 'Please try again later.',
+        title: t.testimonials.reviewFailed,
+        description: t.testimonials.reviewFailedDesc,
       });
     } finally {
       setIsSubmitting(false);
@@ -99,45 +99,45 @@ export function TestimonialsSection({ testimonials }: { testimonials?: Testimoni
         <div className="text-center max-w-3xl mx-auto space-y-3 pb-8">
           <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[#1E3D31] dark:text-[#C89B5C] bg-[#1E3D31]/10 dark:bg-[#C89B5C]/15 px-3.5 py-1.5 rounded-full">
             
-            <span>{t.landing.testimonials.badge}</span>
+            <span>{t.testimonials.badge}</span>
           </div>
           <h2 className="font-heading text-3xl sm:text-5xl font-bold tracking-tight text-[#1E3D31] dark:text-[#F5EFE6] leading-tight">
-            {t.landing.testimonials.title}
+            {t.testimonials.title}
           </h2>
           <p className="text-sm sm:text-base text-[#5C5348] dark:text-[#B8A99A]">
-            {t.landing.testimonials.desc}
+            {t.testimonials.desc}
           </p>
         </div>
 
         <div className="flex justify-center pb-16">
           <Button variant="gold" className="rounded-xl px-6 gap-2 font-bold shadow-md h-12" onClick={() => setIsOpen(true)}>
             <PenLine size={18} />
-            <span>{locale === 'id' ? 'Tulis Ulasan Anda' : 'Write a Review'}</span>
+            <span>{t.testimonials.writeReview}</span>
           </Button>
           
           <Dialog
             open={isOpen}
             onOpenChange={setIsOpen}
-            title={locale === 'id' ? 'Bagikan Pengalaman Anda' : 'Share Your Experience'}
-            description={locale === 'id' ? 'Ulasan Anda sangat berarti bagi kami dan pengunjung lainnya.' : 'Your review means a lot to us and other visitors.'}
+            title={t.testimonials.shareExperience}
+            description={t.testimonials.shareExperienceDesc}
             footer={
               <Button type="submit" form="testimonial-form" disabled={isSubmitting} variant="gold" className="w-full h-12 rounded-xl font-bold shadow-md text-base">
                 {isSubmitting ? <Loader2 className="animate-spin mr-2" size={18} /> : null}
-                {locale === 'id' ? 'Kirim Ulasan' : 'Submit Review'}
+                {t.testimonials.submitReview}
               </Button>
             }
           >
             <form id="testimonial-form" onSubmit={handleSubmit} className="space-y-5 pt-2 pb-4">
               <div className="space-y-2.5">
-                <label className="text-sm font-bold text-[#1E3D31] dark:text-[#F5EFE6]">{locale === 'id' ? 'Nama Lengkap' : 'Full Name'}</label>
-                <Input required placeholder="Cth: Budi Santoso" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="rounded-xl h-12 border-[#E4D9C4] dark:border-[#33413A] focus-visible:ring-[#C89B5C] bg-gray-50/50 dark:bg-[#14201A]" />
+                <label className="text-sm font-bold text-[#1E3D31] dark:text-[#F5EFE6]">{t.testimonials.fullName}</label>
+                <Input required placeholder={t.testimonials.fullNamePlaceholder} value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="rounded-xl h-12 border-[#E4D9C4] dark:border-[#33413A] focus-visible:ring-[#C89B5C] bg-gray-50/50 dark:bg-[#14201A]" />
               </div>
               <div className="space-y-2.5">
-                <label className="text-sm font-bold text-[#1E3D31] dark:text-[#F5EFE6]">{locale === 'id' ? 'Pekerjaan/Profesi' : 'Job/Role'}</label>
-                <Input placeholder="Cth: Coffee Enthusiast" value={formData.role} onChange={(e) => setFormData({ ...formData, role: e.target.value })} className="rounded-xl h-12 border-[#E4D9C4] dark:border-[#33413A] focus-visible:ring-[#C89B5C] bg-gray-50/50 dark:bg-[#14201A]" />
+                <label className="text-sm font-bold text-[#1E3D31] dark:text-[#F5EFE6]">{t.testimonials.jobRole}</label>
+                <Input placeholder={t.testimonials.jobRolePlaceholder} value={formData.role} onChange={(e) => setFormData({ ...formData, role: e.target.value })} className="rounded-xl h-12 border-[#E4D9C4] dark:border-[#33413A] focus-visible:ring-[#C89B5C] bg-gray-50/50 dark:bg-[#14201A]" />
               </div>
               <div className="space-y-2.5">
-                <label className="text-sm font-bold text-[#1E3D31] dark:text-[#F5EFE6]">{locale === 'id' ? 'Penilaian (1-5)' : 'Rating (1-5)'}</label>
+                <label className="text-sm font-bold text-[#1E3D31] dark:text-[#F5EFE6]">{t.testimonials.rating}</label>
                 <div className="flex items-center gap-2">
                   {[1, 2, 3, 4, 5].map((star) => (
                     <button
@@ -152,8 +152,8 @@ export function TestimonialsSection({ testimonials }: { testimonials?: Testimoni
                 </div>
               </div>
               <div className="space-y-2.5">
-                <label className="text-sm font-bold text-[#1E3D31] dark:text-[#F5EFE6]">{locale === 'id' ? 'Ulasan Anda' : 'Your Review'}</label>
-                <Textarea required placeholder={locale === 'id' ? 'Tuliskan pengalaman Anda bersama kami...' : 'Write your experience with us...'} rows={4} value={formData.content} onChange={(e) => setFormData({ ...formData, content: e.target.value })} className="rounded-xl border-[#E4D9C4] dark:border-[#33413A] focus-visible:ring-[#C89B5C] bg-gray-50/50 dark:bg-[#14201A] resize-none p-4" />
+                <label className="text-sm font-bold text-[#1E3D31] dark:text-[#F5EFE6]">{t.testimonials.yourReview}</label>
+                <Textarea required placeholder={t.testimonials.yourReviewPlaceholder} rows={4} value={formData.content} onChange={(e) => setFormData({ ...formData, content: e.target.value })} className="rounded-xl border-[#E4D9C4] dark:border-[#33413A] focus-visible:ring-[#C89B5C] bg-gray-50/50 dark:bg-[#14201A] resize-none p-4" />
               </div>
             </form>
           </Dialog>
@@ -161,17 +161,17 @@ export function TestimonialsSection({ testimonials }: { testimonials?: Testimoni
 
         {/* Testimonials Grid (Tilted Postcard Cards) */}
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4 pt-4">
-          {activeTestimonials.map((t, idx) => {
+          {activeTestimonials.map((item, idx) => {
             const rotations = ['rotate-[2deg]', 'rotate-[-3deg]', 'rotate-[4deg]', 'rotate-[-2deg]'];
             const rot = rotations[idx % rotations.length];
 
-            const name = t.customer_name || t.name || 'Pelanggan Setia';
-            const quoteText = t.comment || t.quote || 'Pengalaman kopi yang luar biasa!';
-            const rating = t.rating || 5;
+      const name = item.customer_name || item.name || t.testimonials.defaultRole;
+      const quoteText = item.comment || item.quote || t.testimonials.defaultQuote;
+            const rating = item.rating || 5;
 
             return (
               <div
-                key={t.id}
+                key={item.id}
                 className={cn(
                   'group relative flex flex-col justify-between rounded-3xl bg-white dark:bg-[#1E2B24] p-6 sm:p-7 shadow-xl border border-[#E4D9C4] dark:border-[#33413A] transition-all duration-300 hover:rotate-0 hover:-translate-y-2 hover:shadow-2xl hover:border-[#C89B5C]/60',
                   rot
@@ -200,9 +200,9 @@ export function TestimonialsSection({ testimonials }: { testimonials?: Testimoni
                 <div className="mt-8 pt-4 border-t border-[#E4D9C4]/60 dark:border-[#33413A] flex items-center justify-between">
                   <div>
                     <h4 className="font-heading font-bold text-sm text-[#1E3D31] dark:text-[#F5EFE6]">{name}</h4>
-                    {t.role && (
+                    {item.role && (
                       <span className="text-[11px] uppercase tracking-wider text-[#5C5348] dark:text-[#B8A99A] font-medium">
-                        {t.role}
+                        {item.role}
                       </span>
                     )}
                   </div>

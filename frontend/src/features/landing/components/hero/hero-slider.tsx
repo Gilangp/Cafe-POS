@@ -45,7 +45,7 @@ const defaultBanners: HeroBannerData[] = [
 
 export function HeroSlider({ banners }: { banners?: HeroBannerData[] }) {
   const { t } = useLanguage();
-  const activeBanners: HeroBannerData[] = banners && banners.length > 0 ? banners : t.landing.hero.defaultBanners.map((b, i) => ({ id: i + 1, ...b })) as HeroBannerData[];
+  const activeBanners: HeroBannerData[] = banners && banners.length > 0 ? banners : t.hero.defaultBanners.map((b, i) => ({ id: i + 1, ...b })) as HeroBannerData[];
   const [currentIndex, setCurrentIndex] = React.useState(0);
 
   React.useEffect(() => {
@@ -90,7 +90,7 @@ export function HeroSlider({ banners }: { banners?: HeroBannerData[] }) {
             <div className="relative z-20 max-w-7xl mx-auto h-full px-4 sm:px-6 lg:px-8 flex flex-col justify-center items-start pt-16 sm:pt-20">
               <div className="max-w-3xl space-y-6 animate-in fade-in slide-in-from-bottom-6 duration-700">
                 <div className="inline-flex items-center gap-2 rounded-full border border-[#C89B5C]/40 bg-[#C89B5C]/15 px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-[#C89B5C] backdrop-blur-md">
-                  <span>{t.landing.hero.badge}</span>
+                  <span>{t.hero.badge}</span>
                 </div>
 
                 <h1 className="font-heading text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-white leading-[1.08] drop-shadow-md">
@@ -118,7 +118,7 @@ export function HeroSlider({ banners }: { banners?: HeroBannerData[] }) {
                       className="h-14 px-8 rounded-2xl text-base font-semibold border-white/30 text-white hover:bg-white/10 hover:border-white gap-2 backdrop-blur-sm"
                     >
                       <Coffee className="h-5 w-5 text-[#C89B5C]" />
-                      <span>{t.landing.hero.btnReserve || 'Reservasi Meja'}</span>
+                      <span>{t.hero.btnReserve || 'Reservasi Meja'}</span>
                     </Button>
                   </Link>
                 </div>
@@ -133,14 +133,14 @@ export function HeroSlider({ banners }: { banners?: HeroBannerData[] }) {
         <div className="absolute right-6 sm:right-12 bottom-12 z-30 flex items-center gap-3">
           <button
             onClick={goToPrev}
-            aria-label="Banner sebelumnya"
+            aria-label={t.hero.prevBanner}
             className="flex h-12 w-12 items-center justify-center rounded-full border border-white/20 bg-black/30 text-white backdrop-blur-md transition-all hover:border-[#C89B5C] hover:bg-[#C89B5C] hover:text-[#1E3D31] focus:outline-none focus:ring-2 focus:ring-[#C89B5C]"
           >
             <ChevronLeft size={22} />
           </button>
           <button
             onClick={goToNext}
-            aria-label="Banner selanjutnya"
+            aria-label={t.hero.nextBanner}
             className="flex h-12 w-12 items-center justify-center rounded-full border border-white/20 bg-black/30 text-white backdrop-blur-md transition-all hover:border-[#C89B5C] hover:bg-[#C89B5C] hover:text-[#1E3D31] focus:outline-none focus:ring-2 focus:ring-[#C89B5C]"
           >
             <ChevronRight size={22} />
@@ -155,7 +155,7 @@ export function HeroSlider({ banners }: { banners?: HeroBannerData[] }) {
             <button
               key={idx}
               onClick={() => setCurrentIndex(idx)}
-              aria-label={`Pindah ke slide ${idx + 1}`}
+              aria-label={`${t.hero.goToSlide} ${idx + 1}`}
               className={cn(
                 'h-2 rounded-full transition-all duration-300',
                 idx === currentIndex ? 'w-10 bg-[#C89B5C]' : 'w-2 bg-white/40 hover:bg-white/80'

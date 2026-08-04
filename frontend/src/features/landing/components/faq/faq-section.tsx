@@ -11,37 +11,9 @@ export interface FaqData {
   answer: string;
 }
 
-const defaultFaqs: FaqData[] = [
-  {
-    id: 1,
-    question: 'Apa yang membedakan biji kopi specialty di NEMU Space?',
-    answer: 'Seluruh biji kopi kami dikurasi langsung oleh Q-Grader bersertifikasi dari perkebunan single-origin terbaik nusantara (Aceh Gayo, Kintamani, Toraja, hingga Ijen). Kami melakukan sangrai dengan profil pemanggangan presisi untuk menonjolkan aroma dan karakter alami dari setiap origin.',
-  },
-  {
-    id: 2,
-    question: 'Apakah saya bisa melakukan reservasi meja untuk keperluan meeting atau acara khusus?',
-    answer: 'Tentu! Anda dapat memesan meja melalui menu "Reservasi" di website kami. Untuk reservasi rombongan (>15 orang), ulang tahun, atau penyewaan area khusus (private area / workshop), tim admin kami akan langsung mengonfirmasi dan menyiapkan tata letak meja sesuai kebutuhan Anda.',
-  },
-  {
-    id: 3,
-    question: 'Bagaimana cara memeriksa status reservasi yang sudah diajukan?',
-    answer: 'Anda dapat langsung memeriksa status reservasi tanpa perlu mendaftar akun, yaitu dengan membuka menu "Reservasi" lalu pilih tab "Cek Status Reservasi" dan memasukkan nomor WhatsApp serta tanggal reservasi yang Anda daftarkan.',
-  },
-  {
-    id: 4,
-    question: 'Apakah NEMU Space menyediakan fasilitas Wi-Fi dan stopkontak untuk bekerja (WFC)?',
-    answer: 'Ya, kami menyediakan koneksi internet serat optik berkecepatan tinggi (100+ Mbps) serta stopkontak yang terdistribusi di setiap meja, baik di area indoor ber-AC maupun semi-outdoor lounge.',
-  },
-  {
-    id: 5,
-    question: 'Apakah tersedia opsi susu nabati (plant-based milk) dan menu non-kopi?',
-    answer: 'Sangat lengkap! Kami menyediakan opsi Oat Milk dan Almond Milk untuk seluruh varian minuman berbasis espresso. Kami juga memiliki koleksi Artisan Tea, Matcha Ceremonial Grade, Pure Chocolate, dan berbagai hidangan pastry segar setiap hari.',
-  },
-];
-
 export function FaqSection({ faqs }: { faqs?: FaqData[] }) {
   const { t } = useLanguage();
-  const activeFaqs = faqs && faqs.length > 0 ? faqs : defaultFaqs;
+  const activeFaqs = faqs && faqs.length > 0 ? faqs : t.faq.defaultFaqs;
   const [openIndex, setOpenIndex] = React.useState<number | null>(0);
 
   const toggleAccordion = (index: number) => {
@@ -54,13 +26,13 @@ export function FaqSection({ faqs }: { faqs?: FaqData[] }) {
         {/* Title Header */}
         <div className="text-center space-y-3 pb-16">
           <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[#1E3D31] dark:text-[#C89B5C] bg-[#1E3D31]/10 dark:bg-[#C89B5C]/15 px-3.5 py-1.5 rounded-full">
-            <span>{t.landing.faq.badge}</span>
+            <span>{t.faq.badge}</span>
           </div>
           <h2 className="font-heading text-3xl sm:text-5xl font-bold tracking-tight text-[#1E3D31] dark:text-[#F5EFE6] leading-tight">
-            {t.landing.faq.title}
+            {t.faq.title}
           </h2>
           <p className="text-sm sm:text-base text-[#5C5348] dark:text-[#B8A99A]">
-            {t.landing.faq.desc}
+            {t.faq.desc}
           </p>
         </div>
 

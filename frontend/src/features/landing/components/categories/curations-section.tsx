@@ -53,7 +53,7 @@ const defaultCategories: CategoryData[] = [
 
 export function CurationsSection({ categories }: { categories?: CategoryData[] }) {
   const { t } = useLanguage();
-  const defaultCategories: CategoryData[] = t.landing.curations.defaultCats.map((c, i) => ({
+  const defaultCategories: CategoryData[] = t.curations.defaultCats.map((c, i) => ({
     id: i + 1,
     name: c.name,
     description: c.desc,
@@ -80,13 +80,13 @@ export function CurationsSection({ categories }: { categories?: CategoryData[] }
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-16 border-b border-white/10">
           <div className="space-y-3 max-w-2xl">
             <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[#C89B5C] bg-[#C89B5C]/15 px-3.5 py-1.5 rounded-full backdrop-blur-md">
-              <span>{t.landing.curations.badge}</span>
+              <span>{t.curations.badge}</span>
             </div>
             <h2 className="font-heading text-3xl sm:text-5xl font-extrabold tracking-tight text-white leading-tight">
-              {t.landing.curations.title}
+              {t.curations.title}
             </h2>
             <p className="text-sm sm:text-base text-[#FAF3E7]/80 leading-relaxed font-light">
-              {t.landing.curations.desc}
+              {t.curations.desc}
             </p>
           </div>
 
@@ -94,7 +94,7 @@ export function CurationsSection({ categories }: { categories?: CategoryData[] }
             href="/menu"
             className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#C89B5C] hover:text-white transition-colors group"
           >
-            <span>{t.landing.curations.catalogBtn}</span>
+            <span>{t.curations.catalogBtn}</span>
             <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
           </Link>
         </div>
@@ -139,7 +139,7 @@ export function CurationsSection({ categories }: { categories?: CategoryData[] }
 
                   {cat.menus_count !== undefined && (
                     <span className="absolute bottom-2 right-4 bg-[#C89B5C] text-[#1E3D31] text-[11px] font-bold px-3 py-1 rounded-full shadow-lg">
-                      {cat.menus_count} {t.landing.curations.menuCount}
+                      {cat.menus_count} {t.curations.menuCount}
                     </span>
                   )}
                 </div>

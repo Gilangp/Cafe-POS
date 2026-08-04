@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { Inter, Poppins, Playfair_Display } from 'next/font/google';
-import './globals.css';
+import '@/styles/globals.css';
 import { AppProviders } from '@/shared/providers/app-providers';
 import { PwaRegistrar } from '@/shared/lib/pwa-registrar';
 

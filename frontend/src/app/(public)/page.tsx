@@ -9,6 +9,11 @@ import { BaristaRecommendsSection, type MenuData } from '@/features/landing/comp
 import { PromotionsSection, type PromotionData } from '@/features/landing/components/promotion/promotions-section';
 import { TestimonialsSection, type TestimonialData } from '@/features/landing/components/testimonial/testimonials-section';
 import { FaqSection, type FaqData } from '@/features/landing/components/faq/faq-section';
+import { ArticlesSection } from '@/features/landing/components/article/articles-section';
+import { GallerySection } from '@/features/landing/components/gallery/gallery-section';
+import { ReservationSection } from '@/features/landing/components/reservation/reservation-section';
+import { LocationSection } from '@/features/landing/components/location/location-section';
+import { ContactSection } from '@/features/landing/components/contact/contact-section';
 import api from '@/shared/api/axios';
 
 export default function LandingPage() {
@@ -20,45 +25,35 @@ export default function LandingPage() {
     testimonials?: TestimonialData[];
     promotions?: PromotionData[];
     categories?: CategoryData[];
+    articles?: any[];
+    galleries?: any[];
+    location?: any;
+    contact?: any;
+    reservation?: any;
   }>({});
   const [loading, setLoading] = React.useState(true);
 
   React.useEffect(() => {
     async function fetchLandingData() {
       try {
-        const [landingRes, promoRes, catRes] = await Promise.allSettled([
-          api.fetch<any>('/landing-page'),
-          api.fetch<any>('/promotions'),
-          api.fetch<any>('/categories'),
-        ]);
+        const [response] = await Promise.allSettled([api.fetch<any>('/landing-page')]);
 
         const data: typeof landingData = {};
 
-        if (landingRes.status === 'fulfilled' && (landingRes.value as any)?.success) {
-          const resData = (landingRes.value as any).data || {};
-          if (resData.hero_banners && resData.hero_banners.length > 0) {
-            data.hero_banners = resData.hero_banners;
-          }
-          if (resData.about_us && resData.about_us.length > 0) {
-            data.about_us = resData.about_us;
-          }
-          if (resData.best_seller_menus && resData.best_seller_menus.length > 0) {
-            data.best_seller_menus = resData.best_seller_menus;
-          }
-          if (resData.faqs && resData.faqs.length > 0) {
-            data.faqs = resData.faqs;
-          }
-          if (resData.testimonials && resData.testimonials.length > 0) {
-            data.testimonials = resData.testimonials;
-          }
-        }
-
-        if (promoRes.status === 'fulfilled' && (promoRes.value as any)?.success && (promoRes.value as any).data?.length > 0) {
-          data.promotions = (promoRes.value as any).data;
-        }
-
-        if (catRes.status === 'fulfilled' && (catRes.value as any)?.success && (catRes.value as any).data?.length > 0) {
-          data.categories = (catRes.value as any).data;
+        if (response.status === 'fulfilled' && (response.value as any)?.success) {
+          const resData = (response.value as any).data || {};
+          data.hero_banners = resData.hero_banners;
+          data.about_us = resData.about_us;
+          data.best_seller_menus = resData.best_seller_menus;
+          data.faqs = resData.faqs;
+          data.testimonials = resData.testimonials;
+          data.promotions = resData.promotions;
+          data.categories = resData.categories;
+          data.articles = resData.articles;
+          data.galleries = resData.galleries;
+          data.location = resData.settings;
+          data.contact = resData.settings;
+          data.reservation = resData.reservations;
         }
 
         setLandingData(data);
@@ -95,7 +90,22 @@ export default function LandingPage() {
 
         {/* 7. FAQ Accordion */}
         <FaqSection faqs={landingData.faqs} />
-      </div>
+
+        {/* 8. Articles Section */}
+        <ArticlesSection articles={landingData.articles} />
+
+        {/* 9. Gallery Section */}
+        <GallerySection galleries={landingData.galleries} />
+
+        {/* 10. Reservation Section */}
+        <ReservationSection reservation={landingData.reservation} />
+
+        {/* 11. Location Section */}
+        <LocationSection location={landingData.location} />
+
+        {/* 12. Contact Section */}
+        <ContactSection contact={landingData.contact} />
+       </div>
     </PublicLayout>
   );
 }
