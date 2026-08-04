@@ -32,7 +32,7 @@ return new class extends Migration
             $table->string('slug', 180)->unique();
             $table->text('description')->nullable();
             $table->decimal('price', 12, 2);
-            $table->string('image', 255);
+            $table->string('image', 255)->nullable();
             $table->enum('status', ['tersedia', 'tidak_tersedia'])->default('tersedia');
             $table->boolean('is_best_seller')->default(false);
             $table->softDeletes();
@@ -51,7 +51,7 @@ return new class extends Migration
             $table->decimal('value', 12, 2)->default(0);
             $table->date('start_date')->nullable();
             $table->date('end_date')->nullable();
-            $table->enum('status', ['active', 'inactive'])->default('active');
+            $table->enum('status', ['aktif', 'tidak_aktif'])->default('aktif');
             $table->timestamps();
 
             $table->index('status');

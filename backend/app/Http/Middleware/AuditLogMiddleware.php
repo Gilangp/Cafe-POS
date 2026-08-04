@@ -20,9 +20,9 @@ class AuditLogMiddleware
         $response = $next($request);
 
         // Only log mutation requests performed by logged-in users
-        if (in_array(strtoupper($request->method()), ['POST', 'PUT', 'PATCH', 'DELETE']) && $request->user()) {
+        if (in_array(strtoupper($request->method()), ['POST', 'PUT', 'PATCH', 'DELETE']) && auth()->check()) {
             try {
-                $user = $request->user();
+                $user = auth()->user();
                 $action = strtoupper($request->method()) . ' ' . $request->path();
                 
                 // Extract clean module name from path segments (e.g., /api/v1/pos/transactions -> pos/transactions)

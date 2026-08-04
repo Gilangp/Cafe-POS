@@ -53,7 +53,7 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->string('title', 150)->nullable();
             $table->text('subtitle')->nullable();
-            $table->string('image', 255);
+            $table->string('image', 255)->nullable();
             $table->string('button_text', 50)->nullable();
             $table->string('button_link', 255)->nullable();
             $table->integer('display_order')->default(0);
@@ -71,6 +71,8 @@ return new class extends Migration
             $table->text('content');
             $table->string('image', 255)->nullable();
             $table->json('highlights')->nullable();
+            $table->boolean('is_active')->default(true);
+            $table->integer('display_order')->default(0);
             $table->timestamps();
         });
 

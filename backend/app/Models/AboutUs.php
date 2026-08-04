@@ -14,9 +14,12 @@ class AboutUs extends Model
         'content',
         'image',
         'highlights',
+        'is_active',
+        'display_order',
     ];
 
     protected $casts = [
         'highlights' => 'array',
+        'is_active' => 'boolean',
     ];
 }

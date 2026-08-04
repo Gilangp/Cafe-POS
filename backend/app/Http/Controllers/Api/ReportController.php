@@ -157,7 +157,7 @@ class ReportController extends Controller
 
         $totalReservations = (clone $query)->count();
         $confirmedCount = (clone $query)->whereIn('status', ['dikonfirmasi', 'selesai'])->count();
-        $totalGuests = (clone $query)->whereIn('status', ['dikonfirmasi', 'selesai'])->sum('guest_count');
+        $totalGuests = (clone $query)->whereIn('status', ['dikonfirmasi', 'selesai'])->sum('party_size');
 
         return response()->json([
             'success' => true,

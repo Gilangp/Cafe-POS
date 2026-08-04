@@ -154,15 +154,24 @@ Route::prefix('v1')->group(function () {
             Route::get('/transactions', [App\Http\Controllers\Api\PosController::class, 'index']);
             Route::post('/transactions', [App\Http\Controllers\Api\PosController::class, 'createOrder']);
             Route::get('/transactions/{id}', [App\Http\Controllers\Api\PosController::class, 'show']);
-            Route::patch('/transactions/{id}/void', [App\Http\Controllers\Api\PosController::class, 'voidOrder']);
             Route::get('/summary', [App\Http\Controllers\Api\PosController::class, 'summary']);
         });
 
+        // Void transaksi — hanya Admin/Owner (GAP-RBAC-01)
+        Route::middleware(['role:Admin,Owner', 'audit'])->prefix('pos')->group(function () {
+            Route::patch('/transactions/{id}/void', [App\Http\Controllers\Api\PosController::class, 'voidOrder']);
+        });
+
         // ─── KDS / Kitchen Display Routes (FASE 4.2) ─────────────────
-        Route::middleware(['role:Dapur_Barista,Kasir,Admin,Owner'])->group(function () {
+        // Read-only untuk Kasir, Dapur/Barista, Admin, Owner (GAP-RBAC-02)
+        Route::middleware(['role:Kasir,Dapur_Barista,Admin,Owner'])->prefix('kds')->group(function () {
+            Route::get('/tickets', [App\Http\Controllers\Api\KdsController::class, 'activeTickets']);
+            Route::get('/tickets/{id}', [App\Http\Controllers\Api\KdsController::class, 'show']);
+        });
+
+        // Write access KDS — hanya Dapur/Barista, Admin, Owner (GAP-RBAC-02)
+        Route::middleware(['role:Dapur_Barista,Admin,Owner'])->group(function () {
             Route::prefix('kds')->group(function () {
-                Route::get('/tickets', [App\Http\Controllers\Api\KdsController::class, 'activeTickets']);
-                Route::get('/tickets/{id}', [App\Http\Controllers\Api\KdsController::class, 'show']);
                 Route::patch('/tickets/{id}/status', [App\Http\Controllers\Api\KdsController::class, 'updateStatus']);
                 Route::patch('/tickets/{ticketId}/items/{itemId}/status', [App\Http\Controllers\Api\KdsController::class, 'updateItemStatus']);
             });

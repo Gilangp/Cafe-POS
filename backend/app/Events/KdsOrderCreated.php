@@ -2,7 +2,7 @@
 
 namespace App\Events;
 
-use App\Models\Order;
+use App\Models\OrderTicket;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
@@ -14,14 +14,14 @@ class KdsOrderCreated implements ShouldBroadcastNow
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public function __construct(
-        public Order $order
+        public OrderTicket $ticket
     ) {
     }
 
     public function broadcastOn(): array
     {
         return [
-            new Channel('branch.' . $this->order->branch_id . '.kitchen'),
+            new Channel('kitchen'),
         ];
     }
 
@@ -33,25 +33,23 @@ class KdsOrderCreated implements ShouldBroadcastNow
     public function broadcastWith(): array
     {
         return [
-            'id' => $this->order->id,
-            'order_number' => $this->order->order_number,
-            'branch_id' => $this->order->branch_id,
-            'customer_name' => $this->order->customer_name,
-            'table_number' => $this->order->table_number,
-            'order_type' => $this->order->order_type,
-            'status' => $this->order->status,
-            'kitchen_status' => $this->order->kitchen_status ?? 'PENDING',
-            'created_at' => $this->order->created_at?->toIso8601String() ?? now()->toIso8601String(),
-            'items' => $this->order->items->map(function ($item) {
-                return [
-                    'id' => $item->id,
-                    'product_id' => $item->product_id,
-                    'product_name' => $item->product?->name ?? 'Unknown Item',
-                    'quantity' => $item->quantity,
-                    'notes' => $item->notes,
-                    'modifiers' => $item->modifiers,
-                ];
-            })->toArray(),
+            'id' => $this->ticket->id,
+            'ticket_number' => $this->ticket->ticket_number,
+            'status' => $this->ticket->status,
+            'received_at' => $this->ticket->received_at?->toIso8601String(),
+            'transaction' => [
+                'invoice_number' => $this->ticket->transaction?->invoice_number,
+                'order_type' => $this->ticket->transaction?->order_type,
+                'table_number' => $this->ticket->transaction?->table_number,
+                'customer_name' => $this->ticket->transaction?->customer_name,
+            ],
+            'items' => $this->ticket->items->map(fn ($item) => [
+                'id' => $item->id,
+                'menu_name_snapshot' => $item->menu_name_snapshot,
+                'quantity' => $item->quantity,
+                'note' => $item->note,
+                'item_status' => $item->item_status,
+            ])->toArray(),
         ];
     }
 }

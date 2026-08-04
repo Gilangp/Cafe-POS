@@ -14,8 +14,10 @@ use App\Models\Transaction;
 use App\Models\TransactionItem;
 use App\Models\TransactionItemVariant;
 use App\Models\VariantOption;
+use App\Events\KdsOrderCreated;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 
 class PosController extends Controller
@@ -107,6 +109,7 @@ class PosController extends Controller
     public function createOrder(Request $request): JsonResponse
     {
         $validated = $request->validate([
+            'idempotency_key' => 'nullable|string|max:100',
             'payment_method' => 'required|in:tunai,qris,kartu',
             'discount' => 'nullable|numeric|min:0',
             'order_type' => 'required|in:dine_in,takeaway',
@@ -120,13 +123,39 @@ class PosController extends Controller
             'items.*.variants.*' => 'required|uuid|exists:variant_options,id',
         ]);
 
-        return DB::transaction(function () use ($validated, $request) {
-            $subtotal = 0;
-            $itemsData = [];
+        // Idempotency (CP-06, NFR-12): transaksi dengan key yang sama dikembalikan
+        // hasil sebelumnya, tidak diproses ulang (mencegah double-charge/double-stok).
+        if (!empty($validated['idempotency_key'])) {
+            $existing = Transaction::where('idempotency_key', $validated['idempotency_key'])->first();
+            if ($existing) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Transaksi sudah pernah diproses sebelumnya.',
+                    'data' => $existing->load(['items', 'orderTicket.items', 'cashier:id,name']),
+                    'meta' => null,
+                ], 201);
+            }
+        }
 
-            // Pre-fetch all requested menus and variants
-            $menuIds = collect($validated['items'])->pluck('menu_id')->unique();
-            $menus = Menu::with('menuIngredients')->whereIn('id', $menuIds)->get()->keyBy('id');
+        try {
+            return DB::transaction(function () use ($validated, $request) {
+                $subtotal = 0;
+                $itemsData = [];
+
+                // Pre-fetch all requested menus and variants
+                $menuIds = collect($validated['items'])->pluck('menu_id')->unique();
+                $menus = Menu::with('menuIngredients')->whereIn('id', $menuIds)->get()->keyBy('id');
+
+            // Menu berstatus "Tidak Tersedia" tidak boleh masuk transaksi (04 §17.3 poin 1)
+            $unavailable = $menus->filter(fn ($menu) => $menu->status !== 'tersedia');
+            if ($unavailable->isNotEmpty()) {
+                abort(response()->json([
+                    'success' => false,
+                    'message' => 'Menu berikut sedang tidak tersedia: ' . $unavailable->pluck('name')->implode(', '),
+                    'data' => null,
+                    'meta' => null,
+                ], 422));
+            }
 
             $variantIds = [];
             foreach ($validated['items'] as $itemRequest) {
@@ -179,6 +208,7 @@ class PosController extends Controller
 
             $transaction = Transaction::create([
                 'invoice_number' => $invoiceNumber,
+                'idempotency_key' => $validated['idempotency_key'] ?? null,
                 'cashier_id'     => $request->user()?->id,
                 'subtotal'       => $subtotal,
                 'discount'       => $discount,
@@ -277,13 +307,31 @@ class PosController extends Controller
                 }
             }
 
+            event(new KdsOrderCreated($ticket->load('items', 'transaction')));
+
             return response()->json([
                 'success' => true,
                 'message' => 'Transaksi POS berhasil diproses dan tiket dapur telah diterbitkan.',
                 'data' => $transaction->load(['items', 'orderTicket.items', 'cashier:id,name']),
                 'meta' => null,
             ], 201);
-        });
+            });
+        } catch (QueryException $e) {
+            // Race condition: dua request bersamaan dengan idempotency_key sama
+            // lolos check-first, DB unique constraint menolak salah satu (kode 23000).
+            if ($e->getCode() === '23000' && !empty($validated['idempotency_key'])) {
+                $existing = Transaction::where('idempotency_key', $validated['idempotency_key'])->first();
+                if ($existing) {
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'Transaksi sudah pernah diproses sebelumnya.',
+                        'data' => $existing->load(['items', 'orderTicket.items', 'cashier:id,name']),
+                        'meta' => null,
+                    ], 201);
+                }
+            }
+            throw $e;
+        }
     }
 
     /**
@@ -297,7 +345,7 @@ class PosController extends Controller
 
         $transaction = Transaction::with(['items.variants.variantOption', 'orderTicket'])->findOrFail($id);
 
-        if ($transaction->status === 'dibatalkan') {
+        if ($transaction->status === 'void') {
             return response()->json([
                 'success' => false,
                 'message' => 'Transaksi ini sudah dibatalkan sebelumnya.',
@@ -307,7 +355,7 @@ class PosController extends Controller
         }
 
         return DB::transaction(function () use ($transaction, $validated, $request) {
-            $transaction->status = 'dibatalkan';
+            $transaction->status = 'void';
             $transaction->void_reason = $validated['void_reason'];
             $transaction->save();
 
@@ -389,7 +437,7 @@ class PosController extends Controller
         $transactions = Transaction::whereDate('created_at', $date)->get();
 
         $completedTransactions = $transactions->where('status', 'selesai');
-        $cancelledTransactions = $transactions->where('status', 'dibatalkan');
+        $cancelledTransactions = $transactions->where('status', 'void');
 
         return response()->json([
             'success' => true,
