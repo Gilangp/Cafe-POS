@@ -350,7 +350,7 @@ export default function ReservationsPage() {
                       ) : (
                         <p className="font-bold text-primary/40 dark:text-cream-400/40 italic">Belum dialokasikan</p>
                       )}
-                      {r.notes && <p className="text-[11px] text-primary/50 dark:text-cream-400/50 truncate mt-0.5">"{r.notes}"</p>}
+                      {r.notes && <p className="text-[11px] text-primary/50 dark:text-cream-400/50 truncate mt-0.5">&ldquo;{r.notes}&rdquo;</p>}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className={`rounded-full px-3 py-1 text-[10px] font-bold border ${statusStyle[r.status] || ''}`}>
@@ -473,7 +473,7 @@ export default function ReservationsPage() {
                   </div>
                   {confirmingRes.notes && (
                     <div className="pt-2 mt-2 border-t border-black/5 dark:border-white/5">
-                      <p className="text-xs text-primary/50 dark:text-cream-400/50 italic">"{confirmingRes.notes}"</p>
+                      <p className="text-xs text-primary/50 dark:text-cream-400/50 italic">&ldquo;{confirmingRes.notes}&rdquo;</p>
                     </div>
                   )}
                 </div>
