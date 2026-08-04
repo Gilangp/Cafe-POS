@@ -4,78 +4,75 @@
 
 :root {
   --font-inter: 'Inter', sans-serif;
-  --font-poppins: 'Poppins', sans-serif;
-  --font-playfair: 'Playfair Display', serif;
+  --font-outfit: 'Outfit', sans-serif;
 }
 
 @layer base {
   :root {
-    /* NEMU Space Light Theme (Table 30.2) */
-    --background: 36 60% 95%; /* #FAF3E7 Ivory Cream */
-    --foreground: 154 34% 18%; /* #1E3D31 Deep Forest Green */
+    /* Design System (06_design_system.md) */
+    --background: 40 29% 96%; /* #F8F6F2 */
+    --foreground: 150 19% 13%; /* #1A2620 */
     
-    --card: 0 0% 100%; /* #FFFFFF Surface */
-    --card-foreground: 154 34% 18%;
+    --card: 0 0% 100%; /* #FFFFFF */
+    --card-foreground: 150 19% 13%; /* #1A2620 */
     
     --popover: 0 0% 100%;
-    --popover-foreground: 154 34% 18%;
+    --popover-foreground: 150 19% 13%;
     
-    --primary: 154 34% 18%; /* #1E3D31 Deep Forest Green */
-    --primary-hover: 154 37% 14%; /* #163026 Darker Forest Green */
-    --primary-foreground: 0 0% 100%; /* White */
+    --primary: 156 34% 18%; /* #1E3D31 */
+    --primary-foreground: 40 29% 96%; /* #F8F6F2 */
     
-    --secondary: 25 33% 33%; /* #6F4E37 Roasted Brown */
-    --secondary-foreground: 0 0% 100%;
+    --secondary: 156 34% 18%; /* #1E3D31 */
+    --secondary-foreground: 40 29% 96%;
     
-    --accent: 35 51% 57%; /* #C89B5C Warm Gold */
-    --accent-foreground: 154 34% 18%;
+    --accent: 35 51% 57%; /* #C89B5C */
+    --accent-foreground: 156 34% 18%; /* #1E3D31 */
     
-    --muted: 38 42% 90%; /* #F1E9DA Beige Kertas (Surface Muted) */
-    --muted-foreground: 29 12% 32%; /* #5C5348 Warm Grey Brown */
+    --muted: 39 35% 83%; /* #E4D9C4 */
+    --muted-foreground: 150 19% 13%;
     
-    --border: 38 35% 83%; /* #E4D9C4 */
-    --input: 38 35% 83%;
-    --ring: 154 34% 18%;
+    --border: 39 35% 83%; /* #E4D9C4 */
+    --input: 39 35% 83%;
+    --ring: 35 51% 57%; /* #C89B5C */
     
-    --success: 120 23% 39%; /* #4C7A4C */
-    --warning: 41 57% 51%; /* #C79A3C */
-    --destructive: 2 55% 45%; /* #B23A34 */
+    --success: 142 71% 45%; /* #22c55e */
+    --success-foreground: 0 0% 100%;
+    --destructive: 0 84% 60%; /* #ef4444 */
     --destructive-foreground: 0 0% 100%;
     
-    --radius: 0.75rem; /* --radius-md 12px */
+    --radius: 0.5rem; /* rounded-lg for default inputs/buttons. 1rem for 2xl */
   }
 
   .dark {
-    /* NEMU Space Dark Theme (Table 30.2) */
-    --background: 150 23% 10%; /* #14201A Deep Pine Black-Green */
-    --foreground: 36 43% 93%; /* #F5EFE6 */
+    /* Auto-mapped for dark mode but keeping close to design system */
+    --background: 150 19% 13%; /* #1A2620 */
+    --foreground: 40 29% 96%; /* #F8F6F2 */
     
-    --card: 150 18% 14%; /* #1E2B24 Surface Dark */
-    --card-foreground: 36 43% 93%;
+    --card: 156 34% 18%; /* #1E3D31 */
+    --card-foreground: 40 29% 96%;
     
-    --popover: 150 18% 14%;
-    --popover-foreground: 36 43% 93%;
+    --popover: 156 34% 18%;
+    --popover-foreground: 40 29% 96%;
     
-    --primary: 36 43% 85%; /* #E8DCC8 Warm Cream */
-    --primary-hover: 36 50% 90%; /* #F2E9DA Lighter Cream */
-    --primary-foreground: 150 23% 10%;
+    --primary: 40 29% 96%; /* #F8F6F2 */
+    --primary-foreground: 156 34% 18%; /* #1E3D31 */
     
-    --secondary: 28 28% 52%; /* #A9825F Muted Caramel */
-    --secondary-foreground: 150 23% 10%;
+    --secondary: 39 35% 83%;
+    --secondary-foreground: 156 34% 18%;
     
-    --accent: 39 56% 65%; /* #D9B675 Soft Gold */
-    --accent-foreground: 150 23% 10%;
+    --accent: 35 51% 57%; /* #C89B5C */
+    --accent-foreground: 156 34% 18%;
     
-    --muted: 150 14% 18%; /* #26332C */
-    --muted-foreground: 28 17% 66%; /* #B8A99A */
+    --muted: 156 34% 18%;
+    --muted-foreground: 39 35% 83%;
     
-    --border: 150 12% 23%; /* #33413A */
-    --input: 150 12% 23%;
-    --ring: 39 56% 65%;
+    --border: 156 34% 18%;
+    --input: 156 34% 18%;
+    --ring: 35 51% 57%;
     
-    --success: 120 23% 55%; /* #6FA96F */
-    --warning: 41 68% 62%; /* #E0B75C */
-    --destructive: 4 61% 62%; /* #D96A63 */
+    --success: 142 71% 45%;
+    --success-foreground: 0 0% 100%;
+    --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
   }
 
@@ -89,7 +86,7 @@
   }
 
   body {
-    @apply bg-[#FAF3E7] dark:bg-[#14201A] text-[#1E3D31] dark:text-[#F5EFE6] font-sans antialiased;
+    @apply bg-background text-foreground font-body antialiased;
     font-feature-settings: 'rlig' 1, 'calt' 1;
   }
 
@@ -105,38 +102,34 @@
 
   /* NEMU Space Primary CTA Button */
   .btn-primary {
-    @apply inline-flex h-12 items-center justify-center rounded-xl bg-[#1E3D31] px-8 text-[14px] font-semibold tracking-wide text-white transition-all duration-300 hover:bg-[#163026] hover:scale-105 shadow-md active:scale-95;
+    @apply inline-flex h-10 items-center justify-center rounded-lg bg-accent px-4 py-2 text-[14px] font-bold tracking-wide text-primary transition-all duration-300 hover:bg-accent/90 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed;
   }
 
   /* NEMU Space Secondary CTA Button */
   .btn-secondary {
-    @apply inline-flex h-12 items-center justify-center rounded-xl border border-[#1E3D31]/30 bg-transparent px-8 text-[14px] font-semibold tracking-wide text-[#1E3D31] transition-all duration-300 hover:border-[#1E3D31] hover:bg-[#1E3D31]/10 active:scale-95;
-  }
-
-  .btn-gold {
-    @apply inline-flex h-12 items-center justify-center rounded-xl bg-[#C89B5C] px-8 text-[14px] font-semibold tracking-wide text-[#1E3D31] transition-all duration-300 hover:bg-[#b58849] hover:scale-105 shadow-md active:scale-95;
+    @apply inline-flex h-10 items-center justify-center rounded-lg bg-primary px-4 py-2 text-[14px] font-bold tracking-wide text-accent transition-all duration-300 hover:bg-primary/90 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed;
   }
 
   .section-title {
-    @apply font-heading text-3xl font-bold tracking-tight text-[#1E3D31] dark:text-[#F5EFE6] sm:text-4xl md:text-5xl lg:text-6xl;
+    @apply font-heading text-2xl font-bold tracking-tight text-foreground sm:text-3xl lg:text-4xl;
   }
 
   .section-subtitle {
-    @apply mx-auto mt-4 max-w-2xl text-base text-[#5C5348] dark:text-[#B8A99A] sm:text-lg font-sans;
+    @apply mx-auto mt-4 max-w-2xl text-base text-muted-foreground font-body;
   }
 }
 
 @layer utilities {
   .text-gold {
-    color: #C89B5C;
+    @apply text-accent;
   }
 
   .bg-forest {
-    background-color: #1E3D31;
+    @apply bg-primary;
   }
 
   .bg-ivory {
-    background-color: #FAF3E7;
+    @apply bg-background;
   }
 
   /* Dotted leader lines for the menu layout */

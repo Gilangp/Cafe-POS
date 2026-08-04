@@ -72,14 +72,14 @@ export function CurationsSection({ categories }: { categories?: CategoryData[] }
     <section className="py-24 sm:py-32 bg-[#14201A] text-white relative overflow-hidden">
       {/* Coffee Bean Texture & Radial Gradient Overlay */}
       <div className="absolute inset-0 opacity-15 pointer-events-none bg-[radial-gradient(#C89B5C_1px,transparent_1px)] [background-size:24px_24px]" />
-      <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/3 w-[500px] h-[500px] rounded-full bg-[#1E3D31]/40 blur-3xl pointer-events-none" />
-      <div className="absolute bottom-0 left-0 translate-y-1/3 -translate-x-1/3 w-[500px] h-[500px] rounded-full bg-[#C89B5C]/10 blur-3xl pointer-events-none" />
+      <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/3 w-[500px] h-[500px] rounded-full bg-primary/40 blur-3xl pointer-events-none" />
+      <div className="absolute bottom-0 left-0 translate-y-1/3 -translate-x-1/3 w-[500px] h-[500px] rounded-full bg-accent/10 blur-3xl pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-16 border-b border-white/10">
           <div className="space-y-3 max-w-2xl">
-            <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[#C89B5C] bg-[#C89B5C]/15 px-3.5 py-1.5 rounded-full backdrop-blur-md">
+            <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-accent bg-accent/15 px-3.5 py-1.5 rounded-full backdrop-blur-md">
               <span>{t.curations.badge}</span>
             </div>
             <h2 className="font-heading text-3xl sm:text-5xl font-extrabold tracking-tight text-white leading-tight">
@@ -92,7 +92,7 @@ export function CurationsSection({ categories }: { categories?: CategoryData[] }
 
           <Link
             href="/menu"
-            className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#C89B5C] hover:text-white transition-colors group"
+            className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-accent hover:text-white transition-colors group"
           >
             <span>{t.curations.catalogBtn}</span>
             <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
@@ -121,7 +121,7 @@ export function CurationsSection({ categories }: { categories?: CategoryData[] }
                 <div className="relative w-48 h-48 sm:w-52 sm:h-52 mx-auto p-2 bg-gradient-to-br from-[#C89B5C]/40 to-transparent transition-all duration-500 group-hover:scale-105 shadow-2xl rounded-full">
                   <div
                     className={cn(
-                      'relative w-full h-full overflow-hidden transition-transform duration-500 group-hover:rotate-3 shadow-inner bg-[#1E3D31]',
+                      'relative w-full h-full overflow-hidden transition-transform duration-500 group-hover:rotate-3 shadow-inner bg-primary',
                       shapeClass
                     )}
                   >
@@ -138,7 +138,7 @@ export function CurationsSection({ categories }: { categories?: CategoryData[] }
                   </div>
 
                   {cat.menus_count !== undefined && (
-                    <span className="absolute bottom-2 right-4 bg-[#C89B5C] text-[#1E3D31] text-[11px] font-bold px-3 py-1 rounded-full shadow-lg">
+                    <span className="absolute bottom-2 right-4 bg-accent text-primary text-[11px] font-bold px-3 py-1 rounded-full shadow-lg">
                       {cat.menus_count} {t.curations.menuCount}
                     </span>
                   )}
@@ -146,7 +146,7 @@ export function CurationsSection({ categories }: { categories?: CategoryData[] }
 
                 {/* Text Title & Description */}
                 <div className="space-y-2">
-                  <h3 className="font-heading text-lg font-bold text-white group-hover:text-[#C89B5C] transition-colors">
+                  <h3 className="font-heading text-lg font-bold text-white group-hover:text-accent transition-colors">
                     {cat.name}
                   </h3>
                   {cat.description && (

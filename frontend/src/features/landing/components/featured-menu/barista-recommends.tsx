@@ -87,19 +87,19 @@ export function BaristaRecommendsSection({ menus }: { menus?: MenuData[] }) {
   };
 
   return (
-    <section className="py-24 sm:py-32 bg-[#FAF3E7] dark:bg-[#1A2620] relative overflow-hidden">
+    <section className="py-24 sm:py-32 bg-background relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-12 border-b border-[#E4D9C4] dark:border-[#33413A]">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-12 border-b border-border">
           <div className="space-y-3 max-w-2xl">
-            <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[#1E3D31] dark:text-[#C89B5C] bg-[#1E3D31]/10 dark:bg-[#C89B5C]/15 px-3.5 py-1.5 rounded-full">
-              <Coffee size={14} className="text-[#C89B5C]" />
+            <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-primary dark:text-accent bg-primary/10 dark:bg-accent/15 px-3.5 py-1.5 rounded-full">
+              <Coffee size={14} className="text-accent" />
               <span>{t.barista.badge}</span>
             </div>
-            <h2 className="font-heading text-3xl sm:text-5xl font-bold tracking-tight text-[#1E3D31] dark:text-[#F5EFE6] leading-tight">
+            <h2 className="font-heading text-3xl sm:text-5xl font-bold tracking-tight text-foreground leading-tight">
               {t.barista.title}
             </h2>
-            <p className="text-sm sm:text-base text-[#5C5348] dark:text-[#B8A99A] leading-relaxed">
+            <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
               {t.barista.desc}
             </p>
           </div>
@@ -118,11 +118,11 @@ export function BaristaRecommendsSection({ menus }: { menus?: MenuData[] }) {
             <Card
               key={menu.id}
               variant="interactive"
-              className="group flex flex-col justify-between overflow-hidden rounded-3xl bg-white dark:bg-[#1E2B24] border-[#E4D9C4] dark:border-[#33413A]"
+              className="group flex flex-col justify-between overflow-hidden rounded-3xl bg-card border-border"
             >
               <div>
                 {/* Image & Badges */}
-                <div className="relative aspect-[4/3] w-full overflow-hidden bg-[#FAF3E7] dark:bg-[#14201A]">
+                <div className="relative aspect-[4/3] w-full overflow-hidden bg-background">
                   <Image
                     src={
                       menu.image_url ||
@@ -146,20 +146,20 @@ export function BaristaRecommendsSection({ menus }: { menus?: MenuData[] }) {
 
                 {/* Content */}
                 <div className="p-5 space-y-2.5">
-                  <h3 className="font-heading text-lg font-bold text-[#1E3D31] dark:text-[#F5EFE6] group-hover:text-[#C89B5C] transition-colors line-clamp-1">
+                  <h3 className="font-heading text-lg font-bold text-foreground group-hover:text-accent transition-colors line-clamp-1">
                     {menu.name}
                   </h3>
-                  <p className="text-xs text-[#5C5348] dark:text-[#B8A99A] leading-relaxed line-clamp-2 min-h-[36px]">
+                  <p className="text-xs text-muted-foreground leading-relaxed line-clamp-2 min-h-[36px]">
                     {menu.description || t.barista.defaultMenuDesc}
                   </p>
                 </div>
               </div>
 
               {/* Price & Action */}
-              <div className="p-5 flex flex-wrap xl:flex-nowrap items-center justify-between gap-3 border-t border-[#E4D9C4]/40 dark:border-[#33413A]/40 mt-auto">
+              <div className="p-5 flex flex-wrap xl:flex-nowrap items-center justify-between gap-3 border-t border-border/40 dark:border-[#33413A]/40 mt-auto">
                 <div className="flex flex-col min-w-0">
-                  <span className="text-[10px] uppercase text-[#5C5348] dark:text-[#B8A99A] font-semibold">{t.barista.price}</span>
-                  <span className="font-heading text-lg font-extrabold text-[#1E3D31] dark:text-[#C89B5C] truncate">
+                  <span className="text-[10px] uppercase text-muted-foreground font-semibold">{t.barista.price}</span>
+                  <span className="font-heading text-lg font-extrabold text-primary dark:text-accent truncate">
                     {formatPrice(menu.price)}
                   </span>
                 </div>

@@ -59,19 +59,19 @@ export function PromotionsSection({ promotions }: { promotions?: PromotionData[]
   const activePromotions = promotions && promotions.length > 0 ? promotions : defaultPromotions;
 
   return (
-    <section className="py-24 sm:py-32 bg-[#FAF3E7] dark:bg-[#14201A] relative overflow-hidden">
+    <section className="py-24 sm:py-32 bg-background relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-12 border-b border-[#E4D9C4] dark:border-[#33413A]">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-12 border-b border-border">
           <div className="space-y-3 max-w-2xl">
-            <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[#1E3D31] dark:text-[#C89B5C] bg-[#1E3D31]/10 dark:bg-[#C89B5C]/15 px-3.5 py-1.5 rounded-full">
-              <Tag size={14} className="text-[#C89B5C]" />
+            <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-primary dark:text-accent bg-primary/10 dark:bg-accent/15 px-3.5 py-1.5 rounded-full">
+              <Tag size={14} className="text-accent" />
               <span>{t.promotions.badge}</span>
             </div>
-            <h2 className="font-heading text-3xl sm:text-5xl font-bold tracking-tight text-[#1E3D31] dark:text-[#F5EFE6] leading-tight">
+            <h2 className="font-heading text-3xl sm:text-5xl font-bold tracking-tight text-foreground leading-tight">
               {t.promotions.title}
             </h2>
-            <p className="text-sm sm:text-base text-[#5C5348] dark:text-[#B8A99A]">
+            <p className="text-sm sm:text-base text-muted-foreground">
               {t.promotions.desc}
             </p>
           </div>
@@ -83,11 +83,11 @@ export function PromotionsSection({ promotions }: { promotions?: PromotionData[]
             <Card
               key={promo.id}
               variant="elevated"
-              className="group flex flex-col justify-between overflow-hidden rounded-3xl bg-white dark:bg-[#1E2B24] border-[#E4D9C4] dark:border-[#33413A] hover:-translate-y-1.5 transition-all duration-300"
+              className="group flex flex-col justify-between overflow-hidden rounded-3xl bg-card border-border hover:-translate-y-1.5 transition-all duration-300"
             >
               <div>
                 {/* Banner Image */}
-                <div className="relative aspect-[16/9] w-full overflow-hidden bg-[#FAF3E7]">
+                <div className="relative aspect-[16/9] w-full overflow-hidden bg-background">
                   <Image
                     src={
                       promo.banner_url ||
@@ -103,19 +103,19 @@ export function PromotionsSection({ promotions }: { promotions?: PromotionData[]
 
                 {/* Content */}
                 <div className="p-6 space-y-3">
-                  <h3 className="font-heading text-xl font-bold text-[#1E3D31] dark:text-[#F5EFE6] group-hover:text-[#C89B5C] transition-colors leading-snug">
+                  <h3 className="font-heading text-xl font-bold text-foreground group-hover:text-accent transition-colors leading-snug">
                     {promo.title}
                   </h3>
-                  <p className="text-xs sm:text-sm text-[#5C5348] dark:text-[#B8A99A] leading-relaxed line-clamp-3">
+                  <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed line-clamp-3">
                     {promo.description}
                   </p>
                 </div>
               </div>
 
               {/* Footer CTA */}
-              <div className="p-6 pt-0 flex items-center justify-between border-t border-[#E4D9C4]/40 dark:border-[#33413A]/40 mt-3 pt-4">
-                <div className="flex items-center gap-1.5 text-xs text-[#5C5348] dark:text-[#B8A99A]">
-                  <Calendar size={14} className="text-[#C89B5C]" />
+              <div className="p-6 pt-0 flex items-center justify-between border-t border-border/40 dark:border-[#33413A]/40 mt-3 pt-4">
+                <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                  <Calendar size={14} className="text-accent" />
                   <span>{t.promotions.validUntil} {promo.end_date ? new Date(promo.end_date).toLocaleDateString('id-ID', { month: 'short', year: 'numeric' }) : t.promotions.limited}</span>
                 </div>
               </div>

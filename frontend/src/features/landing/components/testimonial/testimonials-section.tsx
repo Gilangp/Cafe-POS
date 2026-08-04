@@ -93,18 +93,18 @@ export function TestimonialsSection({ testimonials }: { testimonials?: Testimoni
   };
 
   return (
-    <section id="reviews" className="py-24 sm:py-32 bg-[#FAF3E7] dark:bg-[#14201A] relative overflow-hidden">
+    <section id="reviews" className="py-24 sm:py-32 bg-background relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Title Header */}
         <div className="text-center max-w-3xl mx-auto space-y-3 pb-8">
-          <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[#1E3D31] dark:text-[#C89B5C] bg-[#1E3D31]/10 dark:bg-[#C89B5C]/15 px-3.5 py-1.5 rounded-full">
+          <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-primary dark:text-accent bg-primary/10 dark:bg-accent/15 px-3.5 py-1.5 rounded-full">
             
             <span>{t.testimonials.badge}</span>
           </div>
-          <h2 className="font-heading text-3xl sm:text-5xl font-bold tracking-tight text-[#1E3D31] dark:text-[#F5EFE6] leading-tight">
+          <h2 className="font-heading text-3xl sm:text-5xl font-bold tracking-tight text-foreground leading-tight">
             {t.testimonials.title}
           </h2>
-          <p className="text-sm sm:text-base text-[#5C5348] dark:text-[#B8A99A]">
+          <p className="text-sm sm:text-base text-muted-foreground">
             {t.testimonials.desc}
           </p>
         </div>
@@ -129,15 +129,15 @@ export function TestimonialsSection({ testimonials }: { testimonials?: Testimoni
           >
             <form id="testimonial-form" onSubmit={handleSubmit} className="space-y-5 pt-2 pb-4">
               <div className="space-y-2.5">
-                <label className="text-sm font-bold text-[#1E3D31] dark:text-[#F5EFE6]">{t.testimonials.fullName}</label>
-                <Input required placeholder={t.testimonials.fullNamePlaceholder} value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="rounded-xl h-12 border-[#E4D9C4] dark:border-[#33413A] focus-visible:ring-[#C89B5C] bg-gray-50/50 dark:bg-[#14201A]" />
+                <label className="text-sm font-bold text-foreground">{t.testimonials.fullName}</label>
+                <Input required placeholder={t.testimonials.fullNamePlaceholder} value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="rounded-xl h-12 border-border focus-visible:ring-[#C89B5C] bg-gray-50/50 dark:bg-[#14201A]" />
               </div>
               <div className="space-y-2.5">
-                <label className="text-sm font-bold text-[#1E3D31] dark:text-[#F5EFE6]">{t.testimonials.jobRole}</label>
-                <Input placeholder={t.testimonials.jobRolePlaceholder} value={formData.role} onChange={(e) => setFormData({ ...formData, role: e.target.value })} className="rounded-xl h-12 border-[#E4D9C4] dark:border-[#33413A] focus-visible:ring-[#C89B5C] bg-gray-50/50 dark:bg-[#14201A]" />
+                <label className="text-sm font-bold text-foreground">{t.testimonials.jobRole}</label>
+                <Input placeholder={t.testimonials.jobRolePlaceholder} value={formData.role} onChange={(e) => setFormData({ ...formData, role: e.target.value })} className="rounded-xl h-12 border-border focus-visible:ring-[#C89B5C] bg-gray-50/50 dark:bg-[#14201A]" />
               </div>
               <div className="space-y-2.5">
-                <label className="text-sm font-bold text-[#1E3D31] dark:text-[#F5EFE6]">{t.testimonials.rating}</label>
+                <label className="text-sm font-bold text-foreground">{t.testimonials.rating}</label>
                 <div className="flex items-center gap-2">
                   {[1, 2, 3, 4, 5].map((star) => (
                     <button
@@ -146,14 +146,14 @@ export function TestimonialsSection({ testimonials }: { testimonials?: Testimoni
                       onClick={() => setFormData({ ...formData, rating: star })}
                       className="focus:outline-none"
                     >
-                      <Star className={cn("h-6 w-6", formData.rating >= star ? "fill-[#C89B5C] text-[#C89B5C]" : "text-gray-300")} />
+                      <Star className={cn("h-6 w-6", formData.rating >= star ? "fill-[#C89B5C] text-accent" : "text-gray-300")} />
                     </button>
                   ))}
                 </div>
               </div>
               <div className="space-y-2.5">
-                <label className="text-sm font-bold text-[#1E3D31] dark:text-[#F5EFE6]">{t.testimonials.yourReview}</label>
-                <Textarea required placeholder={t.testimonials.yourReviewPlaceholder} rows={4} value={formData.content} onChange={(e) => setFormData({ ...formData, content: e.target.value })} className="rounded-xl border-[#E4D9C4] dark:border-[#33413A] focus-visible:ring-[#C89B5C] bg-gray-50/50 dark:bg-[#14201A] resize-none p-4" />
+                <label className="text-sm font-bold text-foreground">{t.testimonials.yourReview}</label>
+                <Textarea required placeholder={t.testimonials.yourReviewPlaceholder} rows={4} value={formData.content} onChange={(e) => setFormData({ ...formData, content: e.target.value })} className="rounded-xl border-border focus-visible:ring-[#C89B5C] bg-gray-50/50 dark:bg-[#14201A] resize-none p-4" />
               </div>
             </form>
           </Dialog>
@@ -173,41 +173,41 @@ export function TestimonialsSection({ testimonials }: { testimonials?: Testimoni
               <div
                 key={item.id}
                 className={cn(
-                  'group relative flex flex-col justify-between rounded-3xl bg-white dark:bg-[#1E2B24] p-6 sm:p-7 shadow-xl border border-[#E4D9C4] dark:border-[#33413A] transition-all duration-300 hover:rotate-0 hover:-translate-y-2 hover:shadow-2xl hover:border-[#C89B5C]/60',
+                  'group relative flex flex-col justify-between rounded-3xl bg-card p-6 sm:p-7 shadow-xl border border-border transition-all duration-300 hover:rotate-0 hover:-translate-y-2 hover:shadow-2xl hover:border-accent/60',
                   rot
                 )}
               >
                 {/* Quote Icon */}
-                <div className="absolute top-4 right-6 text-[#E4D9C4]/40 dark:text-[#33413A] group-hover:text-[#C89B5C]/30 transition-colors pointer-events-none">
+                <div className="absolute top-4 right-6 text-[#E4D9C4]/40 dark:text-[#33413A] group-hover:text-accent/30 transition-colors pointer-events-none">
                   <Quote size={64} />
                 </div>
 
                 <div className="space-y-4">
                   {/* Stars */}
-                  <div className="flex gap-1 text-[#C89B5C]">
+                  <div className="flex gap-1 text-accent">
                     {Array.from({ length: rating }).map((_, i) => (
                       <Star key={i} className="h-4 w-4 fill-current" />
                     ))}
                   </div>
 
                   {/* Comment */}
-                  <p className="font-sans text-sm sm:text-base leading-relaxed text-[#1E3D31] dark:text-[#F5EFE6]/90 italic relative z-10">
+                  <p className="font-sans text-sm sm:text-base leading-relaxed text-foreground/90 italic relative z-10">
                     &quot;{quoteText}&quot;
                   </p>
                 </div>
 
                 {/* Author Footer */}
-                <div className="mt-8 pt-4 border-t border-[#E4D9C4]/60 dark:border-[#33413A] flex items-center justify-between">
+                <div className="mt-8 pt-4 border-t border-border/60 dark:border-[#33413A] flex items-center justify-between">
                   <div>
-                    <h4 className="font-heading font-bold text-sm text-[#1E3D31] dark:text-[#F5EFE6]">{name}</h4>
+                    <h4 className="font-heading font-bold text-sm text-foreground">{name}</h4>
                     {item.role && (
-                      <span className="text-[11px] uppercase tracking-wider text-[#5C5348] dark:text-[#B8A99A] font-medium">
+                      <span className="text-[11px] uppercase tracking-wider text-muted-foreground font-medium">
                         {item.role}
                       </span>
                     )}
                   </div>
                   {/* Stamp Graphic */}
-                  <div className="h-9 w-9 rounded-full border-2 border-[#1E3D31]/30 dark:border-[#C89B5C]/40 flex items-center justify-center font-heading text-[11px] text-[#1E3D31] dark:text-[#C89B5C] font-bold rotate-12">
+                  <div className="h-9 w-9 rounded-full border-2 border-[#1E3D31]/30 dark:border-accent/40 flex items-center justify-center font-heading text-[11px] text-primary dark:text-accent font-bold rotate-12">
                     NEMU
                   </div>
                 </div>

@@ -64,7 +64,7 @@ export function HeroSlider({ banners }: { banners?: HeroBannerData[] }) {
   };
 
   return (
-    <section className="relative w-full h-[85vh] min-h-[620px] max-h-[880px] overflow-hidden bg-[#1E3D31]">
+    <section className="relative w-full h-[85vh] min-h-[620px] max-h-[880px] overflow-hidden bg-primary">
       {/* Background Slides */}
       {activeBanners.map((banner, index) => {
         const isActive = index === currentIndex;
@@ -89,7 +89,7 @@ export function HeroSlider({ banners }: { banners?: HeroBannerData[] }) {
             {/* Content Container */}
             <div className="relative z-20 max-w-7xl mx-auto h-full px-4 sm:px-6 lg:px-8 flex flex-col justify-center items-start pt-16 sm:pt-20">
               <div className="max-w-3xl space-y-6 animate-in fade-in slide-in-from-bottom-6 duration-700">
-                <div className="inline-flex items-center gap-2 rounded-full border border-[#C89B5C]/40 bg-[#C89B5C]/15 px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-[#C89B5C] backdrop-blur-md">
+                <div className="inline-flex items-center gap-2 rounded-full border border-accent/40 bg-accent/15 px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-accent backdrop-blur-md">
                   <span>{t.hero.badge}</span>
                 </div>
 
@@ -117,7 +117,7 @@ export function HeroSlider({ banners }: { banners?: HeroBannerData[] }) {
                       size="lg"
                       className="h-14 px-8 rounded-2xl text-base font-semibold border-white/30 text-white hover:bg-white/10 hover:border-white gap-2 backdrop-blur-sm"
                     >
-                      <Coffee className="h-5 w-5 text-[#C89B5C]" />
+                      <Coffee className="h-5 w-5 text-accent" />
                       <span>{t.hero.btnReserve || 'Reservasi Meja'}</span>
                     </Button>
                   </Link>
@@ -134,14 +134,14 @@ export function HeroSlider({ banners }: { banners?: HeroBannerData[] }) {
           <button
             onClick={goToPrev}
             aria-label={t.hero.prevBanner}
-            className="flex h-12 w-12 items-center justify-center rounded-full border border-white/20 bg-black/30 text-white backdrop-blur-md transition-all hover:border-[#C89B5C] hover:bg-[#C89B5C] hover:text-[#1E3D31] focus:outline-none focus:ring-2 focus:ring-[#C89B5C]"
+            className="flex h-12 w-12 items-center justify-center rounded-full border border-white/20 bg-black/30 text-white backdrop-blur-md transition-all hover:border-accent hover:bg-accent hover:text-primary focus:outline-none focus:ring-2 focus:ring-[#C89B5C]"
           >
             <ChevronLeft size={22} />
           </button>
           <button
             onClick={goToNext}
             aria-label={t.hero.nextBanner}
-            className="flex h-12 w-12 items-center justify-center rounded-full border border-white/20 bg-black/30 text-white backdrop-blur-md transition-all hover:border-[#C89B5C] hover:bg-[#C89B5C] hover:text-[#1E3D31] focus:outline-none focus:ring-2 focus:ring-[#C89B5C]"
+            className="flex h-12 w-12 items-center justify-center rounded-full border border-white/20 bg-black/30 text-white backdrop-blur-md transition-all hover:border-accent hover:bg-accent hover:text-primary focus:outline-none focus:ring-2 focus:ring-[#C89B5C]"
           >
             <ChevronRight size={22} />
           </button>
@@ -158,7 +158,7 @@ export function HeroSlider({ banners }: { banners?: HeroBannerData[] }) {
               aria-label={`${t.hero.goToSlide} ${idx + 1}`}
               className={cn(
                 'h-2 rounded-full transition-all duration-300',
-                idx === currentIndex ? 'w-10 bg-[#C89B5C]' : 'w-2 bg-white/40 hover:bg-white/80'
+                idx === currentIndex ? 'w-10 bg-accent' : 'w-2 bg-white/40 hover:bg-white/80'
               )}
             />
           ))}

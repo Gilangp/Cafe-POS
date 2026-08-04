@@ -9,11 +9,11 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
   ({ className, variant = 'default', ...props }, ref) => {
     const variantStyles: Record<NonNullable<CardProps['variant']>, string> = {
       default:
-        'rounded-2xl border border-[#E4D9C4] dark:border-[#33413A] bg-white dark:bg-[#1E2B24] text-[#1E3D31] dark:text-[#F5EFE6] shadow-sm',
+        'rounded-2xl border border-border bg-card text-card-foreground shadow-md',
       elevated:
-        'rounded-2xl border border-[#E4D9C4]/60 dark:border-[#33413A] bg-white dark:bg-[#1E2B24] text-[#1E3D31] dark:text-[#F5EFE6] shadow-md dark:shadow-xl',
+        'rounded-2xl border border-border bg-card text-card-foreground shadow-lg',
       interactive:
-        'rounded-2xl border border-[#E4D9C4] dark:border-[#33413A] bg-white dark:bg-[#1E2B24] text-[#1E3D31] dark:text-[#F5EFE6] shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-card-hover hover:border-[#C89B5C]/60 cursor-pointer',
+        'rounded-2xl border border-border bg-card text-card-foreground shadow-md transition-all duration-300 hover:-translate-y-1 hover:shadow-card-hover hover:border-accent/60 cursor-pointer',
     };
 
     return <div ref={ref} className={cn(variantStyles[variant], className)} {...props} />;
@@ -32,7 +32,7 @@ const CardTitle = React.forwardRef<HTMLParagraphElement, React.HTMLAttributes<HT
   ({ className, ...props }, ref) => (
     <h3
       ref={ref}
-      className={cn('font-heading text-xl font-bold leading-none tracking-tight text-[#1E3D31] dark:text-[#F5EFE6]', className)}
+      className={cn('font-heading text-lg font-semibold leading-none tracking-tight text-foreground', className)}
       {...props}
     />
   )
@@ -43,7 +43,7 @@ const CardDescription = React.forwardRef<HTMLParagraphElement, React.HTMLAttribu
   ({ className, ...props }, ref) => (
     <p
       ref={ref}
-      className={cn('text-sm text-[#5C5348] dark:text-[#B8A99A] leading-relaxed', className)}
+      className={cn('text-sm text-muted-foreground leading-relaxed', className)}
       {...props}
     />
   )

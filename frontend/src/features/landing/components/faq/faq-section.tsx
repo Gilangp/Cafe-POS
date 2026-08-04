@@ -21,17 +21,17 @@ export function FaqSection({ faqs }: { faqs?: FaqData[] }) {
   };
 
   return (
-    <section className="py-24 sm:py-32 bg-[#FAF3E7] dark:bg-[#1A2620] relative overflow-hidden">
+    <section className="py-24 sm:py-32 bg-background relative overflow-hidden">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Title Header */}
         <div className="text-center space-y-3 pb-16">
-          <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[#1E3D31] dark:text-[#C89B5C] bg-[#1E3D31]/10 dark:bg-[#C89B5C]/15 px-3.5 py-1.5 rounded-full">
+          <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-primary dark:text-accent bg-primary/10 dark:bg-accent/15 px-3.5 py-1.5 rounded-full">
             <span>{t.faq.badge}</span>
           </div>
-          <h2 className="font-heading text-3xl sm:text-5xl font-bold tracking-tight text-[#1E3D31] dark:text-[#F5EFE6] leading-tight">
+          <h2 className="font-heading text-3xl sm:text-5xl font-bold tracking-tight text-foreground leading-tight">
             {t.faq.title}
           </h2>
-          <p className="text-sm sm:text-base text-[#5C5348] dark:text-[#B8A99A]">
+          <p className="text-sm sm:text-base text-muted-foreground">
             {t.faq.desc}
           </p>
         </div>
@@ -47,8 +47,8 @@ export function FaqSection({ faqs }: { faqs?: FaqData[] }) {
                 className={cn(
                   'rounded-3xl border transition-all duration-300 overflow-hidden',
                   isOpen
-                    ? 'bg-white dark:bg-[#1E2B24] border-[#C89B5C] shadow-lg'
-                    : 'bg-white/80 dark:bg-[#1E2B24]/80 border-[#E4D9C4] dark:border-[#33413A] hover:border-[#1E3D31]/40'
+                    ? 'bg-card border-accent shadow-lg'
+                    : 'bg-white/80 dark:bg-[#1E2B24]/80 border-border hover:border-[#1E3D31]/40'
                 )}
               >
                 <button
@@ -60,24 +60,24 @@ export function FaqSection({ faqs }: { faqs?: FaqData[] }) {
                     <div
                       className={cn(
                         'flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition-colors',
-                        isOpen ? 'bg-[#C89B5C] text-[#1E3D31]' : 'bg-[#1E3D31]/10 text-[#1E3D31] dark:bg-white/10 dark:text-white'
+                        isOpen ? 'bg-accent text-primary' : 'bg-primary/10 text-primary dark:bg-white/10 dark:text-white'
                       )}
                     >
                       <HelpCircle size={18} />
                     </div>
-                    <h3 className="font-heading text-base sm:text-lg font-bold text-[#1E3D31] dark:text-[#F5EFE6]">
+                    <h3 className="font-heading text-base sm:text-lg font-bold text-foreground">
                       {faq.question}
                     </h3>
                   </div>
 
-                  <div className="text-[#5C5348] dark:text-[#B8A99A] shrink-0">
-                    {isOpen ? <ChevronUp size={22} className="text-[#C89B5C]" /> : <ChevronDown size={22} />}
+                  <div className="text-muted-foreground shrink-0">
+                    {isOpen ? <ChevronUp size={22} className="text-accent" /> : <ChevronDown size={22} />}
                   </div>
                 </button>
 
                 {isOpen && (
                   <div className="px-6 pb-6 sm:px-7 sm:pb-7 pt-0 animate-in fade-in slide-in-from-top-2 duration-300">
-                    <div className="pl-11 border-l-2 border-[#C89B5C]/40 text-sm sm:text-base text-[#5C5348] dark:text-[#B8A99A] leading-relaxed">
+                    <div className="pl-11 border-l-2 border-accent/40 text-sm sm:text-base text-muted-foreground leading-relaxed">
                       {faq.answer}
                     </div>
                   </div>

@@ -9,7 +9,7 @@ export function ReservationSection({ reservation }: { reservation?: any }) {
   const { t } = useLanguage();
   
   return (
-    <section className="py-24 sm:py-32 bg-[#FAF3E7] dark:bg-transparent">
+    <section className="py-24 sm:py-32 bg-background dark:bg-transparent">
       <div className="max-w-2xl mx-auto text-center px-4">
         <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-accent bg-accent/10 px-4 py-2 rounded-full mb-6">
           <Calendar size={14} />

@@ -1,12 +1,11 @@
 import type { Metadata } from 'next';
-import { Inter, Poppins, Playfair_Display } from 'next/font/google';
+import { Inter, Outfit } from 'next/font/google';
 import '@/styles/globals.css';
 import { AppProviders } from '@/shared/providers/app-providers';
 import { PwaRegistrar } from '@/shared/lib/pwa-registrar';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter', display: 'swap' });
-const poppins = Poppins({ subsets: ['latin'], weight: ['400', '500', '600', '700'], variable: '--font-poppins', display: 'swap' });
-const playfair = Playfair_Display({ subsets: ['latin'], weight: ['400', '500', '600', '700'], variable: '--font-playfair', display: 'swap' });
+const outfit = Outfit({ subsets: ['latin'], variable: '--font-outfit', display: 'swap' });
 
 export const metadata: Metadata = {
   title: 'NEMU Space — Premium Coffee & Specialty Roastery',
@@ -27,7 +26,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="icon" href="/images/favicon.ico" sizes="any" />
         <meta name="theme-color" content="#1E3D31" />
       </head>
-      <body className={`${inter.variable} ${poppins.variable} ${playfair.variable} font-sans antialiased`}>
+      <body className={`${inter.variable} ${outfit.variable} font-sans antialiased`}>
         <AppProviders>
           <PwaRegistrar />
           {children}

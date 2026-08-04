@@ -51,17 +51,17 @@ export function AboutSection({ aboutData }: { aboutData?: AboutUsItem[] }) {
       : defaultAboutData[0].points;
 
   return (
-    <section id="about" className="py-24 sm:py-32 bg-[#FAF3E7] dark:bg-[#14201A] overflow-hidden relative">
+    <section id="about" className="py-24 sm:py-32 bg-background overflow-hidden relative">
       {/* Decorative Blob */}
-      <div className="absolute top-1/2 left-0 -translate-y-1/2 -translate-x-1/2 w-96 h-96 rounded-full bg-[#C89B5C]/10 blur-3xl pointer-events-none" />
+      <div className="absolute top-1/2 left-0 -translate-y-1/2 -translate-x-1/2 w-96 h-96 rounded-full bg-accent/10 blur-3xl pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="grid gap-16 lg:grid-cols-12 lg:gap-12 items-center">
           {/* Left Column: Polaroid Collage */}
           <div className="lg:col-span-6 relative min-h-[460px] sm:min-h-[540px] flex items-center justify-center">
             {/* Polaroid 1 (Top Right) */}
-            <div className="absolute top-4 right-4 sm:right-12 w-52 sm:w-64 bg-white dark:bg-[#1E2B24] p-3 rounded-2xl shadow-xl border border-[#E4D9C4] dark:border-[#33413A] rotate-[5deg] z-10 transition-transform duration-500 hover:rotate-0 hover:scale-105 hover:z-30">
-              <div className="relative aspect-[4/3] w-full overflow-hidden rounded-xl bg-[#FAF3E7]">
+            <div className="absolute top-4 right-4 sm:right-12 w-52 sm:w-64 bg-card p-3 rounded-2xl shadow-xl border border-border rotate-[5deg] z-10 transition-transform duration-500 hover:rotate-0 hover:scale-105 hover:z-30">
+              <div className="relative aspect-[4/3] w-full overflow-hidden rounded-xl bg-background">
                 <Image
                   src={item.image_url || 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=800&q=80'}
                   alt="Specialty Roasting"
@@ -70,15 +70,15 @@ export function AboutSection({ aboutData }: { aboutData?: AboutUsItem[] }) {
                 />
               </div>
               <div className="mt-3 text-center">
-                <span className="font-heading text-xs sm:text-sm font-bold text-[#1E3D31] dark:text-[#F5EFE6]">
+                <span className="font-heading text-xs sm:text-sm font-bold text-foreground">
                   {t.about.polaroid1}
                 </span>
               </div>
             </div>
 
             {/* Polaroid 2 (Bottom Left) */}
-            <div className="absolute bottom-6 left-2 sm:left-8 w-56 sm:w-68 bg-white dark:bg-[#1E2B24] p-3.5 rounded-2xl shadow-2xl border border-[#E4D9C4] dark:border-[#33413A] rotate-[-6deg] z-20 transition-transform duration-500 hover:rotate-0 hover:scale-105 hover:z-30">
-              <div className="relative aspect-square w-full overflow-hidden rounded-xl bg-[#FAF3E7]">
+            <div className="absolute bottom-6 left-2 sm:left-8 w-56 sm:w-68 bg-card p-3.5 rounded-2xl shadow-2xl border border-border rotate-[-6deg] z-20 transition-transform duration-500 hover:rotate-0 hover:scale-105 hover:z-30">
+              <div className="relative aspect-square w-full overflow-hidden rounded-xl bg-background">
                 <Image
                   src="https://images.unsplash.com/photo-1511920170033-f8396924c348?auto=format&fit=crop&w=800&q=80"
                   alt="Slow Bar Experience"
@@ -87,19 +87,19 @@ export function AboutSection({ aboutData }: { aboutData?: AboutUsItem[] }) {
                 />
               </div>
               <div className="mt-3.5 text-center">
-                <span className="font-heading text-sm sm:text-base font-bold text-[#1E3D31] dark:text-[#F5EFE6]">
+                <span className="font-heading text-sm sm:text-base font-bold text-foreground">
                   {t.about.polaroid2}
                 </span>
               </div>
             </div>
 
             {/* Badge Floating */}
-            <div className="absolute -bottom-2 right-10 z-30 bg-[#1E3D31] text-white p-5 rounded-3xl shadow-2xl border border-[#C89B5C]/50 flex items-center gap-3 animate-bounce sm:animate-none">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#C89B5C] text-[#1E3D31]">
+            <div className="absolute -bottom-2 right-10 z-30 bg-primary text-white p-5 rounded-3xl shadow-2xl border border-accent/50 flex items-center gap-3 animate-bounce sm:animate-none">
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-accent text-primary">
                 <Award size={26} />
               </div>
               <div>
-                <span className="block font-heading text-xl font-bold text-[#C89B5C]">{t.about.badgeTitle}</span>
+                <span className="block font-heading text-xl font-bold text-accent">{t.about.badgeTitle}</span>
                 <span className="text-xs uppercase tracking-wider text-white/90">{t.about.badgeDesc}</span>
               </div>
             </div>
@@ -108,16 +108,16 @@ export function AboutSection({ aboutData }: { aboutData?: AboutUsItem[] }) {
           {/* Right Column: Story & Value Propositions */}
           <div className="lg:col-span-6 space-y-6">
             <div className="space-y-3">
-              <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[#C89B5C] bg-[#C89B5C]/15 px-3 py-1 rounded-full">
+              <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-accent bg-accent/15 px-3 py-1 rounded-full">
                 <Coffee size={14} />
                 <span>{t.about.badge}</span>
               </div>
-              <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-[#1E3D31] dark:text-[#F5EFE6] leading-tight">
+              <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-foreground leading-tight">
                 {item.title}
               </h2>
             </div>
 
-            <p className="text-base sm:text-lg leading-relaxed text-[#5C5348] dark:text-[#B8A99A]">
+            <p className="text-base sm:text-lg leading-relaxed text-muted-foreground">
               {item.description}
             </p>
 
@@ -125,10 +125,10 @@ export function AboutSection({ aboutData }: { aboutData?: AboutUsItem[] }) {
               <ul className="space-y-3.5 pt-2">
                 {pointsList.map((pt, idx) => (
                   <li key={idx} className="flex items-start gap-3">
-                    <div className="mt-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#1E3D31] text-[#C89B5C]">
+                    <div className="mt-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary text-accent">
                       <ShieldCheck size={14} />
                     </div>
-                    <span className="text-sm sm:text-base font-medium text-[#1E3D31] dark:text-[#F5EFE6] leading-relaxed">
+                    <span className="text-sm sm:text-base font-medium text-foreground leading-relaxed">
                       {pt}
                     </span>
                   </li>
@@ -136,13 +136,13 @@ export function AboutSection({ aboutData }: { aboutData?: AboutUsItem[] }) {
               </ul>
             )}
 
-            <div className="pt-6 flex flex-wrap items-center gap-6 border-t border-[#E4D9C4] dark:border-[#33413A]">
+            <div className="pt-6 flex flex-wrap items-center gap-6 border-t border-border">
               <div className="flex items-center gap-3">
                 <div className="flex -space-x-2">
-                  <div className="h-10 w-10 rounded-full border-2 border-white bg-[#1E3D31] flex items-center justify-center text-xs font-bold text-[#C89B5C]">
+                  <div className="h-10 w-10 rounded-full border-2 border-white bg-primary flex items-center justify-center text-xs font-bold text-accent">
                     Q
                   </div>
-                  <div className="h-10 w-10 rounded-full border-2 border-white bg-[#C89B5C] flex items-center justify-center text-xs font-bold text-[#1E3D31]">
+                  <div className="h-10 w-10 rounded-full border-2 border-white bg-accent flex items-center justify-center text-xs font-bold text-primary">
                     R
                   </div>
                   <div className="h-10 w-10 rounded-full border-2 border-white bg-[#6F4E37] flex items-center justify-center text-xs font-bold text-white">
@@ -150,8 +150,8 @@ export function AboutSection({ aboutData }: { aboutData?: AboutUsItem[] }) {
                   </div>
                 </div>
                 <div className="text-xs">
-                  <span className="block font-bold text-[#1E3D31] dark:text-[#F5EFE6]">{t.about.certification}</span>
-                  <span className="text-[#5C5348] dark:text-[#B8A99A]">{t.about.certDesc}</span>
+                  <span className="block font-bold text-foreground">{t.about.certification}</span>
+                  <span className="text-muted-foreground">{t.about.certDesc}</span>
                 </div>
               </div>
             </div>
