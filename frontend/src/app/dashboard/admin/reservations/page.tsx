@@ -46,7 +46,7 @@ const statusStyle: Record<string, string> = {
   menunggu_konfirmasi: 'bg-accent/10 text-accent border-accent/30',
   check_in: 'bg-orange-500/10 text-orange-700 dark:text-orange-400 border-orange-500/30',
   selesai: 'bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-500/30',
-  ditolak: 'bg-gray-500/10 text-gray-700 dark:text-gray-400 border-gray-500/30',
+  ditolak: 'bg-muted0/10 text-gray-700 dark:text-muted-foreground border-gray-500/30',
   dibatalkan: 'bg-red-500/10 text-red-700 dark:text-red-400 border-red-500/30',
 };
 
@@ -234,7 +234,7 @@ export default function ReservationsPage() {
         <div className="flex flex-col items-start sm:items-end gap-3">
           {/* Top Row: Action Buttons */}
           <div className="flex items-center gap-3">
-            <button onClick={fetchReservations} className="p-2.5 rounded-xl border border-black/5 dark:border-white/5 bg-white dark:bg-[#1A2620] text-primary/60 hover:text-primary dark:text-cream-400/60 dark:hover:text-cream-100 shadow-sm transition-all" title="Refresh Data">
+            <button onClick={fetchReservations} className="p-2.5 rounded-xl border border-border bg-card text-primary/60 hover:text-primary dark:text-cream-400/60 dark:hover:text-cream-100 shadow-sm transition-all" title="Refresh Data">
               <RefreshCw size={20} className={loading ? "animate-spin" : ""} />
             </button>
 
@@ -247,13 +247,13 @@ export default function ReservationsPage() {
           </div>
           
           {/* Bottom Row: View Tabs */}
-          <div className="flex bg-white dark:bg-[#1A2620] rounded-xl p-1 border border-black/5 dark:border-white/5 shadow-sm">
+          <div className="flex bg-card rounded-xl p-1 border border-border shadow-sm">
             {(['list', 'floor', 'history'] as const).map((v) => (
               <button
                 key={v}
                 onClick={() => setView(v)}
                 className={`flex items-center gap-1.5 sm:gap-2 rounded-lg px-3 sm:px-4 py-2 text-xs font-bold transition-all whitespace-nowrap ${
-                  view === v ? 'bg-primary text-accent shadow-md' : 'text-primary/60 dark:text-cream-400/60 hover:text-primary dark:hover:text-cream-100 hover:bg-gray-50 dark:hover:bg-white/5'
+                  view === v ? 'bg-primary text-accent shadow-md' : 'text-muted-foreground/60 hover:text-primary dark:hover:text-cream-100 hover:bg-muted dark:hover:bg-white/5'
                 }`}
               >
                 {v === 'list' ? <List size={14} /> : v === 'history' ? <Clock size={14} /> : <Layout size={14} />}
@@ -277,12 +277,12 @@ export default function ReservationsPage() {
       {/* Stats */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {[
-          { label: 'Total Aktif', value: activeReservations.length, icon: CalendarCheck, color: 'text-primary dark:text-cream-100', bg: 'bg-gray-100 dark:bg-white/5' },
+          { label: 'Total Aktif', value: activeReservations.length, icon: CalendarCheck, color: 'text-primary dark:text-cream-100', bg: 'bg-muted dark:bg-white/5' },
           { label: 'Tamu Aktif', value: activeCount, icon: Users, color: 'text-blue-600 dark:text-blue-400', bg: 'bg-blue-50 dark:bg-blue-500/10' },
           { label: 'Menunggu', value: pendingCount, icon: Clock, color: 'text-accent', bg: 'bg-accent/10' },
           { label: 'Meja Tersedia', value: availableTables, icon: CheckCircle, color: 'text-green-600 dark:text-green-400', bg: 'bg-green-50 dark:bg-green-500/10' },
         ].map((s) => (
-          <div key={s.label} className="rounded-2xl bg-white dark:bg-[#1A2620] border border-black/5 dark:border-white/5 p-5 shadow-card-shadow flex items-center gap-4 transition-transform hover:-translate-y-1">
+          <div key={s.label} className="rounded-2xl bg-card border border-border p-5 shadow-card-shadow flex items-center gap-4 transition-transform hover:-translate-y-1">
             <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl ${s.bg} ${s.color}`}>
               <s.icon size={22} />
             </div>
@@ -295,10 +295,10 @@ export default function ReservationsPage() {
       </div>
 
       {view === 'list' || view === 'history' ? (
-        <div className="flex-1 min-h-0 rounded-2xl bg-white dark:bg-[#1A2620] border border-black/5 dark:border-white/5 shadow-card-shadow overflow-hidden flex flex-col">
+        <div className="flex-1 min-h-0 rounded-2xl bg-card border border-border shadow-card-shadow overflow-hidden flex flex-col">
           <div className="overflow-x-auto custom-scrollbar flex-1">
             <table className="w-full text-left text-sm text-primary dark:text-cream-100">
-              <thead className="bg-gray-50/50 dark:bg-black/20 text-[10px] uppercase tracking-wider text-primary/40 dark:text-cream-400/40 border-b border-black/5 dark:border-white/5 sticky top-0 z-10 backdrop-blur-md">
+              <thead className="bg-muted/50 dark:bg-black/20 text-[10px] uppercase tracking-wider text-primary/40 dark:text-cream-400/40 border-b border-border sticky top-0 z-10 backdrop-blur-md">
                 <tr>
                   <th className="px-6 py-4 font-bold whitespace-nowrap">Tamu & Kontak</th>
                   <th className="px-6 py-4 font-bold whitespace-nowrap">Jadwal Kunjungan</th>
@@ -328,7 +328,7 @@ export default function ReservationsPage() {
                   const rTime = r.reservation_time ? r.reservation_time.slice(0, 5) : '';
 
                   return (
-                  <tr key={r.id} className="hover:bg-gray-50/50 dark:hover:bg-white/5 transition-colors group">
+                  <tr key={r.id} className="hover:bg-muted/50 dark:hover:bg-white/5 transition-colors group">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <p className="font-bold text-primary dark:text-cream-100">{r.customer_name}</p>
                       <p className="text-xs text-accent font-medium mt-0.5 flex items-center gap-1">
@@ -340,7 +340,7 @@ export default function ReservationsPage() {
                       <div className="text-primary/50 dark:text-cream-400/50 text-xs font-medium mt-0.5">{rTime}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="flex items-center gap-1.5 font-bold text-primary dark:text-cream-100 bg-gray-100 dark:bg-white/5 px-2.5 py-1 rounded-lg w-fit">
+                      <span className="flex items-center gap-1.5 font-bold text-primary dark:text-cream-100 bg-muted dark:bg-white/5 px-2.5 py-1 rounded-lg w-fit">
                         <Users size={14} className="text-accent" /> {r.party_size} Pax
                       </span>
                     </td>
@@ -419,7 +419,7 @@ export default function ReservationsPage() {
         <div className="flex-1 overflow-y-auto custom-scrollbar pr-2 pb-6">
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {tables.map((table) => (
-              <div key={table.id} className={`rounded-2xl border-2 p-6 text-center transition-all bg-white dark:bg-[#1A2620] flex flex-col items-center justify-center min-h-[160px] relative overflow-hidden shadow-card-shadow ${
+              <div key={table.id} className={`rounded-2xl border-2 p-6 text-center transition-all bg-card flex flex-col items-center justify-center min-h-[160px] relative overflow-hidden shadow-card-shadow ${
                 table.status === 'tersedia' || table.status === 'available' ? 'border-green-200 dark:border-green-500/30' :
                 table.status === 'terisi' || table.status === 'occupied' ? 'border-red-200 dark:border-red-500/30' :
                 'border-accent/30'
@@ -428,7 +428,7 @@ export default function ReservationsPage() {
                   <div className={`absolute top-0 left-0 w-full h-1 ${table.status === 'terisi' || table.status === 'occupied' ? 'bg-red-500' : 'bg-accent'}`} />
                 )}
                 <p className="font-heading text-lg font-extrabold text-primary dark:text-cream-100 mb-1">{table.table_number}</p>
-                <p className="text-xs font-medium text-primary/60 dark:text-cream-400/60 mb-4 flex items-center gap-1">
+                <p className="text-xs font-medium text-muted-foreground/60 mb-4 flex items-center gap-1">
                   <Users size={12} className="text-accent" /> {table.capacity} Kursi
                 </p>
                 <span className={`inline-flex rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-wider border shadow-sm ${
@@ -450,18 +450,18 @@ export default function ReservationsPage() {
           {/* CONFIRMATION MODAL */}
           {confirmingRes && (
             <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-              <div className="w-full max-w-md rounded-2xl bg-white dark:bg-[#1A2620] p-6 shadow-2xl border border-black/10 dark:border-white/10 space-y-4 animate-in zoom-in-95 duration-200">
-                <div className="flex items-center justify-between border-b border-black/5 dark:border-white/5 pb-4">
+              <div className="w-full max-w-md rounded-2xl bg-card p-6 shadow-2xl border border-black/10 dark:border-white/10 space-y-4 animate-in zoom-in-95 duration-200">
+                <div className="flex items-center justify-between border-b border-border pb-4">
                   <h3 className="font-heading text-lg font-bold text-primary dark:text-cream-100 flex items-center gap-2">
                     <CheckCircle size={20} className="text-accent" />
                     <span>Konfirmasi Alokasi Meja</span>
                   </h3>
-                  <button onClick={() => setConfirmingRes(null)} className="rounded-lg p-1.5 text-primary/40 dark:text-cream-100/40 hover:bg-gray-100 dark:hover:bg-white/10 transition-colors">
+                  <button onClick={() => setConfirmingRes(null)} className="rounded-lg p-1.5 text-primary/40 dark:text-cream-100/40 hover:bg-muted dark:hover:bg-white/10 transition-colors">
                     <X size={18} />
                   </button>
                 </div>
 
-                <div className="rounded-xl bg-gray-50 dark:bg-white/5 p-4 text-sm space-y-2 border border-black/5 dark:border-white/5">
+                <div className="rounded-xl bg-muted dark:bg-white/5 p-4 text-sm space-y-2 border border-border">
                   <p className="font-bold text-primary dark:text-cream-100">{confirmingRes.customer_name}</p>
                   <div className="flex justify-between items-center text-primary/70 dark:text-cream-400/70">
                     <span>Jadwal:</span>
@@ -472,7 +472,7 @@ export default function ReservationsPage() {
                     <strong className="text-primary dark:text-cream-100">{confirmingRes.party_size} Orang</strong>
                   </div>
                   {confirmingRes.notes && (
-                    <div className="pt-2 mt-2 border-t border-black/5 dark:border-white/5">
+                    <div className="pt-2 mt-2 border-t border-border">
                       <p className="text-xs text-primary/50 dark:text-cream-400/50 italic">&ldquo;{confirmingRes.notes}&rdquo;</p>
                     </div>
                   )}
@@ -480,14 +480,14 @@ export default function ReservationsPage() {
 
                 <form onSubmit={handleApplyConfirmWithTable} className="space-y-4 pt-2">
                   <div>
-                    <label className="block text-[10px] font-bold uppercase tracking-wider text-primary/60 dark:text-cream-400/60 mb-2">
+                    <label className="block text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60 mb-2">
                       Pilih Nomor Meja <span className="text-red-500">*</span>
                     </label>
                     <select
                       required
                       value={selectedTableInput}
                       onChange={(e) => setSelectedTableInput(e.target.value)}
-                      className="w-full rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-black/20 px-4 py-3 text-sm font-bold focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none transition-all text-primary dark:text-cream-100"
+                      className="w-full rounded-xl border border-border bg-white dark:bg-black/20 px-4 py-3 text-sm font-bold focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none transition-all text-primary dark:text-cream-100"
                     >
                       {tables.filter(t => t.status === 'tersedia' || t.status === 'available').map((t) => (
                         <option key={t.id} value={t.id}>
@@ -501,7 +501,7 @@ export default function ReservationsPage() {
                     <button
                       type="button"
                       onClick={() => setConfirmingRes(null)}
-                      className="w-full sm:w-auto rounded-xl px-5 py-2.5 text-sm font-bold text-primary/60 dark:text-cream-400/60 hover:bg-gray-100 dark:hover:bg-white/10 transition-colors"
+                      className="w-full sm:w-auto rounded-xl px-5 py-2.5 text-sm font-bold text-muted-foreground/60 hover:bg-muted dark:hover:bg-white/10 transition-colors"
                     >
                       Batal
                     </button>
@@ -520,13 +520,13 @@ export default function ReservationsPage() {
           {/* NEW RESERVATION MODAL */}
           {isModalOpen && (
             <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-              <div className="w-full max-w-lg rounded-2xl bg-white dark:bg-[#1A2620] p-6 shadow-2xl border border-black/10 dark:border-white/10 space-y-4 max-h-[90vh] overflow-y-auto custom-scrollbar animate-in zoom-in-95 duration-200">
-                <div className="flex items-center justify-between border-b border-black/5 dark:border-white/5 pb-4">
+              <div className="w-full max-w-lg rounded-2xl bg-card p-6 shadow-2xl border border-black/10 dark:border-white/10 space-y-4 max-h-[90vh] overflow-y-auto custom-scrollbar animate-in zoom-in-95 duration-200">
+                <div className="flex items-center justify-between border-b border-border pb-4">
                   <h3 className="font-heading text-lg font-bold text-primary dark:text-cream-100 flex items-center gap-2">
                     <CalendarCheck size={20} className="text-accent" />
                     <span>Buat Reservasi Baru</span>
                   </h3>
-                  <button onClick={() => setIsModalOpen(false)} className="rounded-lg p-1.5 text-primary/40 dark:text-cream-100/40 hover:bg-gray-100 dark:hover:bg-white/10 transition-colors">
+                  <button onClick={() => setIsModalOpen(false)} className="rounded-lg p-1.5 text-primary/40 dark:text-cream-100/40 hover:bg-muted dark:hover:bg-white/10 transition-colors">
                     <X size={18} />
                   </button>
                 </div>
@@ -534,7 +534,7 @@ export default function ReservationsPage() {
                 <form onSubmit={handleSaveNewRes} className="space-y-4">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-[10px] font-bold uppercase tracking-wider text-primary/60 dark:text-cream-400/60 mb-1.5">
+                      <label className="block text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60 mb-1.5">
                         Nama Tamu <span className="text-red-500">*</span>
                       </label>
                       <input
@@ -543,11 +543,11 @@ export default function ReservationsPage() {
                         value={formName}
                         onChange={(e) => setFormName(e.target.value)}
                         placeholder="Contoh: Budi Santoso"
-                        className="w-full rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-black/20 px-4 py-2.5 text-sm font-bold focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none transition-all text-primary dark:text-cream-100"
+                        className="w-full rounded-xl border border-border bg-white dark:bg-black/20 px-4 py-2.5 text-sm font-bold focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none transition-all text-primary dark:text-cream-100"
                       />
                     </div>
                     <div>
-                      <label className="block text-[10px] font-bold uppercase tracking-wider text-primary/60 dark:text-cream-400/60 mb-1.5">
+                      <label className="block text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60 mb-1.5">
                         No. HP/WhatsApp <span className="text-red-500">*</span>
                       </label>
                       <input
@@ -556,14 +556,14 @@ export default function ReservationsPage() {
                         value={formPhone}
                         onChange={(e) => setFormPhone(e.target.value)}
                         placeholder="0811-XXXX-XXXX"
-                        className="w-full rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-black/20 px-4 py-2.5 text-sm font-bold font-mono focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none transition-all text-primary dark:text-cream-100"
+                        className="w-full rounded-xl border border-border bg-white dark:bg-black/20 px-4 py-2.5 text-sm font-bold font-mono focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none transition-all text-primary dark:text-cream-100"
                       />
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div>
-                      <label className="block text-[10px] font-bold uppercase tracking-wider text-primary/60 dark:text-cream-400/60 mb-1.5">
+                      <label className="block text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60 mb-1.5">
                         Tanggal <span className="text-red-500">*</span>
                       </label>
                       <input
@@ -571,11 +571,11 @@ export default function ReservationsPage() {
                         required
                         value={formDate}
                         onChange={(e) => setFormDate(e.target.value)}
-                        className="w-full rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-black/20 px-3 py-2.5 text-sm font-bold font-mono focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none transition-all text-primary dark:text-cream-100"
+                        className="w-full rounded-xl border border-border bg-white dark:bg-black/20 px-3 py-2.5 text-sm font-bold font-mono focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none transition-all text-primary dark:text-cream-100"
                       />
                     </div>
                     <div>
-                      <label className="block text-[10px] font-bold uppercase tracking-wider text-primary/60 dark:text-cream-400/60 mb-1.5">
+                      <label className="block text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60 mb-1.5">
                         Jam <span className="text-red-500">*</span>
                       </label>
                       <input
@@ -583,11 +583,11 @@ export default function ReservationsPage() {
                         required
                         value={formTime}
                         onChange={(e) => setFormTime(e.target.value)}
-                        className="w-full rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-black/20 px-3 py-2.5 text-sm font-bold font-mono focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none transition-all text-primary dark:text-cream-100"
+                        className="w-full rounded-xl border border-border bg-white dark:bg-black/20 px-3 py-2.5 text-sm font-bold font-mono focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none transition-all text-primary dark:text-cream-100"
                       />
                     </div>
                     <div>
-                      <label className="block text-[10px] font-bold uppercase tracking-wider text-primary/60 dark:text-cream-400/60 mb-1.5">
+                      <label className="block text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60 mb-1.5">
                         Jumlah (Pax) <span className="text-red-500">*</span>
                       </label>
                       <input
@@ -596,19 +596,19 @@ export default function ReservationsPage() {
                         required
                         value={formGuests}
                         onChange={(e) => setFormGuests(e.target.value)}
-                        className="w-full rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-black/20 px-3 py-2.5 text-sm font-bold font-mono focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none transition-all text-primary dark:text-cream-100"
+                        className="w-full rounded-xl border border-border bg-white dark:bg-black/20 px-3 py-2.5 text-sm font-bold font-mono focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none transition-all text-primary dark:text-cream-100"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-[10px] font-bold uppercase tracking-wider text-primary/60 dark:text-cream-400/60 mb-1.5">
+                    <label className="block text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60 mb-1.5">
                       Alokasi Meja (Opsional)
                     </label>
                     <select
                       value={formTableId}
                       onChange={(e) => setFormTableId(e.target.value)}
-                      className="w-full rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-black/20 px-4 py-3 text-sm font-bold focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none transition-all text-primary dark:text-cream-100"
+                      className="w-full rounded-xl border border-border bg-white dark:bg-black/20 px-4 py-3 text-sm font-bold focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none transition-all text-primary dark:text-cream-100"
                     >
                       <option value="">-- Biarkan Kosong (Belum Dialokasikan) --</option>
                       {tables.filter(t => t.status === 'tersedia' || t.status === 'available').map((t) => (
@@ -620,7 +620,7 @@ export default function ReservationsPage() {
                   </div>
 
                   <div>
-                    <label className="block text-[10px] font-bold uppercase tracking-wider text-primary/60 dark:text-cream-400/60 mb-1.5">
+                    <label className="block text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60 mb-1.5">
                       Catatan Tambahan
                     </label>
                     <textarea
@@ -628,16 +628,16 @@ export default function ReservationsPage() {
                       value={formNotes}
                       onChange={(e) => setFormNotes(e.target.value)}
                       placeholder="Misal: minta kursi bayi, surprise ultah..."
-                      className="w-full rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-black/20 px-4 py-2.5 text-sm focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none transition-all resize-none text-primary dark:text-cream-100"
+                      className="w-full rounded-xl border border-border bg-white dark:bg-black/20 px-4 py-2.5 text-sm focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none transition-all resize-none text-primary dark:text-cream-100"
                     />
                   </div>
 
-                  <div className="flex flex-col-reverse sm:flex-row items-center justify-end gap-3 pt-4 border-t border-black/5 dark:border-white/5">
+                  <div className="flex flex-col-reverse sm:flex-row items-center justify-end gap-3 pt-4 border-t border-border">
                     <button
                       type="button"
                       onClick={() => setIsModalOpen(false)}
                       disabled={isSubmitting}
-                      className="w-full sm:w-auto rounded-xl px-5 py-2.5 text-sm font-bold text-primary/60 dark:text-cream-400/60 hover:bg-gray-100 dark:hover:bg-white/10 transition-colors"
+                      className="w-full sm:w-auto rounded-xl px-5 py-2.5 text-sm font-bold text-muted-foreground/60 hover:bg-muted dark:hover:bg-white/10 transition-colors"
                     >
                       Batal
                     </button>

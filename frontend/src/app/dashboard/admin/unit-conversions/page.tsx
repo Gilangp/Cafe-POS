@@ -58,10 +58,10 @@ export default function UnitConversionsPage() {
         {loading ? (
           <div className="text-center py-20">Loading...</div>
         ) : (
-          <div className="rounded-3xl border border-gray-100 dark:border-white/10 bg-white dark:bg-[#1A2620] overflow-hidden shadow-sm">
+          <div className="rounded-3xl border border-gray-100 dark:border-white/10 bg-card overflow-hidden shadow-sm">
             <table className="w-full text-sm">
               <thead>
-                <tr className="bg-gray-50 dark:bg-black/20 text-gray-500 uppercase tracking-wider font-bold">
+                <tr className="bg-muted dark:bg-black/20 text-muted-foreground uppercase tracking-wider font-bold">
                   <th className="p-4 text-left">Satuan PO (Pembelian)</th>
                   <th className="p-4 text-center">Faktor Konversi (x)</th>
                   <th className="p-4 text-left">Satuan Dasar (Inventory)</th>
@@ -71,13 +71,13 @@ export default function UnitConversionsPage() {
               <tbody className="divide-y divide-gray-100 dark:divide-white/10">
                 {conversions.length === 0 ? (
                   <tr>
-                    <td colSpan={4} className="p-8 text-center text-gray-500">
+                    <td colSpan={4} className="p-8 text-center text-muted-foreground">
                       Belum ada aturan konversi satuan. Silakan tambah baru.
                     </td>
                   </tr>
                 ) : (
                   conversions.map((conv) => (
-                    <tr key={conv.id} className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
+                    <tr key={conv.id} className="hover:bg-muted dark:hover:bg-white/5 transition-colors">
                       <td className="p-4">
                         <span className="font-bold text-gray-900 dark:text-white">{conv.from_unit}</span>
                       </td>
@@ -85,7 +85,7 @@ export default function UnitConversionsPage() {
                         x {Number(conv.multiplier)}
                       </td>
                       <td className="p-4">
-                        <span className="font-bold text-gray-600 dark:text-gray-300">{conv.to_unit}</span>
+                        <span className="font-bold text-gray-600 dark:text-muted-foreground/50">{conv.to_unit}</span>
                       </td>
                       <td className="p-4 text-center">
                         <button
@@ -106,7 +106,7 @@ export default function UnitConversionsPage() {
 
         {isModalOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4" style={{ zIndex: 9999 }}>
-            <div className="w-full max-w-md rounded-3xl bg-white dark:bg-[#1A2620] p-6 shadow-2xl border border-gray-200 dark:border-white/15">
+            <div className="w-full max-w-md rounded-3xl bg-card p-6 shadow-2xl border border-border">
               <h2 className="text-lg font-bold mb-4 font-heading text-gray-900 dark:text-white">Tambah Konversi Satuan</h2>
               
               {error && (
@@ -115,7 +115,7 @@ export default function UnitConversionsPage() {
 
               <form onSubmit={handleSave} className="space-y-4">
                 <div>
-                  <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 uppercase mb-1">
+                  <label className="block text-xs font-bold text-gray-700 dark:text-muted-foreground/50 uppercase mb-1">
                     Satuan PO (Dari) <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -124,12 +124,12 @@ export default function UnitConversionsPage() {
                     value={form.from_unit}
                     onChange={e => setForm({...form, from_unit: e.target.value})}
                     placeholder="Contoh: kg, karung, lusin"
-                    className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm focus:border-[#BA935D] focus:outline-none dark:bg-black/20 dark:border-white/10 dark:text-white"
+                    className="w-full rounded-xl border border-border px-3 py-2 text-sm focus:border-[#BA935D] focus:outline-none dark:bg-black/20 dark:border-white/10 dark:text-white"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 uppercase mb-1">
+                  <label className="block text-xs font-bold text-gray-700 dark:text-muted-foreground/50 uppercase mb-1">
                     Nilai Konversi (Multiplier) <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -140,12 +140,12 @@ export default function UnitConversionsPage() {
                     value={form.multiplier}
                     onChange={e => setForm({...form, multiplier: e.target.value})}
                     placeholder="1000"
-                    className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm focus:border-[#BA935D] focus:outline-none dark:bg-black/20 dark:border-white/10 dark:text-white font-mono"
+                    className="w-full rounded-xl border border-border px-3 py-2 text-sm focus:border-[#BA935D] focus:outline-none dark:bg-black/20 dark:border-white/10 dark:text-white font-mono"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 uppercase mb-1">
+                  <label className="block text-xs font-bold text-gray-700 dark:text-muted-foreground/50 uppercase mb-1">
                     Satuan Dasar / Inventory (Menjadi) <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -154,16 +154,16 @@ export default function UnitConversionsPage() {
                     value={form.to_unit}
                     onChange={e => setForm({...form, to_unit: e.target.value})}
                     placeholder="Contoh: gram, pcs"
-                    className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm focus:border-[#BA935D] focus:outline-none dark:bg-black/20 dark:border-white/10 dark:text-white"
+                    className="w-full rounded-xl border border-border px-3 py-2 text-sm focus:border-[#BA935D] focus:outline-none dark:bg-black/20 dark:border-white/10 dark:text-white"
                   />
-                  <p className="text-xs text-gray-500 mt-1">Jika beli 1 [Dari], berarti dapat berapa [Menjadi]?</p>
+                  <p className="text-xs text-muted-foreground mt-1">Jika beli 1 [Dari], berarti dapat berapa [Menjadi]?</p>
                 </div>
 
                 <div className="flex gap-2 pt-4">
                   <button
                     type="button"
                     onClick={() => setIsModalOpen(false)}
-                    className="flex-1 rounded-xl bg-gray-100 dark:bg-white/10 px-4 py-2 text-sm font-bold text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-white/20 transition-colors"
+                    className="flex-1 rounded-xl bg-muted dark:bg-muted/50 px-4 py-2 text-sm font-bold text-gray-700 dark:text-muted-foreground/50 hover:bg-muted dark:hover:bg-white/20 transition-colors"
                   >
                     Batal
                   </button>

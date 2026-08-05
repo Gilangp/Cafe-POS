@@ -165,6 +165,7 @@ export const Sidebar = ({ className, isMobile }: { className?: string, isMobile?
   return (
     <motion.aside
       animate={{ width: currentWidth }}
+      initial={false}
       transition={{ type: "spring", bounce: 0, duration: 0.3 }}
       className={cn(
         "flex flex-col h-screen bg-primary dark:bg-[#14201A] border-r border-accent/20 shadow-2xl",
@@ -216,13 +217,6 @@ export const Sidebar = ({ className, isMobile }: { className?: string, isMobile?
           return <SidebarItem key={idx} item={menuGroup} isCollapsed={isCollapsed} isActive={pathname === menuGroup.href} />;
         })}
       </div>
-      
-      {/* Footer minimal info if not collapsed */}
-      {!isCollapsed && (
-        <div className="p-4 border-t border-white/10 text-xs text-center text-accent/60 font-mono tracking-widest shrink-0 uppercase">
-          v2.0.0 Ent.
-        </div>
-      )}
     </motion.aside>
   );
 };

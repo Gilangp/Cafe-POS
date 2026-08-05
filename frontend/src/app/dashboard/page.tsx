@@ -2,41 +2,55 @@
 
 import React, { useEffect, useState } from 'react';
 import { useAuthStore } from '@/store/auth.store';
-import { OwnerDashboard } from '@/features/dashboard/components/OwnerDashboard';
-import { AdminDashboard } from '@/features/dashboard/components/AdminDashboard';
-import { CashierDashboard } from '@/features/dashboard/components/CashierDashboard';
+import { useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
 
 export default function DashboardPage() {
   const { user } = useAuthStore();
   const [isClient, setIsClient] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     setIsClient(true);
   }, []);
 
-  if (!isClient) {
+  useEffect(() => {
+    if (isClient && user) {
+      const role = user.role.toLowerCase();
+      switch (role) {
+        case 'owner':
+          router.replace('/dashboard/owner');
+          break;
+        case 'admin':
+          router.replace('/dashboard/admin');
+          break;
+        case 'kasir':
+          router.replace('/dashboard/kasir');
+          break;
+        case 'dapur':
+        case 'barista':
+        case 'dapur_barista':
+          router.replace('/dashboard/barista');
+          break;
+        default:
+          break;
+      }
+    }
+  }, [isClient, user, router]);
+
+  // While checking or if a valid role is detected (waiting to redirect), show loader
+  if (!isClient || user?.role.match(/owner|admin|kasir|dapur|barista/i)) {
     return (
-      <div className="flex h-[80vh] w-full items-center justify-center">
-        <Loader2 className="w-10 h-10 text-accent animate-spin" />
+      <div className="flex h-[70vh] w-full flex-col items-center justify-center gap-4">
+        <Loader2 className="h-8 w-8 animate-spin text-slate-400" />
+        <p className="text-sm font-medium text-muted-foreground">Memverifikasi sesi...</p>
       </div>
     );
   }
 
-  const role = user?.role.toLowerCase();
-
-  switch (role) {
-    case 'owner':
-      return <OwnerDashboard />;
-    case 'admin':
-      return <AdminDashboard />;
-    case 'kasir':
-      return <CashierDashboard />;
-    default:
-      return (
-        <div className="flex h-[60vh] w-full items-center justify-center">
-          <p>Unrecognized user role. Please contact support.</p>
-        </div>
-      );
-  }
+  return (
+    <div className="flex h-[60vh] w-full items-center justify-center">
+      <p>Unrecognized user role. Please contact support.</p>
+    </div>
+  );
 }

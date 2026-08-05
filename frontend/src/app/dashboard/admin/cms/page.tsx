@@ -47,7 +47,7 @@ const recentContent = [
 
 const statusStyle: Record<string, string> = {
   published: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300',
-  draft: 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300',
+  draft: 'bg-muted text-gray-600 dark:bg-gray-800 dark:text-muted-foreground/50',
   review: 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300',
 };
 
@@ -133,7 +133,7 @@ export default function CmsPage() {
   return (
     <div className="space-y-6 pb-12 -m-6 lg:-m-8 p-6 lg:p-8 selection:bg-[#C89B5C]/30">
       {/* Top Header & Tab Switcher */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-200 dark:border-white/10 pb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-6">
         <div>
           <div className="flex items-center gap-3">
             <h1 className="font-heading text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white tracking-wide">
@@ -143,7 +143,7 @@ export default function CmsPage() {
               Phase 9.1 Ready
             </span>
           </div>
-          <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-1 font-sans">
+          <p className="text-xs sm:text-sm text-muted-foreground mt-1 font-sans">
             Kelola artikel jurnal roastery, atur seksi aktif banner beranda, serta perbarui kontak & jam operasional toko.
           </p>
         </div>
@@ -173,12 +173,12 @@ export default function CmsPage() {
             className={`flex items-center gap-2.5 rounded-2xl px-5 py-3 text-xs sm:text-sm font-bold transition-all shrink-0 ${
               activeTab === t.id
                 ? 'bg-[#1E3D31] text-[#C89B5C] shadow-md'
-                : 'bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 text-gray-600 dark:text-gray-300 hover:border-[#C89B5C]'
+                : 'bg-white dark:bg-white/5 border border-border text-gray-600 dark:text-muted-foreground/50 hover:border-[#C89B5C]'
             }`}
           >
             <t.icon size={16} />
             <span>{t.label}</span>
-            <span className={`rounded-full px-2 py-0.5 text-[10px] ${activeTab === t.id ? 'bg-[#C89B5C] text-[#1E3D31]' : 'bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-300'}`}>
+            <span className={`rounded-full px-2 py-0.5 text-[10px] ${activeTab === t.id ? 'bg-[#C89B5C] text-primary' : 'bg-muted dark:bg-muted/50 text-gray-600 dark:text-muted-foreground/50'}`}>
               {t.count}
             </span>
           </button>
@@ -212,12 +212,12 @@ export default function CmsPage() {
                   <mod.icon size={18} />
                 </div>
                 <p className="text-2xl font-extrabold text-gray-900 dark:text-white font-heading">{mod.count}</p>
-                <p className="text-xs text-gray-500 dark:text-gray-300 font-semibold mt-0.5">{mod.label}</p>
+                <p className="text-xs text-muted-foreground dark:text-muted-foreground/50 font-semibold mt-0.5">{mod.label}</p>
               </button>
             ))}
           </div>
 
-          <div className="rounded-3xl bg-white dark:bg-[#1A2620] border border-gray-200 dark:border-white/10 shadow-sm overflow-hidden">
+          <div className="rounded-3xl bg-card border border-border shadow-sm overflow-hidden">
             <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-white/10">
               <h2 className="font-heading text-base font-bold text-gray-900 dark:text-white">Konten Terbaru ({activeModule.toUpperCase()})</h2>
               <button className="flex items-center gap-1.5 rounded-xl bg-[#1E3D31] px-4 py-2 text-xs font-bold text-[#C89B5C] hover:bg-[#163026]">
@@ -227,7 +227,7 @@ export default function CmsPage() {
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="bg-gray-50 dark:bg-black/30 text-left text-[11px] uppercase tracking-wider text-gray-400 border-b border-gray-100 dark:border-white/10">
+                  <tr className="bg-muted dark:bg-black/30 text-left text-[11px] uppercase tracking-wider text-muted-foreground border-b border-gray-100 dark:border-white/10">
                     <th className="px-6 py-3.5">Judul Artikel / Halaman</th>
                     <th className="px-6 py-3.5">Tipe</th>
                     <th className="px-6 py-3.5">Status</th>
@@ -238,22 +238,22 @@ export default function CmsPage() {
                 </thead>
                 <tbody className="divide-y divide-gray-100 dark:divide-white/5 text-xs">
                   {recentContent.map((c, i) => (
-                    <tr key={i} className="hover:bg-gray-50/60 dark:hover:bg-white/5 transition-colors">
+                    <tr key={i} className="hover:bg-muted/60 dark:hover:bg-white/5 transition-colors">
                       <td className="px-6 py-4 font-bold text-gray-900 dark:text-white max-w-xs truncate">{c.title}</td>
-                      <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{c.type}</td>
+                      <td className="px-6 py-4 text-muted-foreground">{c.type}</td>
                       <td className="px-6 py-4">
                         <span className={`rounded-full px-3 py-1 text-[10px] font-bold ${statusStyle[c.status]}`}>
                           {statusLabel[c.status]}
                         </span>
                       </td>
-                      <td className="px-6 py-4 text-gray-600 dark:text-gray-300 font-medium">{c.author}</td>
-                      <td className="px-6 py-4 text-gray-400">{c.date}</td>
+                      <td className="px-6 py-4 text-gray-600 dark:text-muted-foreground/50 font-medium">{c.author}</td>
+                      <td className="px-6 py-4 text-muted-foreground">{c.date}</td>
                       <td className="px-6 py-4">
                         <div className="flex gap-2">
-                          <button className="flex items-center gap-1 rounded-xl border border-gray-200 dark:border-white/15 px-3 py-1.5 text-[11px] font-bold text-gray-600 dark:text-gray-300 hover:border-[#C89B5C] hover:text-[#C89B5C] transition-all">
+                          <button className="flex items-center gap-1 rounded-xl border border-border px-3 py-1.5 text-[11px] font-bold text-gray-600 dark:text-muted-foreground/50 hover:border-[#C89B5C] hover:text-[#C89B5C] transition-all">
                             <Edit2 size={12} /> Edit
                           </button>
-                          <button className="flex items-center gap-1 rounded-xl border border-gray-200 dark:border-white/15 px-3 py-1.5 text-[11px] font-bold text-gray-600 dark:text-gray-300 hover:border-blue-400 hover:text-blue-500 transition-all">
+                          <button className="flex items-center gap-1 rounded-xl border border-border px-3 py-1.5 text-[11px] font-bold text-gray-600 dark:text-muted-foreground/50 hover:border-blue-400 hover:text-blue-500 transition-all">
                             <Eye size={12} /> Preview
                           </button>
                         </div>
@@ -291,7 +291,7 @@ export default function CmsPage() {
                 <div
                   key={block.id}
                   className={`flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-3xl border-2 p-5 transition-all ${
-                    block.active ? 'bg-white dark:bg-[#1A2620] border-gray-200 dark:border-white/10 shadow-sm hover:border-[#C89B5C]' : 'bg-gray-50 dark:bg-black/30 border-dashed border-gray-200 dark:border-white/10 opacity-60'
+                    block.active ? 'bg-card border-border shadow-sm hover:border-[#C89B5C]' : 'bg-muted dark:bg-black/30 border-dashed border-border opacity-60'
                   }`}
                 >
                   <div className="flex items-start gap-3.5 flex-1 min-w-0">
@@ -303,20 +303,20 @@ export default function CmsPage() {
                         <span className="text-[10px] font-bold uppercase tracking-wider text-[#C89B5C] bg-[#C89B5C]/15 px-2.5 py-0.5 rounded-full">
                           {block.badge}
                         </span>
-                        <span className="font-mono text-[10px] text-gray-400 font-bold">{block.id}</span>
+                        <span className="font-mono text-[10px] text-muted-foreground font-bold">{block.id}</span>
                       </div>
                       <h4 className="font-heading text-sm font-bold text-gray-900 dark:text-white mt-1 truncate">{block.type}</h4>
-                      <p className="text-xs font-bold text-gray-700 dark:text-gray-300 truncate mt-0.5">&ldquo;{block.title}&rdquo;</p>
-                      <p className="text-[11px] text-gray-400 line-clamp-1 mt-0.5">{block.subtitle}</p>
+                      <p className="text-xs font-bold text-gray-700 dark:text-muted-foreground/50 truncate mt-0.5">&ldquo;{block.title}&rdquo;</p>
+                      <p className="text-[11px] text-muted-foreground line-clamp-1 mt-0.5">{block.subtitle}</p>
                     </div>
                   </div>
 
                   <div className="flex items-center justify-between sm:justify-end gap-2 border-t sm:border-t-0 pt-3 sm:pt-0 border-gray-100 dark:border-white/10 shrink-0">
-                    <div className="flex items-center gap-1 bg-gray-100 dark:bg-black/40 p-1 rounded-xl">
+                    <div className="flex items-center gap-1 bg-muted dark:bg-black/40 p-1 rounded-xl">
                       <button
                         onClick={() => moveBlock(idx, 'up')}
                         disabled={idx === 0}
-                        className={`p-1.5 rounded-lg ${idx === 0 ? 'text-gray-300 dark:text-gray-600 cursor-not-allowed' : 'text-gray-700 dark:text-gray-200 hover:bg-white dark:hover:bg-white/10 shadow-sm'}`}
+                        className={`p-1.5 rounded-lg ${idx === 0 ? 'text-muted-foreground/50 dark:text-gray-600 cursor-not-allowed' : 'text-gray-700 dark:text-gray-200 hover:bg-white dark:hover:bg-white/10 shadow-sm'}`}
                         title="Geser ke Atas"
                       >
                         <ArrowUp size={14} />
@@ -325,7 +325,7 @@ export default function CmsPage() {
                         onClick={() => moveBlock(idx, 'down')}
                         disabled={idx === blocks.length - 1}
                         className={`p-1.5 rounded-lg ${
-                          idx === blocks.length - 1 ? 'text-gray-300 dark:text-gray-600 cursor-not-allowed' : 'text-gray-700 dark:text-gray-200 hover:bg-white dark:hover:bg-white/10 shadow-sm'
+                          idx === blocks.length - 1 ? 'text-muted-foreground/50 dark:text-gray-600 cursor-not-allowed' : 'text-gray-700 dark:text-gray-200 hover:bg-white dark:hover:bg-white/10 shadow-sm'
                         }`}
                         title="Geser ke Bawah"
                       >
@@ -335,7 +335,7 @@ export default function CmsPage() {
 
                     <button
                       onClick={() => setEditingBlock({ ...block })}
-                      className="flex items-center gap-1.5 rounded-xl border border-gray-200 dark:border-white/15 px-3 py-2 text-xs font-bold text-gray-700 dark:text-gray-300 hover:border-[#C89B5C] hover:text-[#C89B5C] transition-colors"
+                      className="flex items-center gap-1.5 rounded-xl border border-border px-3 py-2 text-xs font-bold text-gray-700 dark:text-muted-foreground/50 hover:border-[#C89B5C] hover:text-[#C89B5C] transition-colors"
                     >
                       <Settings2 size={13} />
                       <span>Edit</span>
@@ -346,7 +346,7 @@ export default function CmsPage() {
                       className={`flex items-center gap-1.5 rounded-xl px-3 py-2 text-xs font-bold transition-all ${
                         block.active
                           ? 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 hover:bg-emerald-200'
-                          : 'bg-gray-200 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-300'
+                          : 'bg-muted dark:bg-gray-800 text-gray-600 dark:text-muted-foreground hover:bg-gray-300'
                       }`}
                     >
                       {block.active ? <ToggleRight size={16} className="text-emerald-600 dark:text-emerald-400" /> : <ToggleLeft size={16} />}
@@ -359,18 +359,18 @@ export default function CmsPage() {
           </div>
 
           <div className="lg:col-span-5 space-y-4">
-            <div className="rounded-3xl bg-white dark:bg-[#1A2620] border border-gray-200 dark:border-white/10 p-6 shadow-sm space-y-4 sticky top-6">
+            <div className="rounded-3xl bg-card border border-border p-6 shadow-sm space-y-4 sticky top-6">
               <div className="flex items-center justify-between border-b border-gray-100 dark:border-white/10 pb-4">
                 <div className="flex items-center gap-2">
                   <Eye size={18} className="text-[#C89B5C]" />
                   <h3 className="font-heading text-base font-bold text-gray-900 dark:text-white">Live Preview Box</h3>
                 </div>
 
-                <div className="flex rounded-xl bg-gray-100 dark:bg-black/40 p-1">
+                <div className="flex rounded-xl bg-muted dark:bg-black/40 p-1">
                   <button
                     onClick={() => setPreviewDevice('desktop')}
                     className={`flex items-center gap-1 px-3 py-1 text-xs font-bold rounded-lg transition-all ${
-                      previewDevice === 'desktop' ? 'bg-[#1E3D31] text-[#C89B5C] shadow-sm' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900'
+                      previewDevice === 'desktop' ? 'bg-[#1E3D31] text-[#C89B5C] shadow-sm' : 'text-gray-600 dark:text-muted-foreground hover:text-gray-900'
                     }`}
                   >
                     <Monitor size={13} /> Desktop
@@ -378,7 +378,7 @@ export default function CmsPage() {
                   <button
                     onClick={() => setPreviewDevice('mobile')}
                     className={`flex items-center gap-1 px-3 py-1 text-xs font-bold rounded-lg transition-all ${
-                      previewDevice === 'mobile' ? 'bg-[#1E3D31] text-[#C89B5C] shadow-sm' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900'
+                      previewDevice === 'mobile' ? 'bg-[#1E3D31] text-[#C89B5C] shadow-sm' : 'text-gray-600 dark:text-muted-foreground hover:text-gray-900'
                     }`}
                   >
                     <Smartphone size={13} /> Mobile
@@ -391,14 +391,14 @@ export default function CmsPage() {
                   previewDevice === 'mobile' ? 'max-w-[280px] text-[10px]' : 'w-full text-xs'
                 }`}
               >
-                <div className="border-b border-gray-300 dark:border-white/10 pb-2 mb-3 flex items-center justify-between text-gray-500 font-mono text-[10px]">
+                <div className="border-b border-gray-300 dark:border-white/10 pb-2 mb-3 flex items-center justify-between text-muted-foreground font-mono text-[10px]">
                   <span>nemuspace.com/home</span>
                   <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-bold">● Live Sync</span>
                 </div>
 
                 <div className="space-y-3">
                   {blocks.filter((b) => b.active).length === 0 ? (
-                    <div className="py-12 text-center text-gray-400 italic">
+                    <div className="py-12 text-center text-muted-foreground italic">
                       Semua blok disembunyikan. Aktifkan minimal 1 blok.
                     </div>
                   ) : (
@@ -407,23 +407,23 @@ export default function CmsPage() {
                       .map((block, i) => (
                         <div
                           key={block.id}
-                          className="rounded-2xl bg-white dark:bg-black/40 border border-gray-200/80 dark:border-white/10 p-3.5 shadow-sm space-y-1.5 animate-in fade-in"
+                          className="rounded-2xl bg-white dark:bg-black/40 border border-border/80 dark:border-white/10 p-3.5 shadow-sm space-y-1.5 animate-in fade-in"
                         >
                           <div className="flex items-center justify-between">
                             <span className="text-[9px] font-bold uppercase tracking-wider text-[#C89B5C] bg-[#C89B5C]/15 px-2 py-0.5 rounded">
                               #{i + 1} · {block.badge}
                             </span>
-                            <span className="text-[9px] text-gray-400 font-mono">{block.id}</span>
+                            <span className="text-[9px] text-muted-foreground font-mono">{block.id}</span>
                           </div>
                           <p className="font-heading font-bold text-gray-900 dark:text-white text-sm leading-tight">{block.title}</p>
-                          <p className="text-gray-500 dark:text-gray-300 text-[11px] leading-relaxed line-clamp-2">{block.subtitle}</p>
+                          <p className="text-muted-foreground dark:text-muted-foreground/50 text-[11px] leading-relaxed line-clamp-2">{block.subtitle}</p>
                         </div>
                       ))
                   )}
                 </div>
               </div>
 
-              <div className="text-[11px] text-gray-400 text-center flex items-center justify-center gap-1 pt-2">
+              <div className="text-[11px] text-muted-foreground text-center flex items-center justify-center gap-1 pt-2">
                 <span>Perubahan urutan & status aktif langsung direfleksikan di atas.</span>
               </div>
             </div>
@@ -434,20 +434,20 @@ export default function CmsPage() {
       {/* TAB 3: STORE SETTINGS (9.1) */}
       {activeTab === 'settings' && (
         <form onSubmit={handleSaveStoreInfo} className="max-w-3xl space-y-6 animate-in fade-in duration-200">
-          <div className="rounded-3xl bg-white dark:bg-[#1A2620] p-6 sm:p-8 border border-gray-200 dark:border-white/10 shadow-sm space-y-6">
+          <div className="rounded-3xl bg-card p-6 sm:p-8 border border-border shadow-sm space-y-6">
             <div className="border-b border-gray-100 dark:border-white/10 pb-4">
               <h2 className="font-heading text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
                 <Globe size={19} className="text-[#C89B5C]" />
                 <span>Pengaturan Identitas & Jam Operasional Toko (9.1)</span>
               </h2>
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+              <p className="text-xs text-muted-foreground mt-1">
                 Informasi ini akan ditampilkan pada footer beranda, halaman kontak, dan struk reservasi.
               </p>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1.5">
+                <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-muted-foreground/50 mb-1.5">
                   Nama Resmi Roastery
                 </label>
                 <input
@@ -455,28 +455,28 @@ export default function CmsPage() {
                   type="text"
                   value={storeInfo.name}
                   onChange={(e) => setStoreInfo({ ...storeInfo, name: e.target.value })}
-                  className="w-full rounded-2xl border border-gray-200 dark:border-white/15 bg-white dark:bg-black/35 px-4 py-3 text-xs font-bold focus:border-[#C89B5C] focus:outline-none"
+                  className="w-full rounded-2xl border border-border bg-white dark:bg-black/35 px-4 py-3 text-xs font-bold focus:border-[#C89B5C] focus:outline-none"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1.5">
+                <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-muted-foreground/50 mb-1.5">
                   No. Telepon Reservasi / Kasir
                 </label>
                 <div className="relative">
-                  <Phone size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
+                  <Phone size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
                   <input
                     required
                     type="text"
                     value={storeInfo.phone}
                     onChange={(e) => setStoreInfo({ ...storeInfo, phone: e.target.value })}
-                    className="w-full rounded-2xl border border-gray-200 dark:border-white/15 bg-white dark:bg-black/35 py-3 pl-10 pr-4 text-xs font-mono font-bold focus:border-[#C89B5C] focus:outline-none"
+                    className="w-full rounded-2xl border border-border bg-white dark:bg-black/35 py-3 pl-10 pr-4 text-xs font-mono font-bold focus:border-[#C89B5C] focus:outline-none"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1.5">
+                <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-muted-foreground/50 mb-1.5">
                   WhatsApp Booking Meja
                 </label>
                 <input
@@ -484,46 +484,46 @@ export default function CmsPage() {
                   type="text"
                   value={storeInfo.whatsapp}
                   onChange={(e) => setStoreInfo({ ...storeInfo, whatsapp: e.target.value })}
-                  className="w-full rounded-2xl border border-gray-200 dark:border-white/15 bg-white dark:bg-black/35 px-4 py-3 text-xs font-mono font-bold focus:border-[#C89B5C] focus:outline-none"
+                  className="w-full rounded-2xl border border-border bg-white dark:bg-black/35 px-4 py-3 text-xs font-mono font-bold focus:border-[#C89B5C] focus:outline-none"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1.5">
+                <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-muted-foreground/50 mb-1.5">
                   Akun Instagram Resmi
                 </label>
                 <div className="relative">
-                  <Share2 size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
+                  <Share2 size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
                   <input
                     required
                     type="text"
                     value={storeInfo.instagram}
                     onChange={(e) => setStoreInfo({ ...storeInfo, instagram: e.target.value })}
-                    className="w-full rounded-2xl border border-gray-200 dark:border-white/15 bg-white dark:bg-black/35 py-3 pl-10 pr-4 text-xs font-bold focus:border-[#C89B5C] focus:outline-none"
+                    className="w-full rounded-2xl border border-border bg-white dark:bg-black/35 py-3 pl-10 pr-4 text-xs font-bold focus:border-[#C89B5C] focus:outline-none"
                   />
                 </div>
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1.5">
+              <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-muted-foreground/50 mb-1.5">
                 Alamat Flagship Roastery
               </label>
               <div className="relative">
-                <MapPin size={16} className="absolute left-3.5 top-3.5 text-gray-400" />
+                <MapPin size={16} className="absolute left-3.5 top-3.5 text-muted-foreground" />
                 <textarea
                   required
                   rows={2}
                   value={storeInfo.address}
                   onChange={(e) => setStoreInfo({ ...storeInfo, address: e.target.value })}
-                  className="w-full rounded-2xl border border-gray-200 dark:border-white/15 bg-white dark:bg-black/35 py-3 pl-10 pr-4 text-xs focus:border-[#C89B5C] focus:outline-none leading-relaxed"
+                  className="w-full rounded-2xl border border-border bg-white dark:bg-black/35 py-3 pl-10 pr-4 text-xs focus:border-[#C89B5C] focus:outline-none leading-relaxed"
                 />
               </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-t border-gray-100 dark:border-white/10 pt-4">
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1.5 flex items-center gap-1.5">
+                <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-muted-foreground/50 mb-1.5 flex items-center gap-1.5">
                   <Clock size={14} className="text-[#C89B5C]" />
                   <span>Jam Buka Hari Kerja (Senin - Jumat)</span>
                 </label>
@@ -532,12 +532,12 @@ export default function CmsPage() {
                   type="text"
                   value={storeInfo.weekdayHours}
                   onChange={(e) => setStoreInfo({ ...storeInfo, weekdayHours: e.target.value })}
-                  className="w-full rounded-2xl border border-gray-200 dark:border-white/15 bg-white dark:bg-black/35 px-4 py-3 text-xs font-bold focus:border-[#C89B5C] focus:outline-none"
+                  className="w-full rounded-2xl border border-border bg-white dark:bg-black/35 px-4 py-3 text-xs font-bold focus:border-[#C89B5C] focus:outline-none"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1.5 flex items-center gap-1.5">
+                <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-muted-foreground/50 mb-1.5 flex items-center gap-1.5">
                   <Clock size={14} className="text-[#C89B5C]" />
                   <span>Jam Buka Akhir Pekan (Sabtu - Minggu)</span>
                 </label>
@@ -546,7 +546,7 @@ export default function CmsPage() {
                   type="text"
                   value={storeInfo.weekendHours}
                   onChange={(e) => setStoreInfo({ ...storeInfo, weekendHours: e.target.value })}
-                  className="w-full rounded-2xl border border-gray-200 dark:border-white/15 bg-white dark:bg-black/35 px-4 py-3 text-xs font-bold focus:border-[#C89B5C] focus:outline-none"
+                  className="w-full rounded-2xl border border-border bg-white dark:bg-black/35 px-4 py-3 text-xs font-bold focus:border-[#C89B5C] focus:outline-none"
                 />
               </div>
             </div>
@@ -567,47 +567,47 @@ export default function CmsPage() {
       {/* MODAL: EDIT BLOCK PAYLOAD */}
       {editingBlock && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in">
-          <div className="w-full max-w-lg bg-white dark:bg-[#1A2620] rounded-3xl p-6 sm:p-8 shadow-2xl border border-gray-100 dark:border-white/15 space-y-6">
+          <div className="w-full max-w-lg bg-card rounded-3xl p-6 sm:p-8 shadow-2xl border border-gray-100 dark:border-white/15 space-y-6">
             <div className="flex items-center justify-between border-b border-gray-100 dark:border-white/10 pb-4">
               <div className="flex items-center gap-2">
                 <Settings2 size={20} className="text-[#C89B5C]" />
                 <h3 className="font-heading text-lg font-bold text-gray-900 dark:text-white">Edit Blok CMS ({editingBlock.id})</h3>
               </div>
-              <button onClick={() => setEditingBlock(null)} className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-200 dark:bg-white/10 text-gray-600 dark:text-gray-300">
+              <button onClick={() => setEditingBlock(null)} className="flex h-8 w-8 items-center justify-center rounded-full bg-muted dark:bg-white/10 text-gray-600 dark:text-muted-foreground/50">
                 <X size={18} />
               </button>
             </div>
 
             <form onSubmit={handleSaveBlockEdit} className="space-y-4">
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">Tipe Blok</label>
+                <label className="block text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1">Tipe Blok</label>
                 <input
                   type="text"
                   disabled
                   value={editingBlock.type}
-                  className="w-full rounded-2xl border border-gray-200 dark:border-white/15 bg-gray-100 dark:bg-black/30 p-3 text-xs text-gray-600 dark:text-gray-400 font-semibold"
+                  className="w-full rounded-2xl border border-border bg-muted dark:bg-black/30 p-3 text-xs text-gray-600 dark:text-muted-foreground font-semibold"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">Judul Utama / Heading (`Title`)</label>
+                <label className="block text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1">Judul Utama / Heading (`Title`)</label>
                 <input
                   required
                   type="text"
                   value={editingBlock.title}
                   onChange={(e) => setEditingBlock({ ...editingBlock, title: e.target.value })}
-                  className="w-full rounded-2xl border border-gray-200 dark:border-white/15 bg-white dark:bg-black/40 p-3 text-sm font-bold text-gray-900 dark:text-white focus:border-[#C89B5C] focus:outline-none"
+                  className="w-full rounded-2xl border border-border bg-white dark:bg-black/40 p-3 text-sm font-bold text-gray-900 dark:text-white focus:border-[#C89B5C] focus:outline-none"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">Deskripsi & Teks (`Subtitle`)</label>
+                <label className="block text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1">Deskripsi & Teks (`Subtitle`)</label>
                 <textarea
                   required
                   rows={4}
                   value={editingBlock.subtitle}
                   onChange={(e) => setEditingBlock({ ...editingBlock, subtitle: e.target.value })}
-                  className="w-full rounded-2xl border border-gray-200 dark:border-white/15 bg-white dark:bg-black/40 p-3 text-xs text-gray-800 dark:text-gray-200 focus:border-[#C89B5C] focus:outline-none leading-relaxed"
+                  className="w-full rounded-2xl border border-border bg-white dark:bg-black/40 p-3 text-xs text-gray-800 dark:text-gray-200 focus:border-[#C89B5C] focus:outline-none leading-relaxed"
                 />
               </div>
 
@@ -615,7 +615,7 @@ export default function CmsPage() {
                 <button
                   type="button"
                   onClick={() => setEditingBlock(null)}
-                  className="rounded-xl border border-gray-200 dark:border-white/15 px-5 py-2.5 text-xs font-semibold text-gray-600 dark:text-gray-300 hover:bg-gray-100"
+                  className="rounded-xl border border-border px-5 py-2.5 text-xs font-semibold text-gray-600 dark:text-muted-foreground/50 hover:bg-muted"
                 >
                   Batal
                 </button>

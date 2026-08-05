@@ -280,12 +280,12 @@ export default function AdminMenuPage() {
   return (
     <div className="space-y-6 -m-6 lg:-m-8 p-6 lg:p-8 selection:bg-accent/30 animate-fadeIn pb-24">
       {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-200 dark:border-white/10 pb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-6">
         <div>
           <h1 className="font-heading text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white tracking-wide">
             Master Menu
           </h1>
-          <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-1 font-sans">
+          <p className="text-xs sm:text-sm text-muted-foreground mt-1 font-sans">
             Kelola katalog menu, resep HPP, varian, dan status ketersediaan secara real-time.
           </p>
         </div>
@@ -299,47 +299,47 @@ export default function AdminMenuPage() {
 
       {/* Stats Cards */}
       <div className="grid gap-4 sm:grid-cols-4">
-        <div className="flex items-center gap-4 rounded-3xl bg-white dark:bg-[#1A2620] border border-gray-200 dark:border-white/10 p-5 shadow-sm">
+        <div className="flex items-center gap-4 rounded-3xl bg-card border border-border p-5 shadow-sm">
           <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-primary text-accent shadow-md">
             <Coffee size={22} />
           </div>
           <div>
             <p className="text-2xl font-extrabold text-gray-900 dark:text-white font-heading">{menus.length}</p>
-            <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mt-0.5">Total Menu</p>
+            <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider mt-0.5">Total Menu</p>
           </div>
         </div>
-        <div className="flex items-center gap-4 rounded-3xl bg-white dark:bg-[#1A2620] border border-gray-200 dark:border-white/10 p-5 shadow-sm">
+        <div className="flex items-center gap-4 rounded-3xl bg-card border border-border p-5 shadow-sm">
           <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400">
             <Eye size={22} />
           </div>
           <div>
             <p className="text-2xl font-extrabold text-emerald-600 dark:text-emerald-400 font-heading">{menus.filter(m => m.status === 'tersedia').length}</p>
-            <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mt-0.5">Tersedia (Ready)</p>
+            <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider mt-0.5">Tersedia (Ready)</p>
           </div>
         </div>
-        <div className="flex items-center gap-4 rounded-3xl bg-white dark:bg-[#1A2620] border border-gray-200 dark:border-white/10 p-5 shadow-sm">
+        <div className="flex items-center gap-4 rounded-3xl bg-card border border-border p-5 shadow-sm">
           <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-red-500/15 border border-red-500/30 text-red-600 dark:text-red-400">
             <EyeOff size={22} />
           </div>
           <div>
             <p className="text-2xl font-extrabold text-red-600 dark:text-red-400 font-heading">{menus.filter(m => m.status !== 'tersedia').length}</p>
-            <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mt-0.5">Habis / Non-Aktif</p>
+            <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider mt-0.5">Habis / Non-Aktif</p>
           </div>
         </div>
-        <div className="flex items-center gap-4 rounded-3xl bg-white dark:bg-[#1A2620] border border-gray-200 dark:border-white/10 p-5 shadow-sm">
+        <div className="flex items-center gap-4 rounded-3xl bg-card border border-border p-5 shadow-sm">
           <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-accent/15 border border-accent/30 text-accent">
             <Star size={22} />
           </div>
           <div>
             <p className="text-2xl font-extrabold text-accent font-heading">{menus.filter(m => m.is_best_seller).length}</p>
-            <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mt-0.5">Best Seller</p>
+            <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider mt-0.5">Best Seller</p>
           </div>
         </div>
       </div>
 
       {loading ? (
-        <div className="flex flex-col items-center justify-center py-20 text-gray-400 bg-white dark:bg-[#1A2620] rounded-3xl border border-gray-200 dark:border-white/10">
-          <Loader2 size={36} className="animate-spin mb-3 text-accent" />
+        <div className="flex flex-col items-center justify-center py-20 text-muted-foreground bg-card rounded-3xl border border-border">
+          <Loader2 size={36} className="animate-spin mb-3 text-slate-400" />
           <p className="text-xs font-bold">Memuat data master menu...</p>
         </div>
       ) : (
@@ -347,13 +347,13 @@ export default function AdminMenuPage() {
           {/* Filters */}
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div className="relative flex-1 min-w-[260px] max-w-sm">
-              <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
+              <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
               <input 
                 type="text" 
                 placeholder="Cari nama menu..."
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
-                className="w-full rounded-2xl border border-gray-200 dark:border-white/15 bg-white dark:bg-black/35 py-2.5 pl-10 pr-4 text-xs font-medium focus:border-accent focus:outline-none dark:text-white"
+                className="w-full rounded-2xl border border-border bg-white dark:bg-black/35 py-2.5 pl-10 pr-4 text-xs font-medium focus:border-accent focus:outline-none dark:text-white"
               />
             </div>
             <div className="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0 scrollbar-hide">
@@ -362,7 +362,7 @@ export default function AdminMenuPage() {
                 className={`shrink-0 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
                   selectedCategoryId === 'all'
                     ? 'bg-primary text-accent shadow-sm'
-                    : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white bg-white dark:bg-black/30 border border-gray-200 dark:border-white/15'
+                    : 'text-muted-foreground hover:text-gray-900 dark:hover:text-white bg-white dark:bg-black/30 border border-border'
                 }`}
               >
                 Semua ({menus.length})
@@ -374,7 +374,7 @@ export default function AdminMenuPage() {
                   className={`shrink-0 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
                     selectedCategoryId === cat.id
                       ? 'bg-primary text-accent shadow-sm'
-                      : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white bg-white dark:bg-black/30 border border-gray-200 dark:border-white/15'
+                      : 'text-muted-foreground hover:text-gray-900 dark:hover:text-white bg-white dark:bg-black/30 border border-border'
                   }`}
                 >
                   {cat.name}
@@ -403,17 +403,17 @@ export default function AdminMenuPage() {
               return (
               <div 
                 key={menu.id} 
-                className={`group relative bg-white dark:bg-[#1A2620] rounded-3xl border overflow-hidden transition-all hover:shadow-glow flex flex-col h-full animate-fadeIn ${
+                className={`group relative bg-card rounded-3xl border overflow-hidden transition-all hover:shadow-glow flex flex-col h-full animate-fadeIn ${
                   menu.status === 'tersedia' 
-                    ? 'border-gray-200 dark:border-white/10 hover:border-accent/40' 
+                    ? 'border-border hover:border-accent/40' 
                     : 'border-red-200 dark:border-red-900/30 opacity-70'
                 }`}
               >
-                <div className="h-36 bg-gray-100 dark:bg-black/30 relative flex items-center justify-center overflow-hidden">
+                <div className="h-36 bg-muted dark:bg-black/30 relative flex items-center justify-center overflow-hidden">
                   {menu.image ? (
                     <img src={menu.image} alt={menu.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                   ) : (
-                    <Coffee size={36} className="text-gray-300 dark:text-gray-600" />
+                    <Coffee size={36} className="text-muted-foreground/50 dark:text-gray-600" />
                   )}
                   
                   {/* Status Badge */}
@@ -434,8 +434,8 @@ export default function AdminMenuPage() {
                     onClick={() => handleToggleBestSeller(menu)}
                     className={`absolute top-3 right-3 p-2 rounded-full shadow-lg transition-all z-10 ${
                       menu.is_best_seller 
-                        ? 'bg-accent text-primary hover:bg-gray-100 hover:text-gray-400' 
-                        : 'bg-white/80 dark:bg-black/50 text-gray-400 hover:bg-accent hover:text-primary'
+                        ? 'bg-accent text-primary hover:bg-muted hover:text-muted-foreground' 
+                        : 'bg-white/80 dark:bg-black/50 text-muted-foreground hover:bg-accent hover:text-primary'
                     }`}
                     title={menu.is_best_seller ? 'Hapus dari Best Seller' : 'Tandai sebagai Best Seller'}
                   >
@@ -454,21 +454,21 @@ export default function AdminMenuPage() {
                   <div className="mt-auto pt-3 border-t border-gray-100 dark:border-white/5 space-y-3">
                     <div className="flex justify-between items-end">
                       <div>
-                        <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wider mb-0.5">Harga Jual</p>
+                        <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider mb-0.5">Harga Jual</p>
                         <p className="text-xl font-extrabold text-gray-900 dark:text-white font-mono">{formatCurrency(Number(menu.price))}</p>
                       </div>
                       <div className="text-right">
-                        <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wider mb-0.5">HPP</p>
-                        <p className="text-sm font-mono font-bold text-gray-400">{formatCurrency(totalCost)}</p>
+                        <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider mb-0.5">HPP</p>
+                        <p className="text-sm font-mono font-bold text-muted-foreground">{formatCurrency(totalCost)}</p>
                       </div>
                     </div>
 
                     <div className="space-y-1">
                       <div className="flex justify-between text-[10px] font-bold">
                         <span className={margin >= 45 ? 'text-emerald-500' : margin >= 20 ? 'text-accent' : 'text-red-500'}>Margin</span>
-                        <span className="text-gray-400 font-mono">{margin}%</span>
+                        <span className="text-muted-foreground font-mono">{margin}%</span>
                       </div>
-                      <div className="h-1.5 w-full rounded-full bg-gray-100 dark:bg-black/50 overflow-hidden">
+                      <div className="h-1.5 w-full rounded-full bg-muted dark:bg-black/50 overflow-hidden">
                         <div className={`h-full rounded-full transition-all ${margin >= 45 ? 'bg-emerald-500' : margin >= 20 ? 'bg-accent' : 'bg-red-500'}`} style={{ width: `${Math.min(Math.max(margin, 5), 100)}%` }} />
                       </div>
                     </div>
@@ -493,7 +493,7 @@ export default function AdminMenuPage() {
                     <div className="flex items-center gap-2">
                       <button 
                         onClick={() => handleEditMenu(menu)}
-                        className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-gray-50 dark:bg-white/5 text-gray-600 dark:text-gray-300 hover:bg-primary hover:text-accent transition-colors text-xs font-bold border border-transparent hover:border-accent/30"
+                        className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-muted dark:bg-white/5 text-gray-600 dark:text-muted-foreground/50 hover:bg-primary hover:text-accent transition-colors text-xs font-bold border border-transparent hover:border-accent/30"
                       >
                         <Edit2 size={14} /> Edit
                       </button>
@@ -512,15 +512,15 @@ export default function AdminMenuPage() {
 
           {/* Pagination Controls */}
           {totalPages > 1 && (
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 border-t border-gray-200 dark:border-white/10 mt-6">
-              <span className="text-xs text-gray-500 dark:text-gray-400 font-bold text-center sm:text-left">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 border-t border-border mt-6">
+              <span className="text-xs text-muted-foreground font-bold text-center sm:text-left">
                 Menampilkan {(currentPage - 1) * itemsPerPage + 1} - {Math.min(currentPage * itemsPerPage, filteredMenus.length)} dari {filteredMenus.length} menu
               </span>
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                   disabled={currentPage === 1}
-                  className="px-4 py-2 rounded-xl border border-gray-200 dark:border-white/15 text-xs font-bold text-gray-700 dark:text-gray-300 bg-white dark:bg-black/30 hover:border-accent hover:text-accent disabled:opacity-50 transition-colors"
+                  className="px-4 py-2 rounded-xl border border-border text-xs font-bold text-gray-700 dark:text-muted-foreground/50 bg-white dark:bg-black/30 hover:border-accent hover:text-accent disabled:opacity-50 transition-colors"
                 >
                   Sebelumnya
                 </button>
@@ -535,14 +535,14 @@ export default function AdminMenuPage() {
                           className={`w-8 h-8 rounded-lg text-xs font-bold transition-colors border ${
                             currentPage === pageNum 
                               ? 'bg-primary text-accent border-primary' 
-                              : 'bg-white dark:bg-black/30 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-white/15 hover:border-accent hover:text-accent'
+                              : 'bg-white dark:bg-black/30 text-gray-600 dark:text-muted-foreground/50 border-border hover:border-accent hover:text-accent'
                           }`}
                         >
                           {pageNum}
                         </button>
                       );
                     } else if (pageNum === currentPage - 2 || pageNum === currentPage + 2) {
-                      return <span key={pageNum} className="text-gray-400 text-xs">...</span>;
+                      return <span key={pageNum} className="text-muted-foreground text-xs">...</span>;
                     }
                     return null;
                   })}
@@ -550,7 +550,7 @@ export default function AdminMenuPage() {
                 <button
                   onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                   disabled={currentPage === totalPages}
-                  className="px-4 py-2 rounded-xl border border-gray-200 dark:border-white/15 text-xs font-bold text-gray-700 dark:text-gray-300 bg-white dark:bg-black/30 hover:border-accent hover:text-accent disabled:opacity-50 transition-colors"
+                  className="px-4 py-2 rounded-xl border border-border text-xs font-bold text-gray-700 dark:text-muted-foreground/50 bg-white dark:bg-black/30 hover:border-accent hover:text-accent disabled:opacity-50 transition-colors"
                 >
                   Selanjutnya
                 </button>
@@ -570,34 +570,34 @@ export default function AdminMenuPage() {
                 initial={{ scale: 0.95, opacity: 0 }} 
                 animate={{ scale: 1, opacity: 1 }} 
                 exit={{ scale: 0.95, opacity: 0 }}
-                className="relative bg-white dark:bg-[#1A2620] w-full max-w-2xl rounded-3xl p-6 md:p-8 shadow-2xl border border-gray-100 dark:border-white/10 max-h-[90vh] overflow-y-auto custom-scrollbar"
+                className="relative bg-card w-full max-w-2xl rounded-3xl p-6 md:p-8 shadow-2xl border border-gray-100 dark:border-white/10 max-h-[90vh] overflow-y-auto custom-scrollbar"
               >
               <div className="flex items-center justify-between mb-6">
                 <h3 className="font-heading text-2xl font-bold text-gray-900 dark:text-white">
                   {menuForm.id ? 'Edit Menu' : 'Tambah Menu Baru'}
                 </h3>
-                <button onClick={() => setShowMenuModal(false)} className="p-2 bg-gray-100 dark:bg-white/5 rounded-full hover:bg-gray-200"><X size={20}/></button>
+                <button onClick={() => setShowMenuModal(false)} className="p-2 bg-muted dark:bg-white/5 rounded-full hover:bg-muted"><X size={20}/></button>
               </div>
 
               <form onSubmit={handleSaveMenu} className="space-y-5">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                   <div>
-                    <label className="block text-xs font-bold text-gray-500 uppercase mb-2">Nama Menu <span className="text-red-500">*</span></label>
+                    <label className="block text-xs font-bold text-muted-foreground uppercase mb-2">Nama Menu <span className="text-red-500">*</span></label>
                     <input 
                       type="text" 
                       required
                       value={menuForm.name}
                       onChange={e => setMenuForm({...menuForm, name: e.target.value})}
-                      className="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-black/20 border border-gray-100 dark:border-white/5 focus:border-accent focus:ring-1 focus:ring-accent outline-none font-bold dark:text-white"
+                      className="w-full px-4 py-3 rounded-xl bg-muted dark:bg-black/20 border border-gray-100 dark:border-white/5 focus:border-accent focus:ring-1 focus:ring-accent outline-none font-bold dark:text-white"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-bold text-gray-500 uppercase mb-2">Kategori <span className="text-red-500">*</span></label>
+                    <label className="block text-xs font-bold text-muted-foreground uppercase mb-2">Kategori <span className="text-red-500">*</span></label>
                     <select 
                       required
                       value={menuForm.category_id}
                       onChange={e => setMenuForm({...menuForm, category_id: e.target.value})}
-                      className="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-black/20 border border-gray-100 dark:border-white/5 focus:border-accent focus:ring-1 focus:ring-accent outline-none font-bold dark:text-white"
+                      className="w-full px-4 py-3 rounded-xl bg-muted dark:bg-black/20 border border-gray-100 dark:border-white/5 focus:border-accent focus:ring-1 focus:ring-accent outline-none font-bold dark:text-white"
                     >
                       <option value="" disabled>Pilih Kategori</option>
                       {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
@@ -606,29 +606,29 @@ export default function AdminMenuPage() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-gray-500 uppercase mb-2">Harga (Rp) <span className="text-red-500">*</span></label>
+                  <label className="block text-xs font-bold text-muted-foreground uppercase mb-2">Harga (Rp) <span className="text-red-500">*</span></label>
                   <input 
                     type="number" 
                     required
                     min="0"
                     value={menuForm.price}
                     onChange={e => setMenuForm({...menuForm, price: e.target.value})}
-                    className="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-black/20 border border-gray-100 dark:border-white/5 focus:border-accent focus:ring-1 focus:ring-accent outline-none font-mono font-bold text-lg dark:text-white"
+                    className="w-full px-4 py-3 rounded-xl bg-muted dark:bg-black/20 border border-gray-100 dark:border-white/5 focus:border-accent focus:ring-1 focus:ring-accent outline-none font-mono font-bold text-lg dark:text-white"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-gray-500 uppercase mb-2">Deskripsi (Opsional)</label>
+                  <label className="block text-xs font-bold text-muted-foreground uppercase mb-2">Deskripsi (Opsional)</label>
                   <textarea 
                     rows={3}
                     value={menuForm.description || ''}
                     onChange={e => setMenuForm({...menuForm, description: e.target.value})}
-                    className="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-black/20 border border-gray-100 dark:border-white/5 focus:border-accent focus:ring-1 focus:ring-accent outline-none text-sm dark:text-white"
+                    className="w-full px-4 py-3 rounded-xl bg-muted dark:bg-black/20 border border-gray-100 dark:border-white/5 focus:border-accent focus:ring-1 focus:ring-accent outline-none text-sm dark:text-white"
                   />
                 </div>
 
                 <div className="flex justify-end gap-3 pt-6 border-t border-gray-100 dark:border-white/10 mt-6">
-                  <button type="button" onClick={() => setShowMenuModal(false)} className="px-6 py-3 rounded-xl font-bold text-gray-500 hover:bg-gray-100 dark:hover:bg-white/5">Batal</button>
+                  <button type="button" onClick={() => setShowMenuModal(false)} className="px-6 py-3 rounded-xl font-bold text-muted-foreground hover:bg-muted dark:hover:bg-white/5">Batal</button>
                   <button type="submit" disabled={isSubmitting} className="px-8 py-3 rounded-xl font-bold bg-accent text-primary hover:bg-[#b88c4d] disabled:opacity-50 flex items-center gap-2 shadow-lg shadow-accent/20">
                     {isSubmitting ? <Loader2 size={18} className="animate-spin" /> : 'Simpan Menu'}
                   </button>
@@ -652,9 +652,9 @@ export default function AdminMenuPage() {
                 animate={{ x: 0 }} 
                 exit={{ x: '100%' }}
                 transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                className="relative bg-white dark:bg-[#1A2620] w-full max-w-xl h-full shadow-2xl border-l border-gray-100 dark:border-white/10 flex flex-col"
+                className="relative bg-card w-full max-w-xl h-full shadow-2xl border-l border-gray-100 dark:border-white/10 flex flex-col"
               >
-              <div className="p-6 border-b border-gray-100 dark:border-white/10 flex justify-between items-center bg-gray-50 dark:bg-black/20">
+              <div className="p-6 border-b border-gray-100 dark:border-white/10 flex justify-between items-center bg-muted dark:bg-black/20">
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 rounded-2xl bg-primary flex items-center justify-center text-accent">
                     <ChefHat size={24} />
@@ -664,19 +664,19 @@ export default function AdminMenuPage() {
                     <p className="text-xs font-bold text-accent">{bomMenu.name}</p>
                   </div>
                 </div>
-                <button onClick={() => setShowBomDrawer(false)} className="p-2 text-gray-500 hover:bg-gray-200 dark:hover:bg-white/10 rounded-full transition-colors"><X size={20}/></button>
+                <button onClick={() => setShowBomDrawer(false)} className="p-2 text-muted-foreground hover:bg-muted dark:hover:bg-white/10 rounded-full transition-colors"><X size={20}/></button>
               </div>
 
               <div className="flex-1 overflow-y-auto p-6 space-y-6">
                 {/* Add new ingredient */}
-                <form onSubmit={handleAddBomItem} className="bg-gray-50 dark:bg-black/20 p-4 rounded-2xl border border-gray-200 dark:border-white/10 space-y-4">
-                  <h4 className="text-xs font-bold text-gray-500 uppercase flex items-center gap-2"><PackageOpen size={16}/> Tambah Bahan Baku</h4>
+                <form onSubmit={handleAddBomItem} className="bg-muted dark:bg-black/20 p-4 rounded-2xl border border-border space-y-4">
+                  <h4 className="text-xs font-bold text-muted-foreground uppercase flex items-center gap-2"><PackageOpen size={16}/> Tambah Bahan Baku</h4>
                   <div className="flex flex-col gap-3">
                     <select 
                       required
                       value={newIngredientId}
                       onChange={e => setNewIngredientId(e.target.value)}
-                      className="w-full px-4 py-3 rounded-xl bg-white dark:bg-black/40 border border-gray-200 dark:border-white/10 focus:ring-2 focus:ring-accent outline-none text-sm font-bold dark:text-white"
+                      className="w-full px-4 py-3 rounded-xl bg-white dark:bg-black/40 border border-border focus:ring-2 focus:ring-accent outline-none text-sm font-bold dark:text-white"
                     >
                       <option value="" disabled>Pilih Inventory / Raw Material</option>
                       {inventories.map(inv => (
@@ -692,9 +692,9 @@ export default function AdminMenuPage() {
                           placeholder="Jumlah"
                           value={newIngredientQty}
                           onChange={e => setNewIngredientQty(e.target.value)}
-                          className="w-full pl-4 pr-12 py-3 rounded-xl bg-white dark:bg-black/40 border border-gray-200 dark:border-white/10 focus:ring-2 focus:ring-accent outline-none text-sm text-center font-mono dark:text-white"
+                          className="w-full pl-4 pr-12 py-3 rounded-xl bg-white dark:bg-black/40 border border-border focus:ring-2 focus:ring-accent outline-none text-sm text-center font-mono dark:text-white"
                         />
-                        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] font-bold text-gray-400 pointer-events-none uppercase">
+                        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] font-bold text-muted-foreground pointer-events-none uppercase">
                           {inventories.find(i => i.id === newIngredientId)?.unit || ''}
                         </span>
                       </div>
@@ -707,9 +707,9 @@ export default function AdminMenuPage() {
 
                 {/* List Ingredients */}
                 <div className="space-y-3">
-                  <h4 className="text-xs font-bold text-gray-500 uppercase">Daftar Komposisi & Kalkulasi</h4>
+                  <h4 className="text-xs font-bold text-muted-foreground uppercase">Daftar Komposisi & Kalkulasi</h4>
                   {bomIngredients.length === 0 ? (
-                    <div className="text-center py-8 text-gray-400 text-sm font-medium border-2 border-dashed border-gray-200 dark:border-white/10 rounded-2xl">
+                    <div className="text-center py-8 text-muted-foreground text-sm font-medium border-2 border-dashed border-border rounded-2xl">
                       Belum ada komposisi bahan baku.
                     </div>
                   ) : (
@@ -718,10 +718,10 @@ export default function AdminMenuPage() {
                         const inv = inventories.find(i => i.id === bom.inventory_id);
                         const cost = inv ? Number(inv.unit_price) * Number(bom.quantity_used) : 0;
                         return (
-                          <div key={idx} className="flex items-center justify-between p-4 bg-white dark:bg-[#1A2620] border border-gray-100 dark:border-white/10 rounded-2xl shadow-sm hover:border-accent transition-colors">
+                          <div key={idx} className="flex items-center justify-between p-4 bg-card border border-gray-100 dark:border-white/10 rounded-2xl shadow-sm hover:border-accent transition-colors">
                             <div>
                               <p className="font-bold text-gray-900 dark:text-white">{inv?.name || 'Unknown'}</p>
-                              <p className="text-xs text-gray-500 mt-1">Takaran: <strong className="text-accent">{bom.quantity_used} {inv?.unit}</strong> (@ {formatCurrency(Number(inv?.unit_price || 0))}/{inv?.unit})</p>
+                              <p className="text-xs text-muted-foreground mt-1">Takaran: <strong className="text-accent">{bom.quantity_used} {inv?.unit}</strong> (@ {formatCurrency(Number(inv?.unit_price || 0))}/{inv?.unit})</p>
                             </div>
                             <div className="flex items-center gap-4">
                               <span className="font-mono font-bold text-gray-900 dark:text-white">{formatCurrency(cost)}</span>
@@ -739,7 +739,7 @@ export default function AdminMenuPage() {
                 {/* Summary HPP */}
                 {bomIngredients.length > 0 && (
                   <div className="bg-accent/10 border border-accent/20 rounded-2xl p-5 space-y-2">
-                    <div className="flex justify-between text-sm font-bold text-gray-700 dark:text-gray-300">
+                    <div className="flex justify-between text-sm font-bold text-gray-700 dark:text-muted-foreground/50">
                       <span>Harga Jual Menu</span>
                       <span className="font-mono">{formatCurrency(Number(bomMenu.price))}</span>
                     </div>
@@ -771,7 +771,7 @@ export default function AdminMenuPage() {
 
               </div>
 
-              <div className="p-6 border-t border-gray-100 dark:border-white/10 bg-gray-50 dark:bg-black/20">
+              <div className="p-6 border-t border-gray-100 dark:border-white/10 bg-muted dark:bg-black/20">
                 <button 
                   onClick={handleSaveBom}
                   disabled={isSubmitting}
@@ -798,9 +798,9 @@ export default function AdminMenuPage() {
                 animate={{ x: 0 }} 
                 exit={{ x: '100%' }}
                 transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                className="relative bg-white dark:bg-[#1A2620] w-full max-w-md h-full shadow-2xl border-l border-gray-100 dark:border-white/10 flex flex-col"
+                className="relative bg-card w-full max-w-md h-full shadow-2xl border-l border-gray-100 dark:border-white/10 flex flex-col"
               >
-              <div className="p-6 border-b border-gray-100 dark:border-white/10 flex justify-between items-center bg-gray-50 dark:bg-black/20">
+              <div className="p-6 border-b border-gray-100 dark:border-white/10 flex justify-between items-center bg-muted dark:bg-black/20">
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 rounded-2xl bg-accent flex items-center justify-center text-primary">
                     <Settings2 size={24} />
@@ -810,16 +810,16 @@ export default function AdminMenuPage() {
                     <p className="text-xs font-bold text-accent">{menuVariantMenu.name}</p>
                   </div>
                 </div>
-                <button onClick={() => setShowMenuVariantDrawer(false)} className="p-2 text-gray-500 hover:bg-gray-200 dark:hover:bg-white/10 rounded-full transition-colors"><X size={20}/></button>
+                <button onClick={() => setShowMenuVariantDrawer(false)} className="p-2 text-muted-foreground hover:bg-muted dark:hover:bg-white/10 rounded-full transition-colors"><X size={20}/></button>
               </div>
 
               <div className="flex-1 overflow-y-auto p-6 space-y-4">
-                <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-4">
+                <p className="text-sm font-medium text-muted-foreground mb-4">
                   Pilih Master Varian yang tersedia untuk menu ini. Anda juga bisa mengatur apakah varian tersebut wajib dipilih atau opsional.
                 </p>
 
                 {variants.length === 0 ? (
-                  <div className="text-center py-8 text-gray-400 text-sm font-medium border-2 border-dashed border-gray-200 dark:border-white/10 rounded-2xl">
+                  <div className="text-center py-8 text-muted-foreground text-sm font-medium border-2 border-dashed border-border rounded-2xl">
                     Belum ada Master Varian. Tambahkan di menu Kategori & Varian.
                   </div>
                 ) : (
@@ -834,7 +834,7 @@ export default function AdminMenuPage() {
                           className={`p-4 rounded-2xl border-2 transition-all cursor-pointer ${
                             isActive 
                               ? 'border-accent bg-accent/5' 
-                              : 'border-gray-100 dark:border-white/5 bg-white dark:bg-[#1A2620] hover:border-accent/40'
+                              : 'border-gray-100 dark:border-white/5 bg-card hover:border-accent/40'
                           }`}
                         >
                           <div className="flex items-center justify-between" onClick={() => handleToggleVariantGroup(vg.id, vg.type === 'single')}>
@@ -842,7 +842,7 @@ export default function AdminMenuPage() {
                               <h4 className={`font-bold ${isActive ? 'text-accent' : 'text-gray-900 dark:text-white'}`}>
                                 {vg.name}
                               </h4>
-                              <p className="text-xs font-medium text-gray-500 mt-1">
+                              <p className="text-xs font-medium text-muted-foreground mt-1">
                                 {vg.options.length} Opsi • {vg.type === 'single' ? 'Pilih Satu' : 'Pilih Banyak'}
                               </p>
                             </div>
@@ -854,8 +854,8 @@ export default function AdminMenuPage() {
                           </div>
                           
                           {isActive && (
-                            <div className="mt-4 pt-4 border-t border-gray-200 dark:border-white/10 flex items-center justify-between" onClick={e => e.stopPropagation()}>
-                              <span className="text-xs font-bold text-gray-600 dark:text-gray-300">Wajib Dipilih?</span>
+                            <div className="mt-4 pt-4 border-t border-border flex items-center justify-between" onClick={e => e.stopPropagation()}>
+                              <span className="text-xs font-bold text-gray-600 dark:text-muted-foreground/50">Wajib Dipilih?</span>
                               <label className="relative inline-flex items-center cursor-pointer">
                                 <input 
                                   type="checkbox" 
@@ -863,7 +863,7 @@ export default function AdminMenuPage() {
                                   checked={currentLink?.is_required || false}
                                   onChange={(e) => handleUpdateVariantRequired(vg.id, e.target.checked)}
                                 />
-                                <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-accent"></div>
+                                <div className="w-9 h-5 bg-muted peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-accent"></div>
                               </label>
                             </div>
                           )}
@@ -874,7 +874,7 @@ export default function AdminMenuPage() {
                 )}
               </div>
 
-              <div className="p-6 border-t border-gray-100 dark:border-white/10 bg-gray-50 dark:bg-black/20">
+              <div className="p-6 border-t border-gray-100 dark:border-white/10 bg-muted dark:bg-black/20">
                 <button 
                   onClick={handleSaveMenuVariants}
                   disabled={isSubmitting}

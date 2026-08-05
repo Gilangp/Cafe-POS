@@ -139,7 +139,7 @@ export default function ProcurementSuppliersPage() {
               </span>
             )}
           </div>
-          <p className="text-sm text-gray-500 mt-1">
+          <p className="text-sm text-muted-foreground mt-1">
             Restrukturisasi modul pengadaan (<span className="font-semibold text-gray-700">/admin/procurement/suppliers</span>) untuk pengelolaan vendor bahan baku resmi.
           </p>
         </div>
@@ -165,12 +165,12 @@ export default function ProcurementSuppliersPage() {
 
       {/* Search Bar */}
       <div className="relative max-w-sm">
-        <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
+        <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
         <input
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Cari nama supplier, kode, atau PIC..."
-          className="w-full rounded-xl border border-gray-200 bg-white py-2.5 pl-10 pr-4 text-sm focus:outline-none focus:ring-1"
+          className="w-full rounded-xl border border-border bg-white py-2.5 pl-10 pr-4 text-sm focus:outline-none focus:ring-1"
           style={{
             '--tw-ring-color': THEME_COLORS.accent,
             '--tw-border-opacity': '1',
@@ -187,30 +187,30 @@ export default function ProcurementSuppliersPage() {
       {/* Suppliers Table or Loading State */}
       {loading ? (
         <div className="flex flex-col items-center justify-center py-20 bg-white rounded-2xl border border-gray-100">
-          <Loader2 size={36} className="animate-spin mb-3" style={{ color: THEME_COLORS.accent }} />
-          <p className="text-sm font-semibold text-gray-400">Memuat daftar supplier dari server...</p>
+          <Loader2 size={36} className="animate-spin mb-3 text-slate-400" />
+          <p className="text-sm font-semibold text-muted-foreground">Memuat daftar supplier dari server...</p>
         </div>
       ) : filtered.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 bg-white rounded-2xl border border-gray-100">
-          <p className="text-sm font-semibold text-gray-400">Tidak ada supplier yang sesuai dengan pencarian Anda</p>
+          <p className="text-sm font-semibold text-muted-foreground">Tidak ada supplier yang sesuai dengan pencarian Anda</p>
         </div>
       ) : (
         <div className="rounded-2xl bg-white border border-gray-100 shadow-sm overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="bg-gray-50 border-b border-gray-100">
-                  <th className="px-6 py-4 text-left text-[11px] uppercase tracking-wider text-gray-400">Kode & Supplier</th>
-                  <th className="px-6 py-4 text-left text-[11px] uppercase tracking-wider text-gray-400">Kategori</th>
-                  <th className="px-6 py-4 text-left text-[11px] uppercase tracking-wider text-gray-400">PIC & Kontak</th>
-                  <th className="px-6 py-4 text-left text-[11px] uppercase tracking-wider text-gray-400">Alamat / Lokasi</th>
-                  <th className="px-6 py-4 text-left text-[11px] uppercase tracking-wider text-gray-400">Status</th>
-                  <th className="px-6 py-4 text-left text-[11px] uppercase tracking-wider text-gray-400">Aksi</th>
+                <tr className="bg-muted border-b border-gray-100">
+                  <th className="px-6 py-4 text-left text-[11px] uppercase tracking-wider text-muted-foreground">Kode & Supplier</th>
+                  <th className="px-6 py-4 text-left text-[11px] uppercase tracking-wider text-muted-foreground">Kategori</th>
+                  <th className="px-6 py-4 text-left text-[11px] uppercase tracking-wider text-muted-foreground">PIC & Kontak</th>
+                  <th className="px-6 py-4 text-left text-[11px] uppercase tracking-wider text-muted-foreground">Alamat / Lokasi</th>
+                  <th className="px-6 py-4 text-left text-[11px] uppercase tracking-wider text-muted-foreground">Status</th>
+                  <th className="px-6 py-4 text-left text-[11px] uppercase tracking-wider text-muted-foreground">Aksi</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
                 {filtered.map((s) => (
-                  <tr key={s.id} className="hover:bg-gray-50/50 transition-colors">
+                  <tr key={s.id} className="hover:bg-muted/50 transition-colors">
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2.5">
                         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-[#BA935D]" style={{ backgroundColor: THEME_COLORS.light }}>
@@ -218,14 +218,14 @@ export default function ProcurementSuppliersPage() {
                         </div>
                         <div>
                           <p className="text-sm font-bold text-gray-800 leading-tight">{s.name}</p>
-                          <p className="text-[10px] font-mono text-gray-400 mt-0.5">{s.code || 'NO-CODE'}</p>
+                          <p className="text-[10px] font-mono text-muted-foreground mt-0.5">{s.code || 'NO-CODE'}</p>
                         </div>
                       </div>
                     </td>
                     <td className="px-6 py-4">
                       <span
                         className={`rounded-full px-3 py-1 text-[11px] font-bold ${
-                          categoryColor[s.category || ''] || 'bg-gray-100 text-gray-600'
+                          categoryColor[s.category || ''] || 'bg-muted text-gray-600'
                         }`}
                       >
                         {s.category || 'Umum'}
@@ -233,7 +233,7 @@ export default function ProcurementSuppliersPage() {
                     </td>
                     <td className="px-6 py-4">
                       <p className="text-xs font-semibold text-gray-800">{s.contact_person || '-'}</p>
-                      <div className="flex flex-col gap-0.5 text-[11px] text-gray-500 mt-0.5">
+                      <div className="flex flex-col gap-0.5 text-[11px] text-muted-foreground mt-0.5">
                         {s.phone && (
                           <span className="flex items-center gap-1">
                             <Phone size={10} className="text-[#BA935D]" /> {s.phone}
@@ -246,10 +246,10 @@ export default function ProcurementSuppliersPage() {
                         )}
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-xs text-gray-500 max-w-xs truncate">
+                    <td className="px-6 py-4 text-xs text-muted-foreground max-w-xs truncate">
                       {s.address ? (
                         <span className="flex items-center gap-1 truncate" title={s.address}>
-                          <MapPin size={12} className="shrink-0 text-gray-400" />
+                          <MapPin size={12} className="shrink-0 text-muted-foreground" />
                           <span className="truncate">{s.address}</span>
                         </span>
                       ) : (
@@ -259,7 +259,7 @@ export default function ProcurementSuppliersPage() {
                     <td className="px-6 py-4">
                       <span
                         className={`rounded-full px-2.5 py-1 text-[10px] font-bold ${
-                          s.is_active ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-400'
+                          s.is_active ? 'bg-emerald-100 text-emerald-700' : 'bg-muted text-muted-foreground'
                         }`}
                       >
                         {s.is_active ? 'Aktif' : 'Nonaktif'}
@@ -271,7 +271,7 @@ export default function ProcurementSuppliersPage() {
                           <button
                             onClick={() => handleOpenEdit(s)}
                             title="Edit Supplier"
-                            className="flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 text-gray-600 hover:border-[#BA935D] hover:text-[#BA935D] transition-colors"
+                            className="flex h-8 w-8 items-center justify-center rounded-lg border border-border text-gray-600 hover:border-[#BA935D] hover:text-[#BA935D] transition-colors"
                           >
                             <Edit2 size={14} />
                           </button>
@@ -306,7 +306,7 @@ export default function ProcurementSuppliersPage() {
               </h2>
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="rounded-lg p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors"
+                className="rounded-lg p-1 text-muted-foreground hover:bg-muted hover:text-gray-600 transition-colors"
               >
                 <X size={18} />
               </button>
@@ -323,7 +323,7 @@ export default function ProcurementSuppliersPage() {
                   value={formName}
                   onChange={(e) => setFormName(e.target.value)}
                   placeholder="Contoh: PT Agri Nusantara Kopi"
-                  className="w-full rounded-xl border border-gray-200 px-3.5 py-2.5 text-sm focus:border-[#BA935D] focus:outline-none"
+                  className="w-full rounded-xl border border-border px-3.5 py-2.5 text-sm focus:border-[#BA935D] focus:outline-none"
                 />
               </div>
 
@@ -335,7 +335,7 @@ export default function ProcurementSuppliersPage() {
                     value={formCode}
                     onChange={(e) => setFormCode(e.target.value)}
                     placeholder="SUP-010"
-                    className="w-full rounded-xl border border-gray-200 px-3.5 py-2.5 text-sm focus:border-[#BA935D] focus:outline-none font-mono uppercase"
+                    className="w-full rounded-xl border border-border px-3.5 py-2.5 text-sm focus:border-[#BA935D] focus:outline-none font-mono uppercase"
                   />
                 </div>
 
@@ -346,7 +346,7 @@ export default function ProcurementSuppliersPage() {
                   <select
                     value={formCategory}
                     onChange={(e) => setFormCategory(e.target.value)}
-                    className="w-full rounded-xl border border-gray-200 px-3.5 py-2.5 text-sm focus:border-[#BA935D] focus:outline-none font-semibold"
+                    className="w-full rounded-xl border border-border px-3.5 py-2.5 text-sm focus:border-[#BA935D] focus:outline-none font-semibold"
                   >
                     {['Kopi', 'Dairy', 'Sirup', 'Baking', 'Kemasan', 'Umum'].map((c) => (
                       <option key={c} value={c}>
@@ -365,7 +365,7 @@ export default function ProcurementSuppliersPage() {
                     value={formContact}
                     onChange={(e) => setFormContact(e.target.value)}
                     placeholder="Pak Hendra"
-                    className="w-full rounded-xl border border-gray-200 px-3.5 py-2.5 text-sm focus:border-[#BA935D] focus:outline-none"
+                    className="w-full rounded-xl border border-border px-3.5 py-2.5 text-sm focus:border-[#BA935D] focus:outline-none"
                   />
                 </div>
 
@@ -376,7 +376,7 @@ export default function ProcurementSuppliersPage() {
                     value={formPhone}
                     onChange={(e) => setFormPhone(e.target.value)}
                     placeholder="0812-3456-7890"
-                    className="w-full rounded-xl border border-gray-200 px-3.5 py-2.5 text-sm focus:border-[#BA935D] focus:outline-none"
+                    className="w-full rounded-xl border border-border px-3.5 py-2.5 text-sm focus:border-[#BA935D] focus:outline-none"
                   />
                 </div>
               </div>
@@ -388,7 +388,7 @@ export default function ProcurementSuppliersPage() {
                   value={formEmail}
                   onChange={(e) => setFormEmail(e.target.value)}
                   placeholder="info@supplier.co.id"
-                  className="w-full rounded-xl border border-gray-200 px-3.5 py-2.5 text-sm focus:border-[#BA935D] focus:outline-none"
+                  className="w-full rounded-xl border border-border px-3.5 py-2.5 text-sm focus:border-[#BA935D] focus:outline-none"
                 />
               </div>
 
@@ -399,7 +399,7 @@ export default function ProcurementSuppliersPage() {
                   value={formAddress}
                   onChange={(e) => setFormAddress(e.target.value)}
                   placeholder="Alamat kantor atau gudang supplier..."
-                  className="w-full rounded-xl border border-gray-200 px-3.5 py-2 text-sm focus:border-[#BA935D] focus:outline-none"
+                  className="w-full rounded-xl border border-border px-3.5 py-2 text-sm focus:border-[#BA935D] focus:outline-none"
                 />
               </div>
 
@@ -407,7 +407,7 @@ export default function ProcurementSuppliersPage() {
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="rounded-xl border border-gray-200 px-4 py-2 text-xs font-bold text-gray-600 hover:bg-gray-50 transition-colors"
+                  className="rounded-xl border border-border px-4 py-2 text-xs font-bold text-gray-600 hover:bg-muted transition-colors"
                 >
                   Batal
                 </button>

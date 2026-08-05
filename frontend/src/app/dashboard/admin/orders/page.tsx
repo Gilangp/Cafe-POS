@@ -23,7 +23,7 @@ const statusStyle: Record<string, string> = {
   pending: 'bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400',
   preparing: 'bg-amber-50 text-amber-600 dark:bg-amber-500/10 dark:text-amber-400',
   ready: 'bg-green-50 text-green-600 dark:bg-green-500/10 dark:text-green-400',
-  completed: 'bg-gray-100 text-gray-600 dark:bg-white/10 dark:text-cream-400 font-bold',
+  completed: 'bg-muted text-gray-600 dark:bg-white/10 dark:text-cream-400 font-bold',
   cancelled: 'bg-red-50 text-red-600 dark:bg-red-500/10 dark:text-red-400',
 };
 
@@ -151,7 +151,7 @@ export default function OrdersPage() {
           <button
             onClick={() => fetchTransactions(true)}
             disabled={refreshing}
-            className="flex items-center gap-2 rounded-xl bg-white dark:bg-[#1A2620] border border-black/5 dark:border-white/5 px-4 py-2.5 text-sm font-bold text-primary dark:text-cream-100 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors shadow-sm disabled:opacity-50"
+            className="flex items-center gap-2 rounded-xl bg-card border border-border px-4 py-2.5 text-sm font-bold text-primary dark:text-cream-100 hover:bg-muted dark:hover:bg-white/5 transition-colors shadow-sm disabled:opacity-50"
           >
             <RefreshCw size={16} className={refreshing ? "animate-spin" : ""} /> 
             {refreshing ? "Menyegarkan..." : "Segarkan"}
@@ -167,14 +167,14 @@ export default function OrdersPage() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Cari No. Invoice, Nama, Meja, Tipe, atau Status..."
-            className="w-full rounded-xl border border-black/5 dark:border-white/10 bg-white dark:bg-[#1A2620] py-3 pl-11 pr-4 text-sm text-primary dark:text-cream-100 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent shadow-sm"
+            className="w-full rounded-xl border border-border bg-card py-3 pl-11 pr-4 text-sm text-primary dark:text-cream-100 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent shadow-sm"
           />
         </div>
         <div className="relative">
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="appearance-none rounded-xl border border-black/5 dark:border-white/10 bg-white dark:bg-[#1A2620] py-3 pl-4 pr-10 text-sm text-primary dark:text-cream-100 focus:border-accent focus:outline-none shadow-sm cursor-pointer"
+            className="appearance-none rounded-xl border border-border bg-card py-3 pl-4 pr-10 text-sm text-primary dark:text-cream-100 focus:border-accent focus:outline-none shadow-sm cursor-pointer"
           >
             <option value="all">Semua Status</option>
             <option value="pending">Baru Masuk</option>
@@ -189,16 +189,16 @@ export default function OrdersPage() {
 
       {/* Orders Table */}
       {loading ? (
-        <div className="flex flex-col items-center justify-center py-20 text-primary/40 dark:text-cream-400/40 bg-white dark:bg-[#1A2620] rounded-2xl border border-black/5 dark:border-white/5 shadow-sm">
-          <Loader2 size={36} className="animate-spin mb-3 text-accent" />
+        <div className="flex flex-col items-center justify-center py-20 text-primary/40 dark:text-cream-400/40 bg-card rounded-2xl border border-border shadow-sm">
+          <Loader2 size={36} className="animate-spin mb-3 text-slate-400" />
           <p className="text-sm font-semibold">Memuat riwayat transaksi POS...</p>
         </div>
       ) : (
-        <div className="rounded-2xl bg-white dark:bg-[#1A2620] border border-black/5 dark:border-white/5 shadow-card-shadow overflow-hidden">
+        <div className="rounded-2xl bg-card border border-border shadow-card-shadow overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="bg-gray-50 dark:bg-black/20 text-left text-[11px] uppercase tracking-wider text-primary/60 dark:text-cream-400/60 border-b border-black/5 dark:border-white/5">
+                <tr className="bg-muted dark:bg-black/20 text-left text-[11px] uppercase tracking-wider text-muted-foreground/60 border-b border-border">
                   <th className="px-6 py-4 font-bold whitespace-nowrap">No. Invoice</th>
                   <th className="px-6 py-4 font-bold whitespace-nowrap">Pelanggan</th>
                   <th className="px-6 py-4 font-bold whitespace-nowrap">Tipe / Channel</th>
@@ -211,18 +211,18 @@ export default function OrdersPage() {
               </thead>
               <tbody className="divide-y divide-gray-100 dark:divide-white/5">
                 {paginatedOrders.map((order) => (
-                  <tr key={order.id} className="hover:bg-gray-50/50 dark:hover:bg-white/5 transition-colors">
+                  <tr key={order.id} className="hover:bg-muted/50 dark:hover:bg-white/5 transition-colors">
                     <td className="px-6 py-4 font-mono text-xs font-bold text-primary dark:text-cream-100 whitespace-nowrap">{order.invoice_number}</td>
                     <td className="px-6 py-4 text-sm font-bold text-primary dark:text-cream-100 whitespace-nowrap">{order.customer_name}</td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`rounded-md px-2 py-1 text-[10px] font-black uppercase tracking-wider ${channelStyle[order.order_type] || 'bg-gray-100 text-gray-600 dark:bg-white/10 dark:text-cream-400'}`}>
+                      <span className={`rounded-md px-2 py-1 text-[10px] font-black uppercase tracking-wider ${channelStyle[order.order_type] || 'bg-muted text-gray-600 dark:bg-white/10 dark:text-cream-400'}`}>
                         {order.order_type.replace('_', ' ')}
                       </span>
                     </td>
                     <td className="px-6 py-4 text-sm font-semibold text-primary/80 dark:text-cream-100/80 whitespace-nowrap">{order.table_number || 'Takeaway'}</td>
                     <td className="px-6 py-4 text-sm font-bold text-accent font-heading whitespace-nowrap">{fmt(order.total)}</td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-block rounded-full px-3 py-1.5 text-[11px] font-bold ${statusStyle[order.status] || 'bg-gray-100 text-gray-600 dark:bg-white/10 dark:text-cream-400'}`}>
+                      <span className={`inline-block rounded-full px-3 py-1.5 text-[11px] font-bold ${statusStyle[order.status] || 'bg-muted text-gray-600 dark:bg-white/10 dark:text-cream-400'}`}>
                         {statusLabel[order.status] || order.status}
                       </span>
                     </td>
@@ -230,7 +230,7 @@ export default function OrdersPage() {
                     <td className="px-6 py-4">
                       <button
                         onClick={() => setSelectedOrder(order)}
-                        className="flex items-center justify-center h-8 w-8 rounded-lg bg-gray-50 dark:bg-white/5 text-primary/60 dark:text-cream-400/60 hover:bg-accent/10 hover:text-accent transition-all border border-black/5 dark:border-white/5"
+                        className="flex items-center justify-center h-8 w-8 rounded-lg bg-muted dark:bg-white/5 text-muted-foreground/60 hover:bg-accent/10 hover:text-accent transition-all border border-border"
                         title="Detail"
                       >
                         <Eye size={16} />
@@ -254,15 +254,15 @@ export default function OrdersPage() {
           
           {/* Pagination Controls */}
           {totalPages > 1 && (
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-6 py-4 border-t border-black/5 dark:border-white/5 bg-gray-50 dark:bg-black/10">
-              <span className="text-xs text-primary/60 dark:text-cream-400/60 font-medium text-center sm:text-left">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-6 py-4 border-t border-border bg-muted dark:bg-black/10">
+              <span className="text-xs text-muted-foreground/60 font-medium text-center sm:text-left">
                 Menampilkan {(currentPage - 1) * itemsPerPage + 1} - {Math.min(currentPage * itemsPerPage, filtered.length)} dari {filtered.length} pesanan
               </span>
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                   disabled={currentPage === 1}
-                  className="px-3 py-1.5 rounded-lg border border-black/5 dark:border-white/5 text-xs font-bold text-primary dark:text-cream-100 bg-white dark:bg-[#1A2620] hover:bg-gray-50 dark:hover:bg-white/5 disabled:opacity-50 transition-colors shadow-sm"
+                  className="px-3 py-1.5 rounded-lg border border-border text-xs font-bold text-primary dark:text-cream-100 bg-card hover:bg-muted dark:hover:bg-white/5 disabled:opacity-50 transition-colors shadow-sm"
                 >
                   Sebelumnya
                 </button>
@@ -278,7 +278,7 @@ export default function OrdersPage() {
                           className={`w-8 h-8 rounded-lg text-xs font-bold transition-colors shadow-sm border ${
                             currentPage === pageNum 
                               ? 'bg-primary text-accent border-primary' 
-                              : 'bg-white dark:bg-[#1A2620] text-primary dark:text-cream-100 border-black/5 dark:border-white/5 hover:bg-gray-50 dark:hover:bg-white/5'
+                              : 'bg-card text-primary dark:text-cream-100 border-border hover:bg-muted dark:hover:bg-white/5'
                           }`}
                         >
                           {pageNum}
@@ -293,7 +293,7 @@ export default function OrdersPage() {
                 <button
                   onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                   disabled={currentPage === totalPages}
-                  className="px-3 py-1.5 rounded-lg border border-black/5 dark:border-white/5 text-xs font-bold text-primary dark:text-cream-100 bg-white dark:bg-[#1A2620] hover:bg-gray-50 dark:hover:bg-white/5 disabled:opacity-50 transition-colors shadow-sm"
+                  className="px-3 py-1.5 rounded-lg border border-border text-xs font-bold text-primary dark:text-cream-100 bg-card hover:bg-muted dark:hover:bg-white/5 disabled:opacity-50 transition-colors shadow-sm"
                 >
                   Selanjutnya
                 </button>
@@ -306,41 +306,41 @@ export default function OrdersPage() {
       {/* Modal Detail Order */}
       {selectedOrder && typeof document !== 'undefined' && createPortal(
         <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-          <div className="w-full max-w-md rounded-2xl bg-white dark:bg-[#1A2620] p-6 shadow-2xl border border-black/10 dark:border-white/10 space-y-4 animate-in zoom-in-95 duration-200">
-            <div className="flex items-center justify-between border-b border-black/5 dark:border-white/5 pb-4">
+          <div className="w-full max-w-md rounded-2xl bg-card p-6 shadow-2xl border border-black/10 dark:border-white/10 space-y-4 animate-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-between border-b border-border pb-4">
               <div>
                 <h3 className="font-heading text-lg font-bold text-primary dark:text-cream-100">Detail Pesanan {selectedOrder.invoice_number}</h3>
                 <p className="text-xs text-primary/50 dark:text-cream-100/50 mt-0.5">Sumber: <span className="font-bold">{selectedOrder.source}</span></p>
               </div>
               <button
                 onClick={() => setSelectedOrder(null)}
-                className="rounded-lg p-1.5 text-primary/40 dark:text-cream-100/40 hover:bg-gray-100 dark:hover:bg-white/10 hover:text-primary dark:hover:text-cream-100 transition-colors"
+                className="rounded-lg p-1.5 text-primary/40 dark:text-cream-100/40 hover:bg-muted dark:hover:bg-white/10 hover:text-primary dark:hover:text-cream-100 transition-colors"
               >
                 <X size={18} />
               </button>
             </div>
 
             <div className="space-y-3 text-sm">
-              <div className="flex justify-between py-1.5 border-b border-black/5 dark:border-white/5">
-                <span className="text-primary/60 dark:text-cream-400/60 font-medium">Pelanggan</span>
+              <div className="flex justify-between py-1.5 border-b border-border">
+                <span className="text-muted-foreground/60 font-medium">Pelanggan</span>
                 <span className="font-bold text-primary dark:text-cream-100">{selectedOrder.customer_name}</span>
               </div>
-              <div className="flex justify-between py-1.5 border-b border-black/5 dark:border-white/5">
-                <span className="text-primary/60 dark:text-cream-400/60 font-medium">Tipe Layanan</span>
+              <div className="flex justify-between py-1.5 border-b border-border">
+                <span className="text-muted-foreground/60 font-medium">Tipe Layanan</span>
                 <span className="font-black text-primary dark:text-cream-100 uppercase tracking-wider text-[11px]">{selectedOrder.order_type.replace('_', ' ')}</span>
               </div>
-              <div className="flex justify-between py-1.5 border-b border-black/5 dark:border-white/5">
-                <span className="text-primary/60 dark:text-cream-400/60 font-medium">Meja / Lokasi</span>
+              <div className="flex justify-between py-1.5 border-b border-border">
+                <span className="text-muted-foreground/60 font-medium">Meja / Lokasi</span>
                 <span className="font-bold text-primary dark:text-cream-100">{selectedOrder.table_number || 'Takeaway'}</span>
               </div>
-              <div className="flex justify-between py-1.5 border-b border-black/5 dark:border-white/5">
-                <span className="text-primary/60 dark:text-cream-400/60 font-medium">Status Saat Ini</span>
+              <div className="flex justify-between py-1.5 border-b border-border">
+                <span className="text-muted-foreground/60 font-medium">Status Saat Ini</span>
                 <span className={`rounded-full px-2.5 py-0.5 text-xs font-bold ${statusStyle[selectedOrder.status]}`}>
                   {statusLabel[selectedOrder.status] || selectedOrder.status}
                 </span>
               </div>
-              <div className="flex justify-between py-1.5 border-b border-black/5 dark:border-white/5">
-                <span className="text-primary/60 dark:text-cream-400/60 font-medium">Waktu Pesan</span>
+              <div className="flex justify-between py-1.5 border-b border-border">
+                <span className="text-muted-foreground/60 font-medium">Waktu Pesan</span>
                 <span className="text-primary dark:text-cream-100 font-medium">{selectedOrder.created_at}</span>
               </div>
               <div className="flex justify-between pt-3 text-base">

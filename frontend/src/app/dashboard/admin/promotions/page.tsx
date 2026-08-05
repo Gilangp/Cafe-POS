@@ -169,7 +169,7 @@ export default function PromotionsPage() {
   return (
     <div className="space-y-6 -m-6 lg:-m-8 p-6 lg:p-8 selection:bg-[#C89B5C]/30">
       {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-200 dark:border-white/10 pb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-6">
         <div>
           <div className="flex items-center gap-3">
             <h1 className="font-heading text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white tracking-wide">
@@ -179,7 +179,7 @@ export default function PromotionsPage() {
               Phase 9.2 Ready
             </span>
           </div>
-          <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-1 font-sans">
+          <p className="text-xs sm:text-sm text-muted-foreground mt-1 font-sans">
             Kelola kode voucher diskon (% atau nominal Rp), masa berlaku tanggal & waktu, serta batas kuota penukaran untuk kasir dan online.
           </p>
         </div>
@@ -207,10 +207,10 @@ export default function PromotionsPage() {
           return (
             <div
               key={promo.id}
-              className={`rounded-3xl bg-white dark:bg-[#1A2620] border-2 p-6 shadow-sm transition-all flex flex-col justify-between hover:shadow-xl ${
+              className={`rounded-3xl bg-card border-2 p-6 shadow-sm transition-all flex flex-col justify-between hover:shadow-xl ${
                 promo.active
-                  ? 'border-gray-200 dark:border-white/10 hover:border-[#C89B5C]'
-                  : 'border-dashed border-gray-200 dark:border-white/10 opacity-70 bg-gray-50 dark:bg-black/20'
+                  ? 'border-border hover:border-[#C89B5C]'
+                  : 'border-dashed border-border opacity-70 bg-muted dark:bg-black/20'
               }`}
             >
               <div>
@@ -237,33 +237,33 @@ export default function PromotionsPage() {
                       )}
                     </div>
                     <h3 className="font-heading text-base font-extrabold text-gray-900 dark:text-white mt-2 leading-snug">{promo.name}</h3>
-                    <p className="text-xs text-gray-500 dark:text-gray-300 mt-1 leading-relaxed">{promo.description}</p>
+                    <p className="text-xs text-muted-foreground dark:text-muted-foreground/50 mt-1 leading-relaxed">{promo.description}</p>
                   </div>
 
                   <button
                     onClick={() => toggleActive(promo.id)}
-                    className="shrink-0 text-gray-400 hover:text-[#C89B5C] transition-colors p-1"
+                    className="shrink-0 text-muted-foreground hover:text-[#C89B5C] transition-colors p-1"
                     title={promo.active ? 'Klik untuk nonaktifkan voucher' : 'Klik untuk aktifkan voucher'}
                   >
                     {promo.active ? <ToggleRight size={32} className="text-emerald-600 dark:text-emerald-400" /> : <ToggleLeft size={32} />}
                   </button>
                 </div>
 
-                <div className="flex items-center justify-between gap-4 text-xs text-gray-500 dark:text-gray-400 py-3 border-y border-gray-100 dark:border-white/10 font-mono">
-                  <span className="flex items-center gap-1.5 font-bold text-gray-700 dark:text-gray-300">
+                <div className="flex items-center justify-between gap-4 text-xs text-muted-foreground py-3 border-y border-gray-100 dark:border-white/10 font-mono">
+                  <span className="flex items-center gap-1.5 font-bold text-gray-700 dark:text-muted-foreground/50">
                     <Calendar size={13} className="text-[#C89B5C]" /> {promo.startDate} s/d {promo.endDate}
                   </span>
-                  <span className="flex items-center gap-1 rounded-lg bg-gray-100 dark:bg-black/40 px-2.5 py-1 font-sans font-semibold">
+                  <span className="flex items-center gap-1 rounded-lg bg-muted dark:bg-black/40 px-2.5 py-1 font-sans font-semibold">
                     <Smartphone size={12} /> {promo.channel}
                   </span>
                 </div>
 
                 <div className="mt-4">
                   <div className="flex justify-between text-xs mb-1.5 font-bold">
-                    <span className="text-gray-500 dark:text-gray-400">Penggunaan Kuota:</span>
+                    <span className="text-muted-foreground">Penggunaan Kuota:</span>
                     <span className="text-gray-900 dark:text-white font-mono">{promo.usageCount} / {promo.maxUsage} Klaim</span>
                   </div>
-                  <div className="h-2 w-full rounded-full bg-gray-100 dark:bg-black/50 overflow-hidden">
+                  <div className="h-2 w-full rounded-full bg-muted dark:bg-black/50 overflow-hidden">
                     <div
                       className={`h-full rounded-full transition-all ${usagePct > 85 ? 'bg-red-500' : 'bg-[#C89B5C]'}`}
                       style={{ width: `${usagePct}%` }}
@@ -274,11 +274,11 @@ export default function PromotionsPage() {
 
               {/* Actions Bar */}
               <div className="flex items-center justify-between gap-2 pt-4 mt-4 border-t border-gray-100 dark:border-white/10">
-                <span className="text-[11px] font-mono text-gray-400">Min. Order: <strong className="text-gray-800 dark:text-white">{fmt(promo.minOrder)}</strong></span>
+                <span className="text-[11px] font-mono text-muted-foreground">Min. Order: <strong className="text-gray-800 dark:text-white">{fmt(promo.minOrder)}</strong></span>
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => handleOpenEdit(promo)}
-                    className="flex items-center gap-1.5 rounded-xl border border-gray-200 dark:border-white/15 px-3 py-1.5 text-xs font-bold text-gray-700 dark:text-gray-300 hover:border-[#C89B5C] hover:text-[#C89B5C] transition-all"
+                    className="flex items-center gap-1.5 rounded-xl border border-border px-3 py-1.5 text-xs font-bold text-gray-700 dark:text-muted-foreground/50 hover:border-[#C89B5C] hover:text-[#C89B5C] transition-all"
                   >
                     <Edit2 size={13} /> Edit
                   </button>
@@ -298,13 +298,13 @@ export default function PromotionsPage() {
       {/* MODAL: CRUD ADD/EDIT PROMO */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fadeIn">
-          <div className="w-full max-w-lg rounded-3xl bg-white dark:bg-[#1A2620] p-6 sm:p-8 shadow-2xl border border-gray-200 dark:border-white/15 space-y-6 max-h-[90vh] overflow-y-auto">
+          <div className="w-full max-w-lg rounded-3xl bg-card p-6 sm:p-8 shadow-2xl border border-border space-y-6 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-gray-100 dark:border-white/10 pb-4">
               <h3 className="font-heading text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
                 <Tag size={20} className="text-[#C89B5C]" />
                 <span>{modalMode === 'add' ? 'Buat Voucher Promosi Baru (9.2)' : 'Edit Voucher Promosi'}</span>
               </h3>
-              <button onClick={() => setIsModalOpen(false)} className="rounded-full p-1.5 text-gray-400 hover:bg-gray-100 dark:hover:bg-white/10">
+              <button onClick={() => setIsModalOpen(false)} className="rounded-full p-1.5 text-muted-foreground hover:bg-muted dark:hover:bg-white/10">
                 <X size={18} />
               </button>
             </div>
@@ -312,7 +312,7 @@ export default function PromotionsPage() {
             <form onSubmit={handleSavePromo} className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1.5">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-muted-foreground/50 mb-1.5">
                     Nama Promosi <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -321,11 +321,11 @@ export default function PromotionsPage() {
                     value={formName}
                     onChange={(e) => setFormName(e.target.value)}
                     placeholder="Contoh: Happy Hour Specialty"
-                    className="w-full rounded-2xl border border-gray-200 dark:border-white/15 bg-white dark:bg-black/35 px-4 py-3 text-xs font-bold focus:border-[#C89B5C] focus:outline-none"
+                    className="w-full rounded-2xl border border-border bg-white dark:bg-black/35 px-4 py-3 text-xs font-bold focus:border-[#C89B5C] focus:outline-none"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1.5">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-muted-foreground/50 mb-1.5">
                     Kode Voucher <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -334,20 +334,20 @@ export default function PromotionsPage() {
                     value={formCode}
                     onChange={(e) => setFormCode(e.target.value)}
                     placeholder="HAPPY20"
-                    className="w-full rounded-2xl border border-gray-200 dark:border-white/15 bg-white dark:bg-black/35 px-4 py-3 text-xs font-mono font-extrabold uppercase text-[#C89B5C] focus:border-[#C89B5C] focus:outline-none"
+                    className="w-full rounded-2xl border border-border bg-white dark:bg-black/35 px-4 py-3 text-xs font-mono font-extrabold uppercase text-[#C89B5C] focus:border-[#C89B5C] focus:outline-none"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1.5">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-muted-foreground/50 mb-1.5">
                     Tipe Diskon
                   </label>
                   <select
                     value={formType}
                     onChange={(e) => setFormType(e.target.value as any)}
-                    className="w-full rounded-2xl border border-gray-200 dark:border-white/15 bg-white dark:bg-black/35 px-3 py-3 text-xs font-bold focus:border-[#C89B5C] focus:outline-none"
+                    className="w-full rounded-2xl border border-border bg-white dark:bg-black/35 px-3 py-3 text-xs font-bold focus:border-[#C89B5C] focus:outline-none"
                   >
                     <option value="percent">Diskon Persen (%)</option>
                     <option value="nominal">Potongan Nominal (Rp)</option>
@@ -355,7 +355,7 @@ export default function PromotionsPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1.5">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-muted-foreground/50 mb-1.5">
                     Nilai Diskon (% atau Rp)
                   </label>
                   <input
@@ -363,11 +363,11 @@ export default function PromotionsPage() {
                     value={formValue}
                     onChange={(e) => setFormValue(e.target.value)}
                     placeholder="20"
-                    className="w-full rounded-2xl border border-gray-200 dark:border-white/15 bg-white dark:bg-black/35 px-4 py-3 text-xs font-mono font-bold focus:border-[#C89B5C] focus:outline-none"
+                    className="w-full rounded-2xl border border-border bg-white dark:bg-black/35 px-4 py-3 text-xs font-mono font-bold focus:border-[#C89B5C] focus:outline-none"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1.5">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-muted-foreground/50 mb-1.5">
                     Min. Order (IDR)
                   </label>
                   <input
@@ -375,20 +375,20 @@ export default function PromotionsPage() {
                     value={formMinOrder}
                     onChange={(e) => setFormMinOrder(e.target.value)}
                     placeholder="40000"
-                    className="w-full rounded-2xl border border-gray-200 dark:border-white/15 bg-white dark:bg-black/35 px-4 py-3 text-xs font-mono font-bold focus:border-[#C89B5C] focus:outline-none"
+                    className="w-full rounded-2xl border border-border bg-white dark:bg-black/35 px-4 py-3 text-xs font-mono font-bold focus:border-[#C89B5C] focus:outline-none"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1.5">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-muted-foreground/50 mb-1.5">
                     Berlaku Channel
                   </label>
                   <select
                     value={formChannel}
                     onChange={(e) => setFormChannel(e.target.value)}
-                    className="w-full rounded-2xl border border-gray-200 dark:border-white/15 bg-white dark:bg-black/35 px-3 py-3 text-xs font-bold focus:border-[#C89B5C] focus:outline-none"
+                    className="w-full rounded-2xl border border-border bg-white dark:bg-black/35 px-3 py-3 text-xs font-bold focus:border-[#C89B5C] focus:outline-none"
                   >
                     <option value="Semua Channel">Semua Channel</option>
                     <option value="POS Kasir">POS Kasir</option>
@@ -396,31 +396,31 @@ export default function PromotionsPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1.5">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-muted-foreground/50 mb-1.5">
                     Tanggal Mulai
                   </label>
                   <input
                     type="date"
                     value={formStartDate}
                     onChange={(e) => setFormStartDate(e.target.value)}
-                    className="w-full rounded-2xl border border-gray-200 dark:border-white/15 bg-white dark:bg-black/35 px-3 py-3 text-xs font-mono font-bold focus:border-[#C89B5C] focus:outline-none"
+                    className="w-full rounded-2xl border border-border bg-white dark:bg-black/35 px-3 py-3 text-xs font-mono font-bold focus:border-[#C89B5C] focus:outline-none"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1.5">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-muted-foreground/50 mb-1.5">
                     Tanggal Selesai
                   </label>
                   <input
                     type="date"
                     value={formEndDate}
                     onChange={(e) => setFormEndDate(e.target.value)}
-                    className="w-full rounded-2xl border border-gray-200 dark:border-white/15 bg-white dark:bg-black/35 px-3 py-3 text-xs font-mono font-bold focus:border-[#C89B5C] focus:outline-none"
+                    className="w-full rounded-2xl border border-border bg-white dark:bg-black/35 px-3 py-3 text-xs font-mono font-bold focus:border-[#C89B5C] focus:outline-none"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1.5">
+                <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-muted-foreground/50 mb-1.5">
                   Batas Maksimal Penggunaan (Kuota Voucher)
                 </label>
                 <input
@@ -428,12 +428,12 @@ export default function PromotionsPage() {
                   value={formMaxUsage}
                   onChange={(e) => setFormMaxUsage(e.target.value)}
                   placeholder="500"
-                  className="w-full rounded-2xl border border-gray-200 dark:border-white/15 bg-white dark:bg-black/35 px-4 py-3 text-xs font-mono focus:border-[#C89B5C] focus:outline-none"
+                  className="w-full rounded-2xl border border-border bg-white dark:bg-black/35 px-4 py-3 text-xs font-mono focus:border-[#C89B5C] focus:outline-none"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1.5">
+                <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-muted-foreground/50 mb-1.5">
                   Deskripsi & Syarat Ketentuan
                 </label>
                 <textarea
@@ -441,7 +441,7 @@ export default function PromotionsPage() {
                   value={formDesc}
                   onChange={(e) => setFormDesc(e.target.value)}
                   placeholder="Diskon berlaku untuk minuman kopi dan pastry..."
-                  className="w-full rounded-2xl border border-gray-200 dark:border-white/15 bg-white dark:bg-black/35 px-4 py-2.5 text-xs focus:border-[#C89B5C] focus:outline-none leading-relaxed"
+                  className="w-full rounded-2xl border border-border bg-white dark:bg-black/35 px-4 py-2.5 text-xs focus:border-[#C89B5C] focus:outline-none leading-relaxed"
                 />
               </div>
 
@@ -449,7 +449,7 @@ export default function PromotionsPage() {
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="rounded-2xl border border-gray-200 dark:border-white/15 px-5 py-3 text-xs font-bold text-gray-600 dark:text-gray-300 hover:bg-gray-50"
+                  className="rounded-2xl border border-border px-5 py-3 text-xs font-bold text-gray-600 dark:text-muted-foreground/50 hover:bg-muted"
                 >
                   Batal
                 </button>

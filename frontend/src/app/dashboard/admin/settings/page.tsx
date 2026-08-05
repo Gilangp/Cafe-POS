@@ -233,7 +233,7 @@ COMMIT;`;
 
   return (
     <div className="space-y-6 pb-12 -m-6 lg:-m-8 p-6 lg:p-8 selection:bg-[#C89B5C]/30">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-200 dark:border-white/10 pb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-6">
         <div>
           <div className="flex items-center gap-3">
             <h1 className="font-heading text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white tracking-wide">
@@ -243,7 +243,7 @@ COMMIT;`;
               Phase 10 Ready
             </span>
           </div>
-          <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-1 font-sans">
+          <p className="text-xs sm:text-sm text-muted-foreground mt-1 font-sans">
             Konfigurasi toko roastery, peran akses, ekspor snapshot database manual, dan pemulihan data dengan pengamanan ganda.
           </p>
         </div>
@@ -267,15 +267,15 @@ COMMIT;`;
               className={`w-full flex items-center justify-between rounded-2xl px-4.5 py-3 text-xs sm:text-sm font-bold text-left transition-all ${
                 activeTab === item.key
                   ? 'bg-[#1E3D31] text-[#C89B5C] shadow-md border border-[#C89B5C]/30'
-                  : 'bg-white dark:bg-[#1A2620] border border-gray-200 dark:border-white/10 text-gray-600 dark:text-gray-300 hover:border-[#C89B5C]'
+                  : 'bg-card border border-border text-gray-600 dark:text-muted-foreground/50 hover:border-[#C89B5C]'
               }`}
             >
               <div className="flex items-center gap-3">
-                <item.icon size={17} className={activeTab === item.key ? 'text-[#C89B5C]' : 'text-gray-400'} />
+                <item.icon size={17} className={activeTab === item.key ? 'text-[#C89B5C]' : 'text-muted-foreground'} />
                 <span>{item.label}</span>
               </div>
               {item.highlight && (
-                <span className="rounded-full bg-[#C89B5C] text-[#1E3D31] px-2 py-0.5 text-[9px] font-extrabold uppercase tracking-wider font-mono">
+                <span className="rounded-full bg-[#C89B5C] text-primary px-2 py-0.5 text-[9px] font-extrabold uppercase tracking-wider font-mono">
                   10.4
                 </span>
               )}
@@ -287,7 +287,7 @@ COMMIT;`;
         <div className="flex-1 space-y-6">
           {/* TAB: GENERAL */}
           {activeTab === 'general' && (
-            <div className="rounded-3xl bg-white dark:bg-[#1A2620] border border-gray-200 dark:border-white/10 shadow-sm p-6 sm:p-8 space-y-6 animate-fadeIn">
+            <div className="rounded-3xl bg-card border border-border shadow-sm p-6 sm:p-8 space-y-6 animate-fadeIn">
               <h2 className="font-heading text-xl font-bold text-gray-900 dark:text-white">Pengaturan Umum Flagship Roastery</h2>
               <div className="grid gap-5 sm:grid-cols-2">
                 {[
@@ -295,20 +295,20 @@ COMMIT;`;
                   { label: 'Tagline Slogan', value: tagline, setter: setTagline },
                 ].map((f) => (
                   <div key={f.label}>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-2">{f.label}</label>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">{f.label}</label>
                     <input
                       value={f.value}
                       onChange={(e) => f.setter(e.target.value)}
-                      className="w-full rounded-2xl border border-gray-200 dark:border-white/15 bg-gray-50 dark:bg-black/35 px-4 py-3 text-xs font-bold text-gray-900 dark:text-white focus:border-[#C89B5C] focus:outline-none"
+                      className="w-full rounded-2xl border border-border bg-muted dark:bg-black/35 px-4 py-3 text-xs font-bold text-gray-900 dark:text-white focus:border-[#C89B5C] focus:outline-none"
                     />
                   </div>
                 ))}
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-2">Mata Uang Transaksi</label>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">Mata Uang Transaksi</label>
                   <select
                     value={currency}
                     onChange={(e) => setCurrency(e.target.value)}
-                    className="w-full rounded-2xl border border-gray-200 dark:border-white/15 bg-gray-50 dark:bg-black/35 px-4 py-3 text-xs font-bold text-gray-900 dark:text-white focus:border-[#C89B5C] focus:outline-none"
+                    className="w-full rounded-2xl border border-border bg-muted dark:bg-black/35 px-4 py-3 text-xs font-bold text-gray-900 dark:text-white focus:border-[#C89B5C] focus:outline-none"
                   >
                     <option value="IDR">IDR — Rupiah Indonesia (Rp)</option>
                     <option value="USD">USD — US Dollar ($)</option>
@@ -316,11 +316,11 @@ COMMIT;`;
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-2">Zona Waktu Operasional</label>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">Zona Waktu Operasional</label>
                   <select
                     value={timezone}
                     onChange={(e) => setTimezone(e.target.value)}
-                    className="w-full rounded-2xl border border-gray-200 dark:border-white/15 bg-gray-50 dark:bg-black/35 px-4 py-3 text-xs font-bold text-gray-900 dark:text-white focus:border-[#C89B5C] focus:outline-none"
+                    className="w-full rounded-2xl border border-border bg-muted dark:bg-black/35 px-4 py-3 text-xs font-bold text-gray-900 dark:text-white focus:border-[#C89B5C] focus:outline-none"
                   >
                     <option value="Asia/Jakarta">Asia/Jakarta (WIB UTC+7)</option>
                     <option value="Asia/Makassar">Asia/Makassar (WITA UTC+8)</option>
@@ -342,7 +342,7 @@ COMMIT;`;
 
           {/* TAB: 10.4 BACKUP & RESTORE DATABASE MANUAL WITH DOUBLE CONFIRMATION */}
           {activeTab === 'backup' && (
-            <div className="rounded-3xl bg-white dark:bg-[#1A2620] border border-gray-200 dark:border-white/10 shadow-sm p-6 sm:p-8 space-y-8 animate-fadeIn">
+            <div className="rounded-3xl bg-card border border-border shadow-sm p-6 sm:p-8 space-y-8 animate-fadeIn">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-100 dark:border-white/10 pb-5">
                 <div>
                   <div className="flex items-center gap-2.5">
@@ -351,7 +351,7 @@ COMMIT;`;
                       Menu Backup & Restore Database (`10.4`)
                     </h2>
                   </div>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  <p className="text-xs text-muted-foreground mt-1">
                     Ekspor manual snapshot data POS/Inventory/Audit ke file lokal (JSON/SQL) dan pemulihan dengan keamanan ganda
                   </p>
                 </div>
@@ -366,7 +366,7 @@ COMMIT;`;
                   <Download className="text-[#C89B5C]" size={18} />
                   <span>1. Ekspor Database Manual Snapshot (`JSON / SQL`)</span>
                 </h3>
-                <p className="text-xs text-gray-600 dark:text-gray-300">
+                <p className="text-xs text-gray-600 dark:text-muted-foreground/50">
                   Unduh seluruh skema dan record aktif (katalog menu, resep BOM, mutasi stok, akun staf, reservasi, dan jejak audit log) ke penyimpanan lokal Anda.
                 </p>
 
@@ -379,7 +379,7 @@ COMMIT;`;
                         </span>
                         <span className="rounded-md bg-[#1E3D31] text-[#C89B5C] px-2 py-0.5 text-[10px] font-mono font-bold">Terpopuler</span>
                       </div>
-                      <p className="text-[11px] text-gray-600 dark:text-gray-400 leading-relaxed">
+                      <p className="text-[11px] text-gray-600 dark:text-muted-foreground leading-relaxed">
                         Format standar bergaya dokumen hierarkis. Sangat cocok untuk cadangan cepat atau impor kembali ke engine FE/BE.
                       </p>
                     </div>
@@ -392,15 +392,15 @@ COMMIT;`;
                     </button>
                   </div>
 
-                  <div className="rounded-3xl bg-gray-50 dark:bg-black/25 border-2 border-gray-200 dark:border-white/10 p-5 space-y-4 flex flex-col justify-between">
+                  <div className="rounded-3xl bg-muted dark:bg-black/25 border-2 border-border p-5 space-y-4 flex flex-col justify-between">
                     <div>
                       <div className="flex items-center justify-between mb-2">
                         <span className="flex items-center gap-2 text-xs font-extrabold text-gray-900 dark:text-white font-mono">
                           <FileCode size={18} className="text-blue-500" /> SQL DDL / DML Script
                         </span>
-                        <span className="rounded-md bg-gray-200 dark:bg-white/10 text-gray-600 dark:text-gray-300 px-2 py-0.5 text-[10px] font-mono font-bold">Relational</span>
+                        <span className="rounded-md bg-muted dark:bg-white/10 text-gray-600 dark:text-muted-foreground/50 px-2 py-0.5 text-[10px] font-mono font-bold">Relational</span>
                       </div>
-                      <p className="text-[11px] text-gray-600 dark:text-gray-400 leading-relaxed">
+                      <p className="text-[11px] text-gray-600 dark:text-muted-foreground leading-relaxed">
                         Format skrip `CREATE TABLE` dan `INSERT` penuh. Sangat cocok untuk pemulihan langsung ke Postgres / Supabase cloud.
                       </p>
                     </div>
@@ -423,11 +423,11 @@ COMMIT;`;
                     <span>2. Restore / Pulihkan Database dari Snapshot (`Double-Confirmation 10.4`)</span>
                   </h3>
                 </div>
-                <p className="text-xs text-gray-600 dark:text-gray-300">
+                <p className="text-xs text-gray-600 dark:text-muted-foreground/50">
                   Unggah file cadangan resmi NEMU Space (`.json` atau `.sql`) untuk menimpa state saat ini dengan data sebelumnya.
                 </p>
 
-                <div className="rounded-3xl border-2 border-dashed border-gray-300 dark:border-white/20 p-8 text-center bg-gray-50/50 dark:bg-black/20 hover:border-[#C89B5C] transition-all flex flex-col items-center justify-center gap-3">
+                <div className="rounded-3xl border-2 border-dashed border-gray-300 dark:border-white/20 p-8 text-center bg-muted/50 dark:bg-black/20 hover:border-[#C89B5C] transition-all flex flex-col items-center justify-center gap-3">
                   <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#1E3D31] text-[#C89B5C] shadow-sm">
                     <Upload size={22} />
                   </div>
@@ -435,7 +435,7 @@ COMMIT;`;
                     <p className="text-xs font-bold text-gray-800 dark:text-gray-200">
                       Pilih atau letakkan file backup (`Backup-NemuSpace-*.json/sql`) di sini
                     </p>
-                    <p className="text-[10px] text-gray-400 mt-0.5">Ukuran file maksimal: 50MB (Encrypted or Plain Snapshot)</p>
+                    <p className="text-[10px] text-muted-foreground mt-0.5">Ukuran file maksimal: 50MB (Encrypted or Plain Snapshot)</p>
                   </div>
 
                   <div className="flex gap-2 mt-2">
@@ -447,7 +447,7 @@ COMMIT;`;
                     </button>
                     <button
                       onClick={() => handleOpenRestorePrompt('Backup-NemuSpace-2026-07-15.sql')}
-                      className="rounded-xl border border-gray-300 dark:border-white/20 px-4 py-2.5 text-xs font-bold text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/5 transition-all"
+                      className="rounded-xl border border-gray-300 dark:border-white/20 px-4 py-2.5 text-xs font-bold text-gray-700 dark:text-muted-foreground/50 hover:bg-muted dark:hover:bg-white/5 transition-all"
                     >
                       Sample SQL Dump
                     </button>
@@ -459,14 +459,14 @@ COMMIT;`;
 
           {/* TAB: DATABASE SUPABASE SEEDER */}
           {activeTab === 'database' && (
-            <div className="rounded-3xl bg-white dark:bg-[#1A2620] border border-gray-200 dark:border-white/10 shadow-sm p-6 sm:p-8 space-y-6 animate-fadeIn">
+            <div className="rounded-3xl bg-card border border-border shadow-sm p-6 sm:p-8 space-y-6 animate-fadeIn">
               <div className="flex items-center justify-between border-b border-gray-100 dark:border-white/10 pb-4">
                 <div>
                   <h2 className="font-heading text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
                     <Database className="text-[#C89B5C]" size={22} />
                     <span>Supabase Live Seeder & Sync</span>
                   </h2>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  <p className="text-xs text-muted-foreground mt-1">
                     Isi database cloud Anda (<code className="text-[#C89B5C] font-mono font-bold">meqhmynwsxeajhumrnqw.supabase.co</code>) dengan data katalog roastery.
                   </p>
                 </div>
@@ -481,7 +481,7 @@ COMMIT;`;
                     <div className="flex items-center gap-2 text-xs font-extrabold text-gray-900 dark:text-white">
                       <span>Seed Menu & KDS Sample</span>
                     </div>
-                    <p className="text-xs text-gray-600 dark:text-gray-300 leading-relaxed mt-2">
+                    <p className="text-xs text-gray-600 dark:text-muted-foreground/50 leading-relaxed mt-2">
                       Tombol ini akan mengirimkan sampel data <strong>Kategori Specialty, Produk Coffee Artisan, dan 1 Tiket Pesanan Live</strong> langsung ke tabel Supabase Anda.
                     </p>
                   </div>
@@ -495,13 +495,13 @@ COMMIT;`;
                   </button>
                 </div>
 
-                <div className="rounded-3xl bg-gray-50 dark:bg-black/25 p-6 border border-gray-200 dark:border-white/10 space-y-3.5 flex flex-col justify-between">
+                <div className="rounded-3xl bg-muted dark:bg-black/25 p-6 border border-border space-y-3.5 flex flex-col justify-between">
                   <div>
                     <div className="flex items-center gap-2 text-xs font-extrabold text-gray-900 dark:text-white">
                       <CheckCircle size={18} className="text-emerald-600" />
                       <span>Status Koneksi Real-Time</span>
                     </div>
-                    <div className="space-y-2 text-xs font-mono text-gray-600 dark:text-gray-400 mt-3">
+                    <div className="space-y-2 text-xs font-mono text-gray-600 dark:text-muted-foreground mt-3">
                       <p className="flex justify-between"><span>Endpoint:</span> <span className="font-bold text-gray-900 dark:text-white">meqhmynwsxe...</span></p>
                       <p className="flex justify-between"><span>DB Engine:</span> <span className="font-bold text-emerald-600 dark:text-emerald-400">PostgreSQL (Supabase)</span></p>
                       <p className="flex justify-between"><span>Sync Strategy:</span> <span className="font-bold text-blue-600 dark:text-blue-400">Offline Fallback + Realtime</span></p>
@@ -520,14 +520,14 @@ COMMIT;`;
 
           {/* TAB: ROLES */}
           {activeTab === 'roles' && (
-            <div className="rounded-3xl bg-white dark:bg-[#1A2620] border border-gray-200 dark:border-white/10 shadow-sm overflow-hidden animate-fadeIn">
+            <div className="rounded-3xl bg-card border border-border shadow-sm overflow-hidden animate-fadeIn">
               <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100 dark:border-white/10">
                 <h2 className="font-heading text-xl font-bold text-gray-900 dark:text-white">Definisi Peran & Hak Akses (RBAC)</h2>
-                <span className="text-xs text-gray-400 font-mono font-bold">{roles.length} roles terdefinisi</span>
+                <span className="text-xs text-muted-foreground font-mono font-bold">{roles.length} roles terdefinisi</span>
               </div>
               <div className="divide-y divide-gray-100 dark:divide-white/5">
                 {roles.map((role) => (
-                  <div key={role.slug} className="flex items-center justify-between px-6 py-4.5 hover:bg-gray-50/60 dark:hover:bg-white/5 transition-colors">
+                  <div key={role.slug} className="flex items-center justify-between px-6 py-4.5 hover:bg-muted/60 dark:hover:bg-white/5 transition-colors">
                     <div className="flex items-start gap-4">
                       <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#1E3D31] text-[#C89B5C]">
                         <Shield size={18} />
@@ -541,11 +541,11 @@ COMMIT;`;
                             </span>
                           )}
                         </div>
-                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{role.description}</p>
+                        <p className="text-xs text-muted-foreground mt-0.5">{role.description}</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-4 shrink-0">
-                      <span className="flex items-center gap-1.5 text-xs font-mono font-bold text-gray-500 dark:text-gray-400">
+                      <span className="flex items-center gap-1.5 text-xs font-mono font-bold text-muted-foreground">
                         <Users size={13} /> {role.users} pengguna
                       </span>
                     </div>
@@ -557,18 +557,18 @@ COMMIT;`;
 
           {/* TAB: INTEGRATIONS */}
           {activeTab === 'integrations' && (
-            <div className="rounded-3xl bg-white dark:bg-[#1A2620] border border-gray-200 dark:border-white/10 shadow-sm p-6 sm:p-8 space-y-4 animate-fadeIn">
+            <div className="rounded-3xl bg-card border border-border shadow-sm p-6 sm:p-8 space-y-4 animate-fadeIn">
               <h2 className="font-heading text-xl font-bold text-gray-900 dark:text-white">Integrasi API & Layanan Cloud</h2>
               {[
                 { name: 'Supabase (Database & Auth)', status: 'connected', color: 'text-emerald-600 dark:text-emerald-400', note: 'db.meqhmynwsxeajhumrnqw.supabase.co' },
                 { name: 'Midtrans (QRIS & EDC Gateway)', status: 'configured', color: 'text-blue-600 dark:text-blue-400', note: 'Sandbox ID: SB-Mid-client-velvra' },
                 { name: 'Resend (Email Receipt Service)', status: 'connected', color: 'text-emerald-600 dark:text-emerald-400', note: 'API Key verified for invoices' },
-                { name: 'Google Maps API (Delivery Mapping)', status: 'not configured', color: 'text-gray-400', note: 'Belum dikonfigurasi' },
+                { name: 'Google Maps API (Delivery Mapping)', status: 'not configured', color: 'text-muted-foreground', note: 'Belum dikonfigurasi' },
               ].map((integ) => (
-                <div key={integ.name} className="flex items-center justify-between rounded-2xl border border-gray-200 dark:border-white/10 p-4.5 bg-gray-50/40 dark:bg-black/25">
+                <div key={integ.name} className="flex items-center justify-between rounded-2xl border border-border p-4.5 bg-muted/40 dark:bg-black/25">
                   <div>
                     <p className="text-xs sm:text-sm font-bold text-gray-900 dark:text-white">{integ.name}</p>
-                    <p className="text-xs text-gray-400 font-mono mt-0.5">{integ.note}</p>
+                    <p className="text-xs text-muted-foreground font-mono mt-0.5">{integ.note}</p>
                   </div>
                   <div className="flex items-center gap-3">
                     <span className={`text-xs font-extrabold ${integ.color}`}>
@@ -585,7 +585,7 @@ COMMIT;`;
       {/* MODAL: 10.4 DOUBLE-CONFIRMATION SAFETY RESTORE PROMPT */}
       {showRestoreModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-md p-4 animate-fadeIn">
-          <div className="w-full max-w-lg bg-white dark:bg-[#1A2620] rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6 border-2 border-red-500/60 max-h-[92vh] overflow-y-auto">
+          <div className="w-full max-w-lg bg-card rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6 border-2 border-red-500/60 max-h-[92vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-gray-100 dark:border-white/10 pb-4">
               <div className="flex items-center gap-3">
                 <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-red-600 text-white shadow-md animate-pulse">
@@ -595,10 +595,10 @@ COMMIT;`;
                   <h3 className="font-heading text-lg sm:text-xl font-bold text-red-600 dark:text-red-400 leading-tight">
                     Double-Confirmation Safety Prompt (`10.4`)
                   </h3>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 font-mono">Tahap Konfirmasi {confirmStep} dari 2</p>
+                  <p className="text-xs text-muted-foreground font-mono">Tahap Konfirmasi {confirmStep} dari 2</p>
                 </div>
               </div>
-              <button onClick={() => setShowRestoreModal(false)} className="rounded-full p-1.5 text-gray-400 hover:bg-gray-100 dark:hover:bg-white/10">
+              <button onClick={() => setShowRestoreModal(false)} className="rounded-full p-1.5 text-muted-foreground hover:bg-muted dark:hover:bg-white/10">
                 <X size={18} />
               </button>
             </div>
@@ -616,7 +616,7 @@ COMMIT;`;
                 </div>
 
                 <div className="space-y-3 pt-2">
-                  <label className="flex items-start gap-3 cursor-pointer rounded-2xl bg-gray-50 dark:bg-black/30 p-3 border border-gray-200 dark:border-white/10 hover:border-red-400 transition-all">
+                  <label className="flex items-start gap-3 cursor-pointer rounded-2xl bg-muted dark:bg-black/30 p-3 border border-border hover:border-red-400 transition-all">
                     <input
                       type="checkbox"
                       checked={checkAck1}
@@ -628,7 +628,7 @@ COMMIT;`;
                     </span>
                   </label>
 
-                  <label className="flex items-start gap-3 cursor-pointer rounded-2xl bg-gray-50 dark:bg-black/30 p-3 border border-gray-200 dark:border-white/10 hover:border-red-400 transition-all">
+                  <label className="flex items-start gap-3 cursor-pointer rounded-2xl bg-muted dark:bg-black/30 p-3 border border-border hover:border-red-400 transition-all">
                     <input
                       type="checkbox"
                       checked={checkAck2}
@@ -644,7 +644,7 @@ COMMIT;`;
                 <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-100 dark:border-white/10">
                   <button
                     onClick={() => setShowRestoreModal(false)}
-                    className="rounded-2xl border border-gray-200 dark:border-white/15 px-5 py-2.5 text-xs font-bold text-gray-600 dark:text-gray-300"
+                    className="rounded-2xl border border-border px-5 py-2.5 text-xs font-bold text-gray-600 dark:text-muted-foreground/50"
                   >
                     Batal
                   </button>
@@ -654,7 +654,7 @@ COMMIT;`;
                     className={`rounded-2xl px-6 py-2.5 text-xs font-extrabold transition-all shadow-md ${
                       checkAck1 && checkAck2
                         ? 'bg-red-600 text-white hover:bg-red-700 active:scale-95'
-                        : 'bg-gray-300 dark:bg-white/10 text-gray-500 cursor-not-allowed'
+                        : 'bg-gray-300 dark:bg-white/10 text-muted-foreground cursor-not-allowed'
                     }`}
                   >
                     Lanjutkan ke Tahap 2 →
@@ -677,7 +677,7 @@ COMMIT;`;
                 </div>
 
                 <div>
-                  <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">
+                  <label className="block text-[11px] font-bold uppercase tracking-wider text-muted-foreground mb-1.5">
                     Ketik kata kunci konfirmasi di atas <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -692,7 +692,7 @@ COMMIT;`;
                 <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-100 dark:border-white/10">
                   <button
                     onClick={() => setConfirmStep(1)}
-                    className="rounded-2xl border border-gray-200 dark:border-white/15 px-5 py-2.5 text-xs font-bold text-gray-600 dark:text-gray-300"
+                    className="rounded-2xl border border-border px-5 py-2.5 text-xs font-bold text-gray-600 dark:text-muted-foreground/50"
                   >
                     ← Kembali
                   </button>
@@ -702,7 +702,7 @@ COMMIT;`;
                     className={`rounded-2xl px-7 py-3 text-xs font-extrabold transition-all shadow-lg ${
                       verifyText === 'RESTORE-NEMU'
                         ? 'bg-red-600 text-white hover:bg-red-700 active:scale-95'
-                        : 'bg-gray-300 dark:bg-white/10 text-gray-500 cursor-not-allowed'
+                        : 'bg-gray-300 dark:bg-white/10 text-muted-foreground cursor-not-allowed'
                     }`}
                   >
                     🔥 Eksekusi Restore Database Sekarang

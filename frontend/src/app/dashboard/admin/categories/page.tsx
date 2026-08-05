@@ -327,7 +327,7 @@ export default function AdminMenuPage() {
           <h1 className="font-heading text-3xl font-extrabold text-primary dark:text-cream-100 tracking-wide">
             Kategori & Varian
           </h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+          <p className="text-sm text-muted-foreground mt-1">
             Kelola kategori menu dan pengaturan master varian (suhu, level gula, ekstra).
           </p>
         </div>
@@ -351,13 +351,13 @@ export default function AdminMenuPage() {
       </div>
 
       {/* Tabs */}
-      <div className="flex items-center gap-4 border-b border-gray-200 dark:border-white/10">
+      <div className="flex items-center gap-4 border-b border-border">
         <button
           onClick={() => setActiveTab('categories')}
           className={`pb-3 px-4 font-bold transition-all relative ${
             activeTab === 'categories' 
               ? 'text-accent border-b-2 border-accent' 
-              : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'
+              : 'text-muted-foreground hover:text-gray-700 dark:hover:text-muted-foreground/50'
           }`}
         >
           <div className="flex items-center gap-2"><LayoutGrid size={18} /> Kategori</div>
@@ -367,7 +367,7 @@ export default function AdminMenuPage() {
           className={`pb-3 px-4 font-bold transition-all relative ${
             activeTab === 'variants' 
               ? 'text-accent border-b-2 border-accent' 
-              : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'
+              : 'text-muted-foreground hover:text-gray-700 dark:hover:text-muted-foreground/50'
           }`}
         >
           <div className="flex items-center gap-2"><Settings2 size={18} /> Master Varian</div>
@@ -375,14 +375,14 @@ export default function AdminMenuPage() {
       </div>
 
       {loading ? (
-        <div className="py-20 flex flex-col items-center justify-center text-gray-500">
-          <Loader2 size={40} className="animate-spin text-accent mb-4" />
+        <div className="py-20 flex flex-col items-center justify-center text-muted-foreground">
+          <Loader2 size={40} className="animate-spin text-slate-400 mb-4" />
           <p className="font-medium">Memuat data master...</p>
         </div>
       ) : activeTab === 'categories' ? (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bg-white dark:bg-[#1A2620] rounded-3xl border border-gray-100 dark:border-white/5 overflow-hidden shadow-sm">
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bg-card rounded-3xl border border-gray-100 dark:border-white/5 overflow-hidden shadow-sm">
           <table className="w-full text-left text-sm">
-            <thead className="bg-gray-50 dark:bg-black/20 text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wider text-xs">
+            <thead className="bg-muted dark:bg-black/20 text-muted-foreground font-bold uppercase tracking-wider text-xs">
               <tr>
                 <th className="px-6 py-4">Urutan</th>
                 <th className="px-6 py-4">Nama Kategori</th>
@@ -392,8 +392,8 @@ export default function AdminMenuPage() {
             </thead>
             <tbody className="divide-y divide-gray-100 dark:divide-white/5">
               {categories.map(cat => (
-                <tr key={cat.id} className="hover:bg-gray-50/50 dark:hover:bg-white/5 transition-colors">
-                  <td className="px-6 py-4 font-mono font-bold text-gray-500">{cat.display_order}</td>
+                <tr key={cat.id} className="hover:bg-muted/50 dark:hover:bg-white/5 transition-colors">
+                  <td className="px-6 py-4 font-mono font-bold text-muted-foreground">{cat.display_order}</td>
                   <td className="px-6 py-4 font-bold text-gray-900 dark:text-white">{cat.name}</td>
                   <td className="px-6 py-4">
                     <span className="bg-accent/10 text-accent font-bold px-3 py-1 rounded-lg">
@@ -403,7 +403,7 @@ export default function AdminMenuPage() {
                   <td className="px-6 py-4 flex justify-end gap-2">
                     <button 
                       onClick={() => handleEditCategory(cat)}
-                      className="p-2 text-gray-500 hover:text-accent bg-gray-100 dark:bg-white/5 hover:bg-accent/10 rounded-xl transition-colors"
+                      className="p-2 text-muted-foreground hover:text-accent bg-muted dark:bg-white/5 hover:bg-accent/10 rounded-xl transition-colors"
                     >
                       <Edit2 size={16} />
                     </button>
@@ -423,14 +423,14 @@ export default function AdminMenuPage() {
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {variants.map(variant => (
-              <div key={variant.id} className="bg-white dark:bg-[#1A2620] rounded-3xl p-6 border border-gray-100 dark:border-white/5 shadow-sm">
+              <div key={variant.id} className="bg-card rounded-3xl p-6 border border-gray-100 dark:border-white/5 shadow-sm">
                 <div className="flex justify-between items-start mb-4">
                   <div>
                     <h3 className="font-bold text-lg text-gray-900 dark:text-white">{variant.name}</h3>
                     <p className="text-xs font-bold text-accent uppercase tracking-wider">{variant.type === 'single' ? 'Pilih Satu (Wajib)' : 'Pilih Banyak (Opsional)'}</p>
                   </div>
                   <div className="flex gap-2">
-                    <button onClick={() => handleEditVariant(variant)} className="p-2 text-gray-500 hover:text-accent bg-gray-100 dark:bg-white/5 hover:bg-accent/10 rounded-xl transition-colors">
+                    <button onClick={() => handleEditVariant(variant)} className="p-2 text-muted-foreground hover:text-accent bg-muted dark:bg-white/5 hover:bg-accent/10 rounded-xl transition-colors">
                       <Edit2 size={14} />
                     </button>
                     <button onClick={() => handleDeleteVariant(variant.id, variant.name)} className="p-2 text-red-500 bg-red-50 dark:bg-red-500/10 hover:bg-red-500 hover:text-white rounded-xl transition-colors">
@@ -440,8 +440,8 @@ export default function AdminMenuPage() {
                 </div>
                 <div className="space-y-2">
                   {variant.options.map((opt, i) => (
-                    <div key={i} className="flex justify-between items-center p-3 bg-gray-50 dark:bg-black/20 rounded-xl">
-                      <span className="font-medium text-sm text-gray-700 dark:text-gray-300">{opt.name}</span>
+                    <div key={i} className="flex justify-between items-center p-3 bg-muted dark:bg-black/20 rounded-xl">
+                      <span className="font-medium text-sm text-gray-700 dark:text-muted-foreground/50">{opt.name}</span>
                       <span className="font-mono font-bold text-xs text-primary dark:text-cream-100">
                         {Number(opt.additional_price) > 0 ? `+${formatCurrency(Number(opt.additional_price))}` : 'Gratis'}
                       </span>
@@ -464,35 +464,35 @@ export default function AdminMenuPage() {
                 initial={{ scale: 0.95, opacity: 0 }} 
                 animate={{ scale: 1, opacity: 1 }} 
                 exit={{ scale: 0.95, opacity: 0 }}
-                className="relative bg-white dark:bg-[#1A2620] w-full max-w-md rounded-3xl p-6 shadow-2xl border border-gray-100 dark:border-white/10"
+                className="relative bg-card w-full max-w-md rounded-3xl p-6 shadow-2xl border border-gray-100 dark:border-white/10"
               >
                 <h3 className="font-heading text-xl font-bold mb-6 text-gray-900 dark:text-white">
                   {categoryForm.id ? 'Edit Kategori' : 'Tambah Kategori Baru'}
                 </h3>
                 <form onSubmit={handleSaveCategory} className="space-y-4">
                   <div>
-                    <label className="block text-xs font-bold text-gray-500 uppercase mb-2">Nama Kategori</label>
+                    <label className="block text-xs font-bold text-muted-foreground uppercase mb-2">Nama Kategori</label>
                     <input 
                       type="text" 
                       required
                       value={categoryForm.name}
                       onChange={e => setCategoryForm({...categoryForm, name: e.target.value})}
-                      className="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-black/20 border-none focus:ring-2 focus:ring-accent outline-none font-medium dark:text-white"
+                      className="w-full px-4 py-3 rounded-xl bg-muted dark:bg-black/20 border-none focus:ring-2 focus:ring-accent outline-none font-medium dark:text-white"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-bold text-gray-500 uppercase mb-2">Urutan Tampil (Display Order)</label>
+                    <label className="block text-xs font-bold text-muted-foreground uppercase mb-2">Urutan Tampil (Display Order)</label>
                     <input 
                       type="number" 
                       required
                       min="1"
                       value={categoryForm.display_order}
                       onChange={e => setCategoryForm({...categoryForm, display_order: parseInt(e.target.value)})}
-                      className="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-black/20 border-none focus:ring-2 focus:ring-accent outline-none font-mono dark:text-white"
+                      className="w-full px-4 py-3 rounded-xl bg-muted dark:bg-black/20 border-none focus:ring-2 focus:ring-accent outline-none font-mono dark:text-white"
                     />
                   </div>
                   <div className="flex justify-end gap-3 pt-4">
-                    <button type="button" onClick={() => setShowCategoryModal(false)} className="px-5 py-2.5 rounded-xl font-bold text-gray-500 hover:bg-gray-100 dark:hover:bg-white/5">Batal</button>
+                    <button type="button" onClick={() => setShowCategoryModal(false)} className="px-5 py-2.5 rounded-xl font-bold text-muted-foreground hover:bg-muted dark:hover:bg-white/5">Batal</button>
                     <button type="submit" disabled={isSubmitting} className="px-6 py-2.5 rounded-xl font-bold bg-accent text-primary hover:bg-[#b88c4d] disabled:opacity-50 flex items-center gap-2">
                       {isSubmitting ? <Loader2 size={18} className="animate-spin" /> : 'Simpan Kategori'}
                     </button>
@@ -515,31 +515,31 @@ export default function AdminMenuPage() {
                 initial={{ scale: 0.95, opacity: 0 }} 
                 animate={{ scale: 1, opacity: 1 }} 
                 exit={{ scale: 0.95, opacity: 0 }}
-                className="relative bg-white dark:bg-[#1A2620] w-full max-w-lg max-h-[90vh] overflow-y-auto custom-scrollbar rounded-3xl p-6 shadow-2xl border border-gray-100 dark:border-white/10"
+                className="relative bg-card w-full max-w-lg max-h-[90vh] overflow-y-auto custom-scrollbar rounded-3xl p-6 shadow-2xl border border-gray-100 dark:border-white/10"
               >
                 <div className="flex justify-between items-center mb-6">
                   <h3 className="font-heading text-xl font-bold text-gray-900 dark:text-white">
                     {variantForm.id ? 'Edit Master Varian' : 'Tambah Master Varian'}
                   </h3>
-                  <button type="button" onClick={() => setShowVariantModal(false)} className="p-2 bg-gray-100 dark:bg-white/5 rounded-full hover:bg-gray-200">
+                  <button type="button" onClick={() => setShowVariantModal(false)} className="p-2 bg-muted dark:bg-white/5 rounded-full hover:bg-muted">
                     <X size={20} />
                   </button>
                 </div>
                 <form onSubmit={handleSaveVariant} className="space-y-6">
                   <div className="space-y-4">
                     <div>
-                      <label className="block text-xs font-bold text-gray-500 uppercase mb-2">Nama Grup Varian</label>
+                      <label className="block text-xs font-bold text-muted-foreground uppercase mb-2">Nama Grup Varian</label>
                       <input 
                         type="text" 
                         required
                         placeholder="Contoh: Level Gula, Suhu, Extra Shot"
                         value={variantForm.name}
                         onChange={e => setVariantForm({...variantForm, name: e.target.value})}
-                        className="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-black/20 border-none focus:ring-2 focus:ring-accent outline-none font-medium dark:text-white"
+                        className="w-full px-4 py-3 rounded-xl bg-muted dark:bg-black/20 border-none focus:ring-2 focus:ring-accent outline-none font-medium dark:text-white"
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-bold text-gray-500 uppercase mb-2">Tipe Pilihan</label>
+                      <label className="block text-xs font-bold text-muted-foreground uppercase mb-2">Tipe Pilihan</label>
                       <div className="flex gap-4">
                         <label className="flex items-center gap-2 cursor-pointer">
                           <input type="radio" checked={variantForm.type === 'single'} onChange={() => setVariantForm({...variantForm, type: 'single'})} className="text-accent focus:ring-accent" />
@@ -555,7 +555,7 @@ export default function AdminMenuPage() {
                   
                   <div className="space-y-3">
                     <div className="flex justify-between items-center">
-                      <label className="block text-xs font-bold text-gray-500 uppercase">Opsi Varian</label>
+                      <label className="block text-xs font-bold text-muted-foreground uppercase">Opsi Varian</label>
                       <button 
                         type="button" 
                         onClick={() => setVariantForm({...variantForm, options: [...variantForm.options, { name: '', additional_price: 0, inventory_action: 'none', inventory_action_value: 0 }]})}
@@ -566,7 +566,7 @@ export default function AdminMenuPage() {
                     </div>
                     
                     {variantForm.options.map((opt, idx) => (
-                      <div key={idx} className="flex gap-3 items-start bg-gray-50 dark:bg-black/20 p-3 rounded-xl">
+                      <div key={idx} className="flex gap-3 items-start bg-muted dark:bg-black/20 p-3 rounded-xl">
                         <div className="flex-1 space-y-3">
                           <input 
                             type="text" 
@@ -578,10 +578,10 @@ export default function AdminMenuPage() {
                               newOpts[idx].name = e.target.value;
                               setVariantForm({...variantForm, options: newOpts});
                             }}
-                            className="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-white/10 bg-white dark:bg-[#1A2620] focus:ring-1 focus:ring-accent outline-none dark:text-white"
+                            className="w-full px-3 py-2 text-sm rounded-lg border border-border bg-card focus:ring-1 focus:ring-accent outline-none dark:text-white"
                           />
                           <div className="flex items-center gap-2">
-                            <span className="text-xs font-bold text-gray-500">Harga Tambahan: Rp</span>
+                            <span className="text-xs font-bold text-muted-foreground">Harga Tambahan: Rp</span>
                             <input 
                               type="number" 
                               min="0"
@@ -591,13 +591,13 @@ export default function AdminMenuPage() {
                                 newOpts[idx].additional_price = e.target.value;
                                 setVariantForm({...variantForm, options: newOpts});
                               }}
-                              className="w-full px-3 py-2 text-sm font-mono rounded-lg border border-gray-200 dark:border-white/10 bg-white dark:bg-[#1A2620] focus:ring-1 focus:ring-accent outline-none dark:text-white"
+                              className="w-full px-3 py-2 text-sm font-mono rounded-lg border border-border bg-card focus:ring-1 focus:ring-accent outline-none dark:text-white"
                             />
                           </div>
 
                           {/* Inventory Linking */}
                           <div className="pt-2 border-t border-gray-100 dark:border-white/5 space-y-2">
-                            <label className="text-[10px] font-bold text-gray-400 uppercase">Penyesuaian Stok Bahan Baku Varian</label>
+                            <label className="text-[10px] font-bold text-muted-foreground uppercase">Penyesuaian Stok Bahan Baku Varian</label>
                             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                               <select
                                 value={opt.inventory_item_id || ''}
@@ -606,7 +606,7 @@ export default function AdminMenuPage() {
                                   newOpts[idx].inventory_item_id = e.target.value || null;
                                   setVariantForm({...variantForm, options: newOpts});
                                 }}
-                                className="w-full px-2 py-1.5 text-xs rounded border border-gray-200 dark:border-white/10 bg-white dark:bg-[#1A2620] focus:ring-1 focus:ring-accent outline-none dark:text-white"
+                                className="w-full px-2 py-1.5 text-xs rounded border border-border bg-card focus:ring-1 focus:ring-accent outline-none dark:text-white"
                               >
                                 <option value="">(Tidak Ada)</option>
                                 {inventories.map(inv => <option key={inv.id} value={inv.id}>{inv.name}</option>)}
@@ -621,7 +621,7 @@ export default function AdminMenuPage() {
                                       newOpts[idx].inventory_action = e.target.value as any;
                                       setVariantForm({...variantForm, options: newOpts});
                                     }}
-                                    className="w-full px-2 py-1.5 text-xs rounded border border-gray-200 dark:border-white/10 bg-white dark:bg-[#1A2620] focus:ring-1 focus:ring-accent outline-none dark:text-white"
+                                    className="w-full px-2 py-1.5 text-xs rounded border border-border bg-card focus:ring-1 focus:ring-accent outline-none dark:text-white"
                                   >
                                     <option value="none">Pilih Aksi</option>
                                     <option value="add">Tambah Takaran (+)</option>
@@ -639,9 +639,9 @@ export default function AdminMenuPage() {
                                         newOpts[idx].inventory_action_value = e.target.value;
                                         setVariantForm({...variantForm, options: newOpts});
                                       }}
-                                      className="w-full pl-2 pr-12 py-1.5 text-xs rounded border border-gray-200 dark:border-white/10 bg-white dark:bg-[#1A2620] focus:ring-1 focus:ring-accent outline-none dark:text-white"
+                                      className="w-full pl-2 pr-12 py-1.5 text-xs rounded border border-border bg-card focus:ring-1 focus:ring-accent outline-none dark:text-white"
                                     />
-                                    <span className="absolute right-2 text-[10px] font-bold text-gray-400 pointer-events-none uppercase">
+                                    <span className="absolute right-2 text-[10px] font-bold text-muted-foreground pointer-events-none uppercase">
                                       {inventories.find(i => i.id === opt.inventory_item_id)?.unit || ''}
                                     </span>
                                   </div>
@@ -656,7 +656,7 @@ export default function AdminMenuPage() {
                             const newOpts = variantForm.options.filter((_, i) => i !== idx);
                             setVariantForm({...variantForm, options: newOpts.length > 0 ? newOpts : [{ name: '', additional_price: 0, inventory_action: 'none', inventory_action_value: 0 }]});
                           }}
-                          className="p-2 text-gray-400 hover:text-red-500 bg-white dark:bg-[#1A2620] rounded-lg shadow-sm"
+                          className="p-2 text-muted-foreground hover:text-red-500 bg-card rounded-lg shadow-sm"
                         >
                           <Trash size={16} />
                         </button>
@@ -665,7 +665,7 @@ export default function AdminMenuPage() {
                   </div>
 
                   <div className="flex justify-end gap-3 pt-4 border-t border-gray-100 dark:border-white/10">
-                    <button type="button" onClick={() => setShowVariantModal(false)} className="px-5 py-2.5 rounded-xl font-bold text-gray-500 hover:bg-gray-100 dark:hover:bg-white/5">Batal</button>
+                    <button type="button" onClick={() => setShowVariantModal(false)} className="px-5 py-2.5 rounded-xl font-bold text-muted-foreground hover:bg-muted dark:hover:bg-white/5">Batal</button>
                     <button type="submit" disabled={isSubmitting} className="px-6 py-2.5 rounded-xl font-bold bg-accent text-primary hover:bg-[#b88c4d] disabled:opacity-50 flex items-center gap-2">
                       {isSubmitting ? <Loader2 size={18} className="animate-spin" /> : 'Simpan Varian'}
                     </button>

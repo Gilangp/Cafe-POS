@@ -1,8 +1,8 @@
 import { 
   LayoutDashboard, Calculator, CalendarCheck, Utensils, Tags, Package, 
-  ClipboardList, Clock, MonitorPlay, Image as ImageIcon, FileText, 
-  Ticket, HelpCircle, TrendingUp, CalendarClock, Archive, 
-  Users, Shield, Key, Settings, Store, Database, Activity, Scale
+  ClipboardList, Clock, MonitorPlay, FileText, 
+  Ticket, TrendingUp, 
+  Users, Store, Database, Activity, Scale, Settings
 } from 'lucide-react';
 import { ForwardRefExoticComponent, RefAttributes } from 'react';
 import { LucideProps } from 'lucide-react';
@@ -22,18 +22,18 @@ export const DASHBOARD_MENU: MenuItem[] = [
     title: 'Dashboard',
     icon: LayoutDashboard,
     href: '/dashboard',
-    roles: ['owner', 'admin', 'kasir', 'dapur_barista', 'multi_role'],
+    roles: ['owner', 'admin'],
   },
   {
     title: 'Operasional',
     roles: ['owner', 'admin', 'kasir', 'dapur_barista', 'multi_role'],
     items: [
-      { title: 'POS (Kasir)', icon: Calculator, href: '/dashboard/pos', roles: ['owner', 'kasir', 'multi_role'] },
-      { title: 'KDS (Dapur)', icon: Clock, href: '/dashboard/admin/kds', roles: ['owner', 'admin', 'dapur_barista', 'multi_role'] },
+      { title: 'Kasir (POS)', icon: Calculator, href: '/dashboard/kasir', roles: ['owner', 'kasir', 'multi_role'] },
+      { title: 'Dapur / Barista', icon: Clock, href: '/dashboard/barista', roles: ['owner', 'admin', 'dapur_barista', 'multi_role'] },
       { title: 'Riwayat Pesanan', icon: ClipboardList, href: '/dashboard/admin/orders', roles: ['owner', 'admin', 'kasir', 'multi_role'] },
       { title: 'Reservasi', icon: CalendarCheck, href: '/dashboard/admin/reservations', roles: ['owner', 'admin', 'kasir', 'multi_role'] },
       { title: 'Menu', icon: Utensils, href: '/dashboard/admin/menu', roles: ['owner', 'admin'] },
-      { title: 'Kategori & Varian', icon: Tags, href: '/dashboard/admin/categories', roles: ['owner', 'admin'] },
+      { title: 'Kategori', icon: Tags, href: '/dashboard/admin/categories', roles: ['owner', 'admin'] },
       { title: 'Inventory', icon: Package, href: '/dashboard/admin/inventory', roles: ['owner', 'admin', 'multi_role'] },
     ]
   },
@@ -57,20 +57,19 @@ export const DASHBOARD_MENU: MenuItem[] = [
     title: 'Manajemen',
     roles: ['owner', 'admin'],
     items: [
-      { title: 'User & Karyawan', icon: Users, href: '/dashboard/admin/users', roles: ['owner', 'admin'] },
-      { title: 'CRM & Member', icon: Shield, href: '/dashboard/admin/memberships', roles: ['owner', 'admin'] },
-      { title: 'Daftar Suplier', icon: Package, href: '/dashboard/admin/suppliers', roles: ['owner', 'admin'] },
-      { title: 'Pembelian (PO)', icon: TrendingUp, href: '/dashboard/admin/procurement/purchase-orders', roles: ['owner', 'admin'] },
+      { title: 'Karyawan', icon: Users, href: '/dashboard/admin/employees', roles: ['owner', 'admin'] },
+      { title: 'Suplier', icon: Store, href: '/dashboard/admin/suppliers', roles: ['owner', 'admin'] },
+      { title: 'Pembelian (PO)', icon: Package, href: '/dashboard/admin/procurement/purchase-orders', roles: ['owner', 'admin'] },
     ]
   },
   {
     title: 'Pengaturan',
-    roles: ['owner', 'admin'],
+    roles: ['owner'],
     items: [
-      { title: 'Pengaturan Umum', icon: Settings, href: '/dashboard/admin/settings', roles: ['owner', 'admin'] },
-      { title: 'Konversi Satuan', icon: Scale, href: '/dashboard/admin/unit-conversions', roles: ['owner', 'admin'] },
-      { title: 'Aktivitas Sistem', icon: Activity, href: '/dashboard/admin/audit', roles: ['owner'] },
-      { title: 'Backup', icon: Database, href: '/dashboard/admin/backup', roles: ['owner'] },
+      { title: 'Pengaturan Umum', icon: Settings, href: '/dashboard/admin/settings', roles: ['owner'] },
+      { title: 'Konversi Satuan', icon: Scale, href: '/dashboard/admin/unit-conversions', roles: ['owner'] },
+      { title: 'Audit Log', icon: Activity, href: '/dashboard/admin/audit', roles: ['owner'] },
+      { title: 'Backup & Restore', icon: Database, href: '/dashboard/admin/backup', roles: ['owner'] },
     ]
   }
 ];

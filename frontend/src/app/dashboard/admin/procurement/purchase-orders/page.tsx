@@ -27,7 +27,7 @@ const fmt = (n: number) =>
   new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(n);
 
 const statusBadge: Record<string, string> = {
-  DRAFT: 'bg-gray-100 text-gray-700 border border-gray-200',
+  DRAFT: 'bg-muted text-gray-700 border border-border',
   ORDERED: 'bg-blue-100 text-blue-800 border border-blue-200',
   PARTIAL: 'bg-amber-100 text-amber-800 border border-amber-200',
   RECEIVED: 'bg-emerald-100 text-emerald-800 border border-emerald-200',
@@ -293,12 +293,12 @@ export default function PurchaseOrdersPage() {
   return (
     <div className="space-y-6 -m-6 lg:-m-8 p-6 lg:p-8 selection:bg-accent/30">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-200 dark:border-white/10 pb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-6">
         <div>
           <h1 className="font-heading text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white tracking-wide flex items-center gap-3">
             Purchase Orders (PO)
           </h1>
-          <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-1 font-sans">
+          <p className="text-xs sm:text-sm text-muted-foreground mt-1 font-sans">
             Buat PO ke supplier dan proses penerimaan barang dengan integrasi Batch FEFO dan perhitungan HPP rata-rata tertimbang.
           </p>
         </div>
@@ -322,12 +322,12 @@ export default function PurchaseOrdersPage() {
       {/* Filters */}
       <div className="flex flex-wrap gap-3">
         <div className="relative flex-1 min-w-48">
-          <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
+          <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Cari nomor PO atau nama supplier..."
-            className="w-full rounded-2xl border border-gray-200 dark:border-white/15 bg-white dark:bg-black/35 py-2.5 pl-10 pr-4 text-xs font-medium focus:border-accent focus:outline-none"
+            className="w-full rounded-2xl border border-border bg-white dark:bg-black/35 py-2.5 pl-10 pr-4 text-xs font-medium focus:border-accent focus:outline-none"
           />
         </div>
         <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-hide">
@@ -338,7 +338,7 @@ export default function PurchaseOrdersPage() {
               className={`shrink-0 rounded-2xl px-5 py-2.5 text-xs font-bold transition-all ${
                 statusFilter === st
                   ? 'bg-primary text-accent shadow-sm'
-                  : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white bg-white dark:bg-black/30 border border-gray-200 dark:border-white/15'
+                  : 'text-muted-foreground hover:text-gray-900 dark:hover:text-white bg-white dark:bg-black/30 border border-border'
               }`}
             >
               {st === 'all' ? 'Semua Status' : st}
@@ -349,8 +349,8 @@ export default function PurchaseOrdersPage() {
 
       {/* PO List */}
       {loading ? (
-        <div className="flex flex-col items-center justify-center py-20 text-gray-400 bg-white dark:bg-[#1A2620] rounded-3xl border border-gray-200 dark:border-white/10">
-          <Loader2 size={36} className="animate-spin mb-3 text-accent" />
+        <div className="flex flex-col items-center justify-center py-20 text-muted-foreground bg-card rounded-3xl border border-border">
+          <Loader2 size={36} className="animate-spin mb-3 text-slate-400" />
           <p className="text-xs font-bold">Memuat daftar Purchase Order...</p>
         </div>
       ) : (
@@ -362,14 +362,14 @@ export default function PurchaseOrdersPage() {
             return (
               <div
                 key={po.id}
-                className="group relative bg-white dark:bg-[#1A2620] rounded-3xl border border-gray-200 dark:border-white/10 p-5 shadow-sm hover:shadow-glow hover:border-accent/40 transition-all flex flex-col md:flex-row md:items-center justify-between gap-4 animate-fadeIn"
+                className="group relative bg-card rounded-3xl border border-border p-5 shadow-sm hover:shadow-glow hover:border-accent/40 transition-all flex flex-col md:flex-row md:items-center justify-between gap-4 animate-fadeIn"
               >
                 <div className="space-y-2">
                   <div className="flex items-center gap-3">
                     <span className="flex items-center gap-1.5 font-mono text-xs font-bold text-gray-900 dark:text-white bg-primary/10 dark:bg-accent/10 px-3 py-1 rounded-lg text-primary dark:text-accent border border-primary/20 dark:border-accent/20">
                       <Receipt size={14} /> {po.po_number}
                     </span>
-                    <span className={`rounded-full px-3 py-0.5 text-[11px] font-bold ${statusBadge[po.status] || 'bg-gray-100 text-gray-600'}`}>
+                    <span className={`rounded-full px-3 py-0.5 text-[11px] font-bold ${statusBadge[po.status] || 'bg-muted text-gray-600'}`}>
                       {po.status}
                     </span>
                   </div>
@@ -378,23 +378,23 @@ export default function PurchaseOrdersPage() {
                     <span className="flex items-center gap-1 font-bold text-gray-800">
                       <Store size={13} className="text-[#BA935D]" /> {po.supplier?.name || 'Supplier'}
                     </span>
-                    <span className="flex items-center gap-1 text-gray-400">
+                    <span className="flex items-center gap-1 text-muted-foreground">
                       <Calendar size={13} /> Tgl Order: <strong className="text-gray-700">{po.order_date}</strong>
                     </span>
                     {po.expected_delivery_date && (
-                      <span className="flex items-center gap-1 text-gray-400">
+                      <span className="flex items-center gap-1 text-muted-foreground">
                         <Truck size={13} /> Est. Tiba: <strong className="text-gray-700">{po.expected_delivery_date}</strong>
                       </span>
                     )}
                   </div>
 
-                  {po.notes && <p className="text-xs text-gray-500 italic">&ldquo;{po.notes}&rdquo;</p>}
+                  {po.notes && <p className="text-xs text-muted-foreground italic">&ldquo;{po.notes}&rdquo;</p>}
 
                 </div>
 
                 <div className="flex md:flex-col items-center md:items-end justify-between border-t md:border-t-0 pt-3 md:pt-0 gap-3">
                   <div className="text-left md:text-right">
-                    <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400">Total Nilai PO</p>
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Total Nilai PO</p>
                     <p className="font-serif text-lg font-bold text-gray-900">{fmt(displayTotal)}</p>
                   </div>
 
@@ -428,7 +428,7 @@ export default function PurchaseOrdersPage() {
       {/* Modal Create Purchase Order */}
       {mounted && isCreateModalOpen && createPortal(
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fadeIn" style={{ zIndex: 9999 }}>
-          <div className="w-full max-w-2xl rounded-3xl bg-white dark:bg-[#1A2620] p-6 shadow-2xl border border-gray-200 dark:border-white/15 max-h-[90vh] overflow-y-auto">
+          <div className="w-full max-w-2xl rounded-3xl bg-card p-6 shadow-2xl border border-border max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-gray-100 dark:border-white/10 pb-4 mb-4">
               <div className="flex items-center gap-2">
                 <FileText size={20} className="text-accent" />
@@ -436,7 +436,7 @@ export default function PurchaseOrdersPage() {
               </div>
               <button
                 onClick={() => setIsCreateModalOpen(false)}
-                className="rounded-full p-1.5 text-gray-400 hover:bg-gray-100 dark:hover:bg-white/10"
+                className="rounded-full p-1.5 text-muted-foreground hover:bg-muted dark:hover:bg-white/10"
               >
                 <X size={18} />
               </button>
@@ -452,7 +452,7 @@ export default function PurchaseOrdersPage() {
                     required
                     value={supplierId}
                     onChange={(e) => setSupplierId(e.target.value)}
-                    className="w-full rounded-xl border border-gray-200 px-3 py-2 text-xs font-semibold focus:border-[#BA935D] focus:outline-none"
+                    className="w-full rounded-xl border border-border px-3 py-2 text-xs font-semibold focus:border-[#BA935D] focus:outline-none"
                   >
                     {suppliers.length === 0 && (
                       <option value="" disabled>-- Belum ada data Supplier --</option>
@@ -474,7 +474,7 @@ export default function PurchaseOrdersPage() {
                     required
                     value={orderDate}
                     onChange={(e) => setOrderDate(e.target.value)}
-                    className="w-full rounded-xl border border-gray-200 px-3 py-2 text-xs focus:border-[#BA935D] focus:outline-none"
+                    className="w-full rounded-xl border border-border px-3 py-2 text-xs focus:border-[#BA935D] focus:outline-none"
                   />
                 </div>
 
@@ -486,7 +486,7 @@ export default function PurchaseOrdersPage() {
                     type="date"
                     value={expectedDate}
                     onChange={(e) => setExpectedDate(e.target.value)}
-                    className="w-full rounded-xl border border-gray-200 px-3 py-2 text-xs focus:border-[#BA935D] focus:outline-none"
+                    className="w-full rounded-xl border border-border px-3 py-2 text-xs focus:border-[#BA935D] focus:outline-none"
                   />
                 </div>
               </div>
@@ -506,10 +506,10 @@ export default function PurchaseOrdersPage() {
                   </button>
                 </div>
 
-                <div className="rounded-xl border border-gray-200 overflow-hidden">
+                <div className="rounded-xl border border-border overflow-hidden">
                   <table className="w-full text-xs">
                     <thead>
-                      <tr className="bg-gray-50 dark:bg-black/20 text-gray-400 uppercase tracking-wider text-left">
+                      <tr className="bg-muted dark:bg-black/20 text-muted-foreground uppercase tracking-wider text-left">
                         <th className="p-2.5">Bahan Baku</th>
                         <th className="p-2.5 w-24">Jumlah</th>
                         <th className="p-2.5 w-24">Satuan PO</th>
@@ -525,7 +525,7 @@ export default function PurchaseOrdersPage() {
                             <select
                               value={item.inventory_item_id}
                               onChange={(e) => handlePoItemChange(idx, 'inventory_item_id', e.target.value)}
-                              className="w-full rounded-lg border border-gray-200 px-2 py-1.5 focus:border-[#BA935D] focus:outline-none"
+                              className="w-full rounded-lg border border-border px-2 py-1.5 focus:border-[#BA935D] focus:outline-none"
                             >
                               {inventoryItems.map((inv) => (
                                 <option key={inv.id} value={inv.id}>
@@ -540,7 +540,7 @@ export default function PurchaseOrdersPage() {
                               required
                               value={item.quantity}
                               onChange={(e) => handlePoItemChange(idx, 'quantity', e.target.value)}
-                              className="w-full rounded-lg border border-gray-200 px-2 py-1.5 font-mono focus:border-[#BA935D] focus:outline-none"
+                              className="w-full rounded-lg border border-border px-2 py-1.5 font-mono focus:border-[#BA935D] focus:outline-none"
                             />
                           </td>
                           <td className="p-2">
@@ -549,7 +549,7 @@ export default function PurchaseOrdersPage() {
                               required
                               value={item.unit}
                               onChange={(e) => handlePoItemChange(idx, 'unit', e.target.value)}
-                              className="w-full rounded-lg border border-gray-200 px-2 py-1.5 font-mono focus:border-[#BA935D] focus:outline-none"
+                              className="w-full rounded-lg border border-border px-2 py-1.5 font-mono focus:border-[#BA935D] focus:outline-none"
                               placeholder="kg, dus..."
                             />
                           </td>
@@ -559,7 +559,7 @@ export default function PurchaseOrdersPage() {
                               required
                               value={item.conversion_multiplier}
                               onChange={(e) => handlePoItemChange(idx, 'conversion_multiplier', e.target.value)}
-                              className="w-full rounded-lg border border-gray-200 px-2 py-1.5 font-mono focus:border-[#BA935D] focus:outline-none"
+                              className="w-full rounded-lg border border-border px-2 py-1.5 font-mono focus:border-[#BA935D] focus:outline-none"
                             />
                             {/* Tooltip to explain conversion */}
                             <div className="absolute hidden group-hover:block bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 p-2 bg-gray-900 text-white text-[10px] rounded shadow-xl z-50">
@@ -572,7 +572,7 @@ export default function PurchaseOrdersPage() {
                               required
                               value={item.unit_price}
                               onChange={(e) => handlePoItemChange(idx, 'unit_price', e.target.value)}
-                              className="w-full rounded-lg border border-gray-200 px-2 py-1.5 font-mono focus:border-[#BA935D] focus:outline-none"
+                              className="w-full rounded-lg border border-border px-2 py-1.5 font-mono focus:border-[#BA935D] focus:outline-none"
                             />
                           </td>
                           <td className="p-2 text-center">
@@ -600,7 +600,7 @@ export default function PurchaseOrdersPage() {
                   value={poNotes}
                   onChange={(e) => setPoNotes(e.target.value)}
                   placeholder="Instruksi pengiriman khusus..."
-                  className="w-full rounded-xl border border-gray-200 px-3 py-2 text-xs focus:border-[#BA935D] focus:outline-none"
+                  className="w-full rounded-xl border border-border px-3 py-2 text-xs focus:border-[#BA935D] focus:outline-none"
                 />
               </div>
 
@@ -608,7 +608,7 @@ export default function PurchaseOrdersPage() {
                 <button
                   type="button"
                   onClick={() => setIsCreateModalOpen(false)}
-                  className="rounded-xl border border-gray-200 px-4 py-2 text-xs font-bold text-gray-600 hover:bg-gray-50"
+                  className="rounded-xl border border-border px-4 py-2 text-xs font-bold text-gray-600 hover:bg-muted"
                 >
                   Batal
                 </button>
@@ -643,20 +643,20 @@ export default function PurchaseOrdersPage() {
       {/* Modal Receive Purchase Order with Batch FEFO */}
       {mounted && isReceiveModalOpen && selectedPo && createPortal(
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fadeIn" style={{ zIndex: 9999 }}>
-          <div className="w-full max-w-3xl rounded-3xl bg-white dark:bg-[#1A2620] p-6 shadow-2xl border border-gray-200 dark:border-white/15 max-h-[90vh] overflow-y-auto">
+          <div className="w-full max-w-3xl rounded-3xl bg-card p-6 shadow-2xl border border-border max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-gray-100 dark:border-white/10 pb-4 mb-4">
               <div className="flex items-center gap-2">
                 <PackageCheck size={22} className="text-emerald-500" />
                 <div>
                   <h3 className="font-heading text-lg font-bold text-gray-900 dark:text-white">Penerimaan Barang PO (Receiving)</h3>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 font-mono mt-0.5">
+                  <p className="text-xs text-muted-foreground font-mono mt-0.5">
                     {selectedPo.po_number} • {selectedPo.supplier?.name}
                   </p>
                 </div>
               </div>
               <button
                 onClick={() => setIsReceiveModalOpen(false)}
-                className="rounded-full p-1.5 text-gray-400 hover:bg-gray-100 dark:hover:bg-white/10"
+                className="rounded-full p-1.5 text-muted-foreground hover:bg-muted dark:hover:bg-white/10"
               >
                 <X size={18} />
               </button>
@@ -673,10 +673,10 @@ export default function PurchaseOrdersPage() {
             </div>
 
             <form onSubmit={handleSaveReceive} className="space-y-4">
-              <div className="overflow-x-auto rounded-xl border border-gray-200">
+              <div className="overflow-x-auto rounded-xl border border-border">
                 <table className="w-full text-xs">
                   <thead>
-                    <tr className="bg-gray-50 dark:bg-black/20 text-left uppercase tracking-wider text-gray-400">
+                    <tr className="bg-muted dark:bg-black/20 text-left uppercase tracking-wider text-muted-foreground">
                       <th className="p-3">Nama Bahan Baku</th>
                       <th className="p-3 w-28">Order vs Terima</th>
                       <th className="p-3 w-28">Qty Diterima</th>
@@ -686,7 +686,7 @@ export default function PurchaseOrdersPage() {
                   </thead>
                   <tbody className="divide-y divide-gray-100">
                     {receiveFormItems.map((item, idx) => (
-                      <tr key={idx} className="hover:bg-gray-50/50">
+                      <tr key={idx} className="hover:bg-muted/50">
                         <td className="p-3 font-bold text-gray-800">{item.item_name}</td>
                         <td className="p-3 font-mono text-gray-600">
                           {item.already_received}/{item.ordered_qty} {item.unit}
@@ -703,7 +703,7 @@ export default function PurchaseOrdersPage() {
                                 prev.map((r, i) => (i === idx ? { ...r, receiving_qty: val } : r))
                               );
                             }}
-                            className="w-full rounded-lg border border-gray-200 px-2 py-1.5 font-mono font-bold focus:border-[#BA935D] focus:outline-none"
+                            className="w-full rounded-lg border border-border px-2 py-1.5 font-mono font-bold focus:border-[#BA935D] focus:outline-none"
                           />
                         </td>
                         <td className="p-3">
@@ -717,7 +717,7 @@ export default function PurchaseOrdersPage() {
                               );
                             }}
                             placeholder="BATCH-001"
-                            className="w-full rounded-lg border border-gray-200 px-2 py-1.5 font-mono focus:border-[#BA935D] focus:outline-none"
+                            className="w-full rounded-lg border border-border px-2 py-1.5 font-mono focus:border-[#BA935D] focus:outline-none"
                           />
                         </td>
                         <td className="p-3">
@@ -730,7 +730,7 @@ export default function PurchaseOrdersPage() {
                                 prev.map((r, i) => (i === idx ? { ...r, expiration_date: val } : r))
                               );
                             }}
-                            className="w-full rounded-lg border border-gray-200 px-2 py-1.5 focus:border-[#BA935D] focus:outline-none"
+                            className="w-full rounded-lg border border-border px-2 py-1.5 focus:border-[#BA935D] focus:outline-none"
                           />
                         </td>
                       </tr>
@@ -743,7 +743,7 @@ export default function PurchaseOrdersPage() {
                 <button
                   type="button"
                   onClick={() => setIsReceiveModalOpen(false)}
-                  className="rounded-xl border border-gray-200 px-4 py-2 text-xs font-bold text-gray-600 hover:bg-gray-50"
+                  className="rounded-xl border border-border px-4 py-2 text-xs font-bold text-gray-600 hover:bg-muted"
                 >
                   Batal
                 </button>

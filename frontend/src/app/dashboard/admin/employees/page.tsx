@@ -347,7 +347,7 @@ export default function EmployeesPage() {
   return (
     <div className="space-y-6 pb-12 -m-6 lg:-m-8 p-6 lg:p-8 selection:bg-[#C89B5C]/30">
       {/* Top Header & Tab Switcher */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-200 dark:border-white/10 pb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-6">
         <div>
           <div className="flex items-center gap-3">
             <h1 className="font-heading text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white tracking-wide">
@@ -357,7 +357,7 @@ export default function EmployeesPage() {
               Phase 10 Ready
             </span>
           </div>
-          <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-1 font-sans">
+          <p className="text-xs sm:text-sm text-muted-foreground mt-1 font-sans">
             Kelola akun user internal (Kasir, Admin, Dapur/Barista) dengan hak akses peran ganda (Multi-Role RBAC Scope) dan pantau jejak audit log keamanan.
           </p>
         </div>
@@ -395,13 +395,13 @@ export default function EmployeesPage() {
             className={`flex items-center gap-2.5 rounded-2xl px-6 py-3.5 text-xs sm:text-sm font-bold transition-all shrink-0 ${
               activeTab === t.id
                 ? 'bg-[#1E3D31] text-[#C89B5C] shadow-md border border-[#C89B5C]/30'
-                : 'bg-white dark:bg-[#1A2620] border border-gray-200 dark:border-white/15 text-gray-600 dark:text-gray-300 hover:border-[#C89B5C]'
+                : 'bg-card border border-border text-gray-600 dark:text-muted-foreground/50 hover:border-[#C89B5C]'
             }`}
           >
             <t.icon size={17} />
             <span>{t.label}</span>
             {t.count !== undefined && (
-              <span className={`rounded-full px-2.5 py-0.5 text-[10px] font-mono font-extrabold ${activeTab === t.id ? 'bg-[#C89B5C] text-[#1E3D31]' : 'bg-gray-100 dark:bg-black/40 text-gray-600 dark:text-gray-300'}`}>
+              <span className={`rounded-full px-2.5 py-0.5 text-[10px] font-mono font-extrabold ${activeTab === t.id ? 'bg-[#C89B5C] text-primary' : 'bg-muted dark:bg-black/40 text-gray-600 dark:text-muted-foreground/50'}`}>
                 {t.count}
               </span>
             )}
@@ -422,26 +422,26 @@ export default function EmployeesPage() {
             {[
               { label: 'Total User Akun', value: employees.length, color: 'bg-[#1E3D31] text-[#C89B5C]' },
               { label: 'Akun Staf Aktif', value: activeCount, color: 'bg-emerald-600 text-white' },
-              { label: 'Akun Nonaktif / Non-Aktif', value: employees.length - activeCount, color: 'bg-gray-500 text-white' },
+              { label: 'Akun Nonaktif / Non-Aktif', value: employees.length - activeCount, color: 'bg-muted0 text-white' },
               { label: 'User Multi-Role Ganda', value: employees.filter((e) => e.roles.length > 1).length, color: 'bg-blue-600 text-white' },
             ].map((s) => (
-              <div key={s.label} className="rounded-3xl bg-white dark:bg-[#1A2620] border border-gray-200 dark:border-white/10 p-5 shadow-sm flex items-center gap-4">
+              <div key={s.label} className="rounded-3xl bg-card border border-border p-5 shadow-sm flex items-center gap-4">
                 <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl ${s.color} font-bold text-xl font-heading shadow-sm`}>
                   {s.value}
                 </div>
-                <span className="text-xs font-bold text-gray-700 dark:text-gray-300 leading-snug">{s.label}</span>
+                <span className="text-xs font-bold text-gray-700 dark:text-muted-foreground/50 leading-snug">{s.label}</span>
               </div>
             ))}
           </div>
 
           {/* Search Bar */}
           <div className="relative max-w-sm">
-            <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
+            <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
             <input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Cari nama staf atau peran jabatan..."
-              className="w-full rounded-2xl border border-gray-200 dark:border-white/15 bg-white dark:bg-black/35 py-2.5 pl-10 pr-4 text-xs font-bold focus:border-[#C89B5C] focus:outline-none"
+              className="w-full rounded-2xl border border-border bg-white dark:bg-black/35 py-2.5 pl-10 pr-4 text-xs font-bold focus:border-[#C89B5C] focus:outline-none"
             />
           </div>
 
@@ -450,8 +450,8 @@ export default function EmployeesPage() {
             {filteredEmployees.map((emp, i) => (
               <div
                 key={emp.id}
-                className={`rounded-3xl bg-white dark:bg-[#1A2620] border-2 p-6 shadow-sm transition-all flex flex-col justify-between ${
-                  emp.status === 'active' ? 'border-gray-200 dark:border-white/10 hover:border-[#C89B5C]' : 'border-dashed border-gray-300 dark:border-white/15 opacity-70'
+                className={`rounded-3xl bg-card border-2 p-6 shadow-sm transition-all flex flex-col justify-between ${
+                  emp.status === 'active' ? 'border-border hover:border-[#C89B5C]' : 'border-dashed border-gray-300 dark:border-white/15 opacity-70'
                 }`}
               >
                 <div>
@@ -462,7 +462,7 @@ export default function EmployeesPage() {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between gap-2">
                         <h3 className="font-heading font-extrabold text-gray-900 dark:text-white text-base truncate">{emp.name}</h3>
-                        <span className={`shrink-0 text-[10px] font-extrabold rounded-full px-2.5 py-0.5 border ${emp.status === 'active' ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-700 dark:text-emerald-400' : 'bg-gray-500/15 border-gray-500/30 text-gray-500 dark:text-gray-400'}`}>
+                        <span className={`shrink-0 text-[10px] font-extrabold rounded-full px-2.5 py-0.5 border ${emp.status === 'active' ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-700 dark:text-emerald-400' : 'bg-muted0/15 border-gray-500/30 text-muted-foreground'}`}>
                           {emp.status === 'active' ? 'Aktif' : 'Nonaktif'}
                         </span>
                       </div>
@@ -472,7 +472,7 @@ export default function EmployeesPage() {
                         {emp.roles.map((role) => (
                           <span
                             key={role}
-                            className={`text-[10px] font-extrabold rounded-full px-2.5 py-0.5 border ${roleColors[role] || 'bg-gray-100 dark:bg-black/40 text-gray-600 border-gray-200'}`}
+                            className={`text-[10px] font-extrabold rounded-full px-2.5 py-0.5 border ${roleColors[role] || 'bg-muted dark:bg-black/40 text-gray-600 border-border'}`}
                           >
                             {role}
                           </span>
@@ -481,7 +481,7 @@ export default function EmployeesPage() {
                     </div>
                   </div>
 
-                  <div className="mt-5 space-y-2.5 text-xs text-gray-600 dark:text-gray-300 border-t border-gray-100 dark:border-white/10 pt-4 font-medium">
+                  <div className="mt-5 space-y-2.5 text-xs text-gray-600 dark:text-muted-foreground/50 border-t border-gray-100 dark:border-white/10 pt-4 font-medium">
                     <div className="flex items-center gap-2">
                       <Phone size={13} className="text-[#C89B5C] shrink-0" />
                       <span className="font-mono">{emp.phone}</span>
@@ -492,7 +492,7 @@ export default function EmployeesPage() {
                     </div>
                     <div className="flex items-center justify-between pt-2 border-t border-gray-50 dark:border-white/5 text-[11px]">
                       <span className="flex items-center gap-1.5">
-                        <MapPin size={12} className="text-gray-400" /> <strong className="text-gray-900 dark:text-white">{emp.branch}</strong>
+                        <MapPin size={12} className="text-muted-foreground" /> <strong className="text-gray-900 dark:text-white">{emp.branch}</strong>
                       </span>
                       <span>
                         Join: <strong className="font-mono">{emp.joinDate}</strong>
@@ -505,7 +505,7 @@ export default function EmployeesPage() {
                 <div className="grid grid-cols-2 gap-2 mt-5 pt-4 border-t border-gray-100 dark:border-white/10">
                   <button
                     onClick={() => handleOpenEditModal(emp)}
-                    className="flex items-center justify-center gap-1.5 rounded-2xl bg-gray-100 dark:bg-white/5 hover:bg-[#C89B5C] hover:text-white py-2.5 text-xs font-bold text-gray-700 dark:text-gray-300 transition-all active:scale-95"
+                    className="flex items-center justify-center gap-1.5 rounded-2xl bg-muted dark:bg-white/5 hover:bg-[#C89B5C] hover:text-white py-2.5 text-xs font-bold text-gray-700 dark:text-muted-foreground/50 transition-all active:scale-95"
                   >
                     <Edit2 size={13} />
                     <span>Edit Peran Ganda</span>
@@ -583,14 +583,14 @@ export default function EmployeesPage() {
             </div>
           )}
 
-          <div className="rounded-3xl bg-white dark:bg-[#1A2620] border border-gray-200 dark:border-white/10 shadow-sm overflow-hidden">
+          <div className="rounded-3xl bg-card border border-border shadow-sm overflow-hidden">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between px-6 py-5 border-b border-gray-100 dark:border-white/10 bg-[#FAF3E7] dark:bg-black/30 gap-3">
               <div>
                 <h2 className="font-heading text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
                   <Calendar className="text-[#C89B5C]" size={20} />
                   <span>Matriks Penjadwalan Mingguan (`HR-002`)</span>
                 </h2>
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Klik dropdown pada sel hari untuk mengubah jam shift secara interaktif</p>
+                <p className="text-xs text-muted-foreground mt-0.5">Klik dropdown pada sel hari untuk mengubah jam shift secara interaktif</p>
               </div>
 
               <div className="flex items-center gap-3 text-xs font-semibold flex-wrap">
@@ -609,7 +609,7 @@ export default function EmployeesPage() {
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="bg-gray-50 dark:bg-black/30 text-[11px] font-bold uppercase tracking-wider text-gray-400 border-b border-gray-100 dark:border-white/10">
+                  <tr className="bg-muted dark:bg-black/30 text-[11px] font-bold uppercase tracking-wider text-muted-foreground border-b border-gray-100 dark:border-white/10">
                     <th className="p-4 pl-6 min-w-[200px]">Staf / Barista</th>
                     {WEEK_DAYS.map((day) => (
                       <th key={day} className="p-4 text-center min-w-[145px]">
@@ -620,7 +620,7 @@ export default function EmployeesPage() {
                 </thead>
                 <tbody className="divide-y divide-gray-100 dark:divide-white/5 text-xs">
                   {employees.map((emp) => (
-                    <tr key={emp.id} className="hover:bg-gray-50/60 dark:hover:bg-white/5 transition-colors">
+                    <tr key={emp.id} className="hover:bg-muted/60 dark:hover:bg-white/5 transition-colors">
                       <td className="p-4 pl-6 font-semibold text-gray-900 dark:text-white">
                         <div className="flex items-center gap-3">
                           <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#1E3D31] text-[#C89B5C] font-extrabold text-xs shadow-sm">
@@ -652,7 +652,7 @@ export default function EmployeesPage() {
                                   ? 'bg-blue-500/15 border-blue-500/30 text-blue-800 dark:text-blue-300 hover:border-blue-400'
                                   : shiftVal.includes('Full')
                                   ? 'bg-violet-500/15 border-violet-500/30 text-violet-800 dark:text-violet-300 hover:border-violet-400'
-                                  : 'bg-gray-100 dark:bg-black/35 border-gray-200 dark:border-white/15 text-gray-500 dark:text-gray-400 font-normal'
+                                  : 'bg-muted dark:bg-black/35 border-border text-muted-foreground font-normal'
                               }`}
                             >
                               <option value="Libur">Libur (Off)</option>
@@ -677,7 +677,7 @@ export default function EmployeesPage() {
         <div className="space-y-6 animate-in fade-in duration-200">
           <div className="rounded-3xl bg-[#1E3D31] text-white p-6 sm:p-8 border-2 border-[#C89B5C]/50 shadow-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="flex items-center gap-4">
-              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#C89B5C] text-[#1E3D31] shadow-md">
+              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#C89B5C] text-primary shadow-md">
                 <FileText size={28} />
               </div>
               <div>
@@ -698,12 +698,12 @@ export default function EmployeesPage() {
           {/* Audit Log Filters */}
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div className="relative flex-1 min-w-[280px] max-w-md">
-              <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
+              <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
               <input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Cari target, modul, atau aktor pengubah..."
-                className="w-full rounded-2xl border border-gray-200 dark:border-white/15 bg-white dark:bg-black/35 py-2.5 pl-10 pr-4 text-xs font-bold focus:border-[#C89B5C] focus:outline-none"
+                className="w-full rounded-2xl border border-border bg-white dark:bg-black/35 py-2.5 pl-10 pr-4 text-xs font-bold focus:border-[#C89B5C] focus:outline-none"
               />
             </div>
 
@@ -713,7 +713,7 @@ export default function EmployeesPage() {
                   key={act}
                   onClick={() => setLogFilterAction(act)}
                   className={`rounded-xl px-3.5 py-2 text-xs font-bold transition-all ${
-                    logFilterAction === act ? 'bg-[#1E3D31] text-[#C89B5C] shadow-sm' : 'bg-white dark:bg-black/30 border border-gray-200 dark:border-white/15 text-gray-600 dark:text-gray-300 hover:border-[#C89B5C]'
+                    logFilterAction === act ? 'bg-[#1E3D31] text-[#C89B5C] shadow-sm' : 'bg-white dark:bg-black/30 border border-border text-gray-600 dark:text-muted-foreground/50 hover:border-[#C89B5C]'
                   }`}
                 >
                   {act === 'ALL' ? 'Semua Aksi' : act}
@@ -722,7 +722,7 @@ export default function EmployeesPage() {
             </div>
           </div>
 
-          <div className="rounded-3xl bg-white dark:bg-[#1A2620] border border-gray-200 dark:border-white/10 shadow-sm overflow-hidden">
+          <div className="rounded-3xl bg-card border border-border shadow-sm overflow-hidden">
             <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-white/10">
               <h3 className="font-heading text-lg font-bold text-gray-900 dark:text-white">Daftar Riwayat Aktivitas Sistem ({filteredAuditLogs.length})</h3>
               <span className="text-xs text-[#C89B5C] font-mono font-extrabold">Live Security Audit</span>
@@ -731,7 +731,7 @@ export default function EmployeesPage() {
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="bg-gray-50 dark:bg-black/30 text-[11px] font-bold uppercase tracking-wider text-gray-400 border-b border-gray-100 dark:border-white/10">
+                  <tr className="bg-muted dark:bg-black/30 text-[11px] font-bold uppercase tracking-wider text-muted-foreground border-b border-gray-100 dark:border-white/10">
                     <th className="p-4 pl-6">Log ID & Timestamp</th>
                     <th className="p-4">Modul / Aksi (10.3)</th>
                     <th className="p-4">Aktor / Staf</th>
@@ -741,10 +741,10 @@ export default function EmployeesPage() {
                 </thead>
                 <tbody className="divide-y divide-gray-100 dark:divide-white/5 text-xs">
                   {filteredAuditLogs.map((log) => (
-                    <tr key={log.id} className="hover:bg-gray-50/60 dark:hover:bg-white/5 transition-colors">
+                    <tr key={log.id} className="hover:bg-muted/60 dark:hover:bg-white/5 transition-colors">
                       <td className="p-4 pl-6 whitespace-nowrap">
                         <p className="font-mono font-extrabold text-gray-900 dark:text-white">{log.id}</p>
-                        <p className="text-[10px] text-gray-400 mt-0.5 font-mono flex items-center gap-1">
+                        <p className="text-[10px] text-muted-foreground mt-0.5 font-mono flex items-center gap-1">
                           <Clock size={11} /> {log.timestamp}
                         </p>
                       </td>
@@ -767,7 +767,7 @@ export default function EmployeesPage() {
                         </div>
                       </td>
                       <td className="p-4 font-extrabold text-gray-900 dark:text-white">{log.actor}</td>
-                      <td className="p-4 text-gray-600 dark:text-gray-300 font-medium max-w-xs truncate">{log.target}</td>
+                      <td className="p-4 text-gray-600 dark:text-muted-foreground/50 font-medium max-w-xs truncate">{log.target}</td>
                       <td className="p-4 text-right pr-6">
                         <button
                           onClick={() => setSelectedLog(log)}
@@ -789,7 +789,7 @@ export default function EmployeesPage() {
       {/* MODAL: AUD-001 BEFORE/AFTER JSON DIFF VIEWER */}
       {selectedLog && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fadeIn">
-          <div className="w-full max-w-2xl bg-white dark:bg-[#1A2620] rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[88vh] border border-gray-200 dark:border-white/15">
+          <div className="w-full max-w-2xl bg-card rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[88vh] border border-border">
             <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100 dark:border-white/10 bg-[#FAF3E7] dark:bg-black/40">
               <div className="flex items-center gap-3">
                 <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#1E3D31] text-[#C89B5C]">
@@ -799,22 +799,22 @@ export default function EmployeesPage() {
                   <h3 className="font-heading text-lg font-bold text-gray-900 dark:text-white">
                     AUD-001 Diff Viewer · <span className="font-mono text-[#C89B5C]">{selectedLog.id}</span>
                   </h3>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 font-mono">{selectedLog.module} · {selectedLog.timestamp}</p>
+                  <p className="text-xs text-muted-foreground font-mono">{selectedLog.module} · {selectedLog.timestamp}</p>
                 </div>
               </div>
-              <button onClick={() => setSelectedLog(null)} className="rounded-full p-1.5 text-gray-400 hover:bg-gray-100 dark:hover:bg-white/10">
+              <button onClick={() => setSelectedLog(null)} className="rounded-full p-1.5 text-muted-foreground hover:bg-muted dark:hover:bg-white/10">
                 <X size={18} />
               </button>
             </div>
 
             <div className="p-6 overflow-y-auto space-y-6 flex-1">
-              <div className="grid grid-cols-2 gap-4 text-xs bg-gray-50 dark:bg-black/35 p-4 rounded-2xl border border-gray-100 dark:border-white/10">
+              <div className="grid grid-cols-2 gap-4 text-xs bg-muted dark:bg-black/35 p-4 rounded-2xl border border-gray-100 dark:border-white/10">
                 <div>
-                  <p className="text-gray-400 uppercase font-bold text-[10px]">Aktor Pengubah</p>
+                  <p className="text-muted-foreground uppercase font-bold text-[10px]">Aktor Pengubah</p>
                   <p className="font-extrabold text-gray-900 dark:text-white mt-0.5">{selectedLog.actor}</p>
                 </div>
                 <div>
-                  <p className="text-gray-400 uppercase font-bold text-[10px]">Target Objek</p>
+                  <p className="text-muted-foreground uppercase font-bold text-[10px]">Target Objek</p>
                   <p className="font-extrabold text-gray-900 dark:text-white mt-0.5">{selectedLog.target}</p>
                 </div>
               </div>
@@ -843,7 +843,7 @@ export default function EmployeesPage() {
               </div>
             </div>
 
-            <div className="border-t border-gray-100 dark:border-white/10 p-5 bg-gray-50 dark:bg-black/30 flex justify-end">
+            <div className="border-t border-gray-100 dark:border-white/10 p-5 bg-muted dark:bg-black/30 flex justify-end">
               <button
                 onClick={() => setSelectedLog(null)}
                 className="rounded-2xl bg-[#1E3D31] px-8 py-2.5 text-xs font-bold text-[#C89B5C] hover:bg-[#163026] transition-all"
@@ -858,20 +858,20 @@ export default function EmployeesPage() {
       {/* 10.2 MODAL: ADD / EDIT EMPLOYEE & MULTI-ROLE */}
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fadeIn">
-          <div className="w-full max-w-lg bg-white dark:bg-[#1A2620] rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6 border border-gray-200 dark:border-white/15 max-h-[92vh] overflow-y-auto">
+          <div className="w-full max-w-lg bg-card rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6 border border-border max-h-[92vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-gray-100 dark:border-white/10 pb-4">
               <h3 className="font-heading text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
                 <Users size={22} className="text-[#C89B5C]" />
                 <span>{editingId !== null ? 'Edit Akun & Peran Ganda (10.2)' : 'Tambah Akun User Baru (10.2)'}</span>
               </h3>
-              <button onClick={() => setShowModal(false)} className="rounded-full p-1.5 text-gray-400 hover:bg-gray-100 dark:hover:bg-white/10">
+              <button onClick={() => setShowModal(false)} className="rounded-full p-1.5 text-muted-foreground hover:bg-muted dark:hover:bg-white/10">
                 <X size={18} />
               </button>
             </div>
 
             <form onSubmit={handleSaveEmployee} className="space-y-4">
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1.5">
+                <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-muted-foreground/50 mb-1.5">
                   Nama Lengkap <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -880,16 +880,16 @@ export default function EmployeesPage() {
                   value={formName}
                   onChange={(e) => setFormName(e.target.value)}
                   placeholder="Contoh: Rina Kusuma"
-                  className="w-full rounded-2xl border border-gray-200 dark:border-white/15 bg-white dark:bg-black/35 px-4 py-3 text-xs font-bold focus:border-[#C89B5C] focus:outline-none"
+                  className="w-full rounded-2xl border border-border bg-white dark:bg-black/35 px-4 py-3 text-xs font-bold focus:border-[#C89B5C] focus:outline-none"
                 />
               </div>
 
               {/* 10.2 Multi-Role RBAC Checkbox Selector */}
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-muted-foreground/50 mb-2">
                   Pilih Peran Ganda (Multi-Role Scope 10.2) <span className="text-red-500">*</span>
                 </label>
-                <p className="text-[11px] text-gray-400 mb-3">
+                <p className="text-[11px] text-muted-foreground mb-3">
                   Anda dapat memilih lebih dari satu peran agar staf memiliki hak akses di beberapa modul sekaligus (misal: Kasir + Barista).
                 </p>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
@@ -903,10 +903,10 @@ export default function EmployeesPage() {
                         className={`flex items-center gap-2 rounded-xl p-2.5 text-xs font-bold transition-all text-left border ${
                           isSelected
                             ? 'bg-[#1E3D31] text-[#C89B5C] border-[#C89B5C] shadow-sm'
-                            : 'bg-gray-50 dark:bg-black/30 border-gray-200 dark:border-white/15 text-gray-600 dark:text-gray-300 hover:border-[#C89B5C]'
+                            : 'bg-muted dark:bg-black/30 border-border text-gray-600 dark:text-muted-foreground/50 hover:border-[#C89B5C]'
                         }`}
                       >
-                        <span className={`h-4 w-4 rounded flex items-center justify-center text-[10px] shrink-0 border ${isSelected ? 'bg-[#C89B5C] text-[#1E3D31] border-transparent font-extrabold' : 'border-gray-400'}`}>
+                        <span className={`h-4 w-4 rounded flex items-center justify-center text-[10px] shrink-0 border ${isSelected ? 'bg-[#C89B5C] text-primary border-transparent font-extrabold' : 'border-gray-400'}`}>
                           {isSelected && '✓'}
                         </span>
                         <span>{role}</span>
@@ -918,13 +918,13 @@ export default function EmployeesPage() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1.5">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-muted-foreground/50 mb-1.5">
                     Cabang Penempatan <span className="text-red-500">*</span>
                   </label>
                   <select
                     value={formBranch}
                     onChange={(e) => setFormBranch(e.target.value)}
-                    className="w-full rounded-2xl border border-gray-200 dark:border-white/15 bg-white dark:bg-black/35 px-3.5 py-3 text-xs font-bold focus:border-[#C89B5C] focus:outline-none"
+                    className="w-full rounded-2xl border border-border bg-white dark:bg-black/35 px-3.5 py-3 text-xs font-bold focus:border-[#C89B5C] focus:outline-none"
                   >
                     <option value="Sudirman Flagship">Sudirman Flagship</option>
                     <option value="Kemang Artisan Bar">Kemang Artisan Bar</option>
@@ -934,13 +934,13 @@ export default function EmployeesPage() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1.5">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-muted-foreground/50 mb-1.5">
                     Status Akun <span className="text-red-500">*</span>
                   </label>
                   <select
                     value={formStatus}
                     onChange={(e) => setFormStatus(e.target.value as any)}
-                    className="w-full rounded-2xl border border-gray-200 dark:border-white/15 bg-white dark:bg-black/35 px-3.5 py-3 text-xs font-bold focus:border-[#C89B5C] focus:outline-none"
+                    className="w-full rounded-2xl border border-border bg-white dark:bg-black/35 px-3.5 py-3 text-xs font-bold focus:border-[#C89B5C] focus:outline-none"
                   >
                     <option value="active">Aktif (Dapat Login & Kerja)</option>
                     <option value="inactive">Nonaktif (Diberhentikan / Cut off)</option>
@@ -949,7 +949,7 @@ export default function EmployeesPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1.5">
+                <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-muted-foreground/50 mb-1.5">
                   Nomor WhatsApp / Kontak <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -958,7 +958,7 @@ export default function EmployeesPage() {
                   value={formPhone}
                   onChange={(e) => setFormPhone(e.target.value)}
                   placeholder="0812-3456-7890"
-                  className="w-full rounded-2xl border border-gray-200 dark:border-white/15 bg-white dark:bg-black/35 px-4 py-3 text-xs font-mono font-bold focus:border-[#C89B5C] focus:outline-none"
+                  className="w-full rounded-2xl border border-border bg-white dark:bg-black/35 px-4 py-3 text-xs font-mono font-bold focus:border-[#C89B5C] focus:outline-none"
                 />
               </div>
 
@@ -966,7 +966,7 @@ export default function EmployeesPage() {
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="rounded-2xl border border-gray-200 dark:border-white/15 px-5 py-2.5 text-xs font-bold text-gray-600 dark:text-gray-300"
+                  className="rounded-2xl border border-border px-5 py-2.5 text-xs font-bold text-gray-600 dark:text-muted-foreground/50"
                 >
                   Batal
                 </button>

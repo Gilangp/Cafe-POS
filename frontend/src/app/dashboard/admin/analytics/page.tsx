@@ -139,7 +139,7 @@ export default function AnalyticsPage() {
   return (
     <div className="space-y-6 pb-12 -m-6 lg:-m-8 p-6 lg:p-8 selection:bg-[#C89B5C]/30 print:m-0 print:p-4">
       {/* Header & Status */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-gray-200 dark:border-white/10 pb-6 print:border-none">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-border pb-6 print:border-none">
         <div>
           <div className="flex items-center gap-3">
             <h1 className="font-heading text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white tracking-wide">
@@ -149,7 +149,7 @@ export default function AnalyticsPage() {
               Phase 9.5 Ready
             </span>
           </div>
-          <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-1 font-sans flex items-center gap-2">
+          <p className="text-xs sm:text-sm text-muted-foreground mt-1 font-sans flex items-center gap-2">
             <span>Filter rentang waktu (hari ini, minggu ini, bulan ini, custom range) dan ekspor PDF / Excel.</span>
             {liveConnected ? (
               <span className="flex items-center gap-1.5 rounded-full bg-emerald-500/20 border border-emerald-500/30 px-3 py-0.5 text-[11px] font-bold text-emerald-600 dark:text-emerald-400">
@@ -165,7 +165,7 @@ export default function AnalyticsPage() {
 
         <div className="flex items-center gap-2.5 flex-wrap print:hidden">
           {/* Time Filter Tabs */}
-          <div className="flex gap-1 rounded-2xl border border-gray-200 dark:border-white/15 bg-white dark:bg-black/30 p-1">
+          <div className="flex gap-1 rounded-2xl border border-border bg-white dark:bg-black/30 p-1">
             {[
               ['hari', 'Hari Ini'],
               ['minggu', 'Minggu Ini'],
@@ -177,7 +177,7 @@ export default function AnalyticsPage() {
                 key={v}
                 onClick={() => triggerSkeletonRefresh(v)}
                 className={`flex items-center gap-1.5 rounded-xl px-4 py-2 text-xs font-bold transition-all ${
-                  period === v ? 'bg-[#1E3D31] text-[#C89B5C] shadow-sm' : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+                  period === v ? 'bg-[#1E3D31] text-[#C89B5C] shadow-sm' : 'text-muted-foreground hover:text-gray-900 dark:hover:text-white'
                 }`}
               >
                 {v === 'custom' && <Calendar size={13} />}
@@ -220,13 +220,13 @@ export default function AnalyticsPage() {
             </div>
             <div>
               <p className="font-heading font-extrabold text-base text-gray-900 dark:text-white">Filter Custom Range (9.5)</p>
-              <p className="text-xs text-gray-600 dark:text-gray-300">Pilih rentang tanggal khusus untuk menganalisis performa keuangan</p>
+              <p className="text-xs text-gray-600 dark:text-muted-foreground/50">Pilih rentang tanggal khusus untuk menganalisis performa keuangan</p>
             </div>
           </div>
 
           <div className="flex items-center gap-3 flex-wrap w-full sm:w-auto">
             <div>
-              <label className="block text-[10px] font-bold uppercase text-gray-500 dark:text-gray-400 mb-1">Mulai Dari (Start Date)</label>
+              <label className="block text-[10px] font-bold uppercase text-muted-foreground mb-1">Mulai Dari (Start Date)</label>
               <input
                 type="date"
                 value={startDate}
@@ -235,7 +235,7 @@ export default function AnalyticsPage() {
               />
             </div>
             <div>
-              <label className="block text-[10px] font-bold uppercase text-gray-500 dark:text-gray-400 mb-1">Sampai (End Date)</label>
+              <label className="block text-[10px] font-bold uppercase text-muted-foreground mb-1">Sampai (End Date)</label>
               <input
                 type="date"
                 value={endDate}
@@ -274,10 +274,10 @@ export default function AnalyticsPage() {
 
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
             {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="rounded-3xl bg-white dark:bg-[#1A2620] border border-gray-200 dark:border-white/10 p-6 shadow-sm space-y-4">
-                <div className="h-3 w-28 bg-gray-200 dark:bg-white/10 rounded-full" />
+              <div key={i} className="rounded-3xl bg-card border border-border p-6 shadow-sm space-y-4">
+                <div className="h-3 w-28 bg-muted dark:bg-white/10 rounded-full" />
                 <div className="h-8 w-44 bg-gray-300 dark:bg-white/20 rounded-xl" />
-                <div className="h-3 w-36 bg-gray-100 dark:bg-white/5 rounded-full" />
+                <div className="h-3 w-36 bg-muted dark:bg-white/5 rounded-full" />
               </div>
             ))}
           </div>
@@ -293,10 +293,10 @@ export default function AnalyticsPage() {
               { label: 'Rata-rata Nilai Order (AOV)', value: fmt(avgOrder), change: '+6.2% stabil & konsisten', up: true, icon: TrendingUp, color: 'bg-violet-600 text-white' },
               { label: 'Estimasi Pelanggan Unik', value: `${Math.round(totalOrdersCount * 0.85)} Orang`, change: '+15% retensi CRM loyalty', up: true, icon: Users, color: 'bg-emerald-600 text-white' },
             ].map((kpi) => (
-              <div key={kpi.label} className="rounded-3xl bg-white dark:bg-[#1A2620] border-2 border-gray-200 dark:border-white/10 p-6 shadow-sm transition-all hover:shadow-xl hover:border-[#C89B5C]">
+              <div key={kpi.label} className="rounded-3xl bg-card border-2 border-border p-6 shadow-sm transition-all hover:shadow-xl hover:border-[#C89B5C]">
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <p className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">{kpi.label}</p>
+                    <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{kpi.label}</p>
                     <p className="mt-2 text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white font-mono">{kpi.value}</p>
                     <p className={`mt-2 text-xs font-extrabold flex items-center gap-1 ${kpi.up ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-500'}`}>
                       {kpi.up ? <TrendingUp size={14} /> : <TrendingDown size={14} />} {kpi.change}
@@ -312,11 +312,11 @@ export default function AnalyticsPage() {
 
           {/* Charts & Top Products */}
           <div className="grid gap-6 lg:grid-cols-3">
-            <div className="lg:col-span-2 rounded-3xl bg-white dark:bg-[#1A2620] border border-gray-200 dark:border-white/10 p-6 sm:p-7 shadow-sm flex flex-col justify-between">
+            <div className="lg:col-span-2 rounded-3xl bg-card border border-border p-6 sm:p-7 shadow-sm flex flex-col justify-between">
               <div className="flex items-center justify-between mb-6 border-b border-gray-100 dark:border-white/10 pb-4">
                 <div>
                   <h2 className="font-heading text-lg font-bold text-gray-900 dark:text-white">Grafik Tren Omset ({period.toUpperCase()})</h2>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Distribusi arus kas dan volume transaksi harian roastery</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">Distribusi arus kas dan volume transaksi harian roastery</p>
                 </div>
                 <span className="rounded-xl bg-[#FAF3E7] dark:bg-black/40 px-3 py-1 text-xs font-extrabold text-[#C89B5C] border border-[#C89B5C]/30 flex items-center gap-1.5 font-mono">
                   <BarChart3 size={15} /> Peak Day: Sabtu
@@ -332,14 +332,14 @@ export default function AnalyticsPage() {
                       <span className="text-[11px] font-mono font-extrabold text-[#C89B5C] opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
                         {fmtShort(dynamicSales)}
                       </span>
-                      <div className="w-full flex items-end justify-center rounded-t-2xl bg-gray-50 dark:bg-black/30 p-1" style={{ height: '100%' }}>
+                      <div className="w-full flex items-end justify-center rounded-t-2xl bg-muted dark:bg-black/30 p-1" style={{ height: '100%' }}>
                         <div
                           className="w-full rounded-t-xl bg-gradient-to-t from-[#1E3D31] to-[#C89B5C] transition-all group-hover:brightness-125 shadow-sm"
                           style={{ height: `${h}%`, minHeight: '10px' }}
                         />
                       </div>
-                      <span className="text-xs font-extrabold text-gray-700 dark:text-gray-300">{d.day}</span>
-                      <span className="text-[10px] font-mono font-bold text-gray-400">{Math.round(d.orders * multiplier)}x</span>
+                      <span className="text-xs font-extrabold text-gray-700 dark:text-muted-foreground/50">{d.day}</span>
+                      <span className="text-[10px] font-mono font-bold text-muted-foreground">{Math.round(d.orders * multiplier)}x</span>
                     </div>
                   );
                 })}
@@ -347,7 +347,7 @@ export default function AnalyticsPage() {
             </div>
 
             {/* 9.5 Top Seller Products */}
-            <div className="rounded-3xl bg-white dark:bg-[#1A2620] border border-gray-200 dark:border-white/10 p-6 sm:p-7 shadow-sm flex flex-col justify-between">
+            <div className="rounded-3xl bg-card border border-border p-6 sm:p-7 shadow-sm flex flex-col justify-between">
               <div>
                 <div className="flex items-center justify-between mb-6 border-b border-gray-100 dark:border-white/10 pb-4">
                   <h2 className="font-heading text-lg font-bold text-gray-900 dark:text-white">Item Terlaris (*Top Seller*)</h2>
@@ -365,10 +365,10 @@ export default function AnalyticsPage() {
                         </div>
                         <span className="text-xs font-mono font-extrabold text-[#C89B5C] shrink-0">{Math.round(p.qty * multiplier)}x Terjual</span>
                       </div>
-                      <div className="h-2 w-full rounded-full bg-gray-100 dark:bg-black/50 overflow-hidden">
+                      <div className="h-2 w-full rounded-full bg-muted dark:bg-black/50 overflow-hidden">
                         <div className="h-full rounded-full bg-[#C89B5C]" style={{ width: `${p.pct}%` }} />
                       </div>
-                      <p className="mt-1 text-[11px] text-right text-gray-500 dark:text-gray-400 font-mono font-bold">
+                      <p className="mt-1 text-[11px] text-right text-muted-foreground font-mono font-bold">
                         {fmt(Math.round(p.revenue * multiplier))}
                       </p>
                     </div>
@@ -379,14 +379,14 @@ export default function AnalyticsPage() {
           </div>
 
           {/* Breakdown per Channel */}
-          <div className="rounded-3xl bg-white dark:bg-[#1A2620] border border-gray-200 dark:border-white/10 p-6 sm:p-7 shadow-sm">
+          <div className="rounded-3xl bg-card border border-border p-6 sm:p-7 shadow-sm">
             <div className="flex items-center justify-between mb-6 border-b border-gray-100 dark:border-white/10 pb-4">
               <div>
                 <h2 className="font-heading text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
                   <PieChart className="text-[#C89B5C]" size={20} />
                   <span>Breakdown Pendapatan Per Saluran Digital (*Channel*)</span>
                 </h2>
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Komparasi kontribusi transaksi kasir POS offline dengan pemesanan online & QR Meja</p>
+                <p className="text-xs text-muted-foreground mt-0.5">Komparasi kontribusi transaksi kasir POS offline dengan pemesanan online & QR Meja</p>
               </div>
             </div>
 
@@ -396,14 +396,14 @@ export default function AnalyticsPage() {
                 { label: 'Online Ordering (/order Delivery)', orders: onlineOrdersCount, revenue: Math.round(totalSales * 0.29), pct: 29, color: 'bg-blue-600 text-white' },
                 { label: 'QR Table Ordering (/qr Meja)', orders: qrOrdersCount, revenue: Math.round(totalSales * 0.13), pct: 13, color: 'bg-emerald-600 text-white' },
               ].map((ch) => (
-                <div key={ch.label} className="rounded-3xl border-2 border-gray-200 dark:border-white/10 p-6 hover:border-[#C89B5C] transition-colors bg-white dark:bg-black/25">
+                <div key={ch.label} className="rounded-3xl border-2 border-border p-6 hover:border-[#C89B5C] transition-colors bg-white dark:bg-black/25">
                   <div className="flex items-center justify-between mb-3">
                     <span className="text-xs font-bold text-gray-800 dark:text-gray-200 leading-snug">{ch.label}</span>
                     <span className={`${ch.color} text-xs font-bold px-3 py-1 rounded-full shadow-sm font-mono`}>{ch.pct}%</span>
                   </div>
                   <p className="text-2xl font-extrabold text-gray-900 dark:text-white font-mono">{fmt(ch.revenue)}</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 font-semibold mt-1">{ch.orders} transaksi terproses</p>
-                  <div className="mt-4 h-2 w-full rounded-full bg-gray-100 dark:bg-black/50 overflow-hidden">
+                  <p className="text-xs text-muted-foreground font-semibold mt-1">{ch.orders} transaksi terproses</p>
+                  <div className="mt-4 h-2 w-full rounded-full bg-muted dark:bg-black/50 overflow-hidden">
                     <div className="h-full rounded-full bg-[#C89B5C]" style={{ width: `${ch.pct}%` }} />
                   </div>
                 </div>
