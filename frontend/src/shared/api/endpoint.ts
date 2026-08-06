@@ -8,12 +8,16 @@ export const ENDPOINTS = {
     LIST: '/menus',
     DETAIL: (id: string) => `/menus/${id}`,
   },
+  ARTICLES: {
+    LIST: '/articles',
+    DETAIL: (slug: string) => `/articles/${slug}`,
+  },
   TESTIMONIALS: {
     LIST: '/testimonials',
     STORE: '/testimonials',
   },
   LANDING: {
-    DATA: '/landing',
+    DATA: '/landing-page',
   },
   RESERVATIONS: {
     LIST: '/reservations',
@@ -23,9 +27,12 @@ export const ENDPOINTS = {
     LIST: '/inventory',
   },
   GALLERY: {
-    LIST: '/gallery',
+    LIST: '/galleries',
   },
   PROMOTIONS: {
     LIST: '/promotions',
+  },
+  SETTINGS: {
+    SHOW: '/settings',
   },
 } as const;
