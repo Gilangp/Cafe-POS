@@ -103,95 +103,57 @@ graph TD
 
 ## 29. FOLDER STRUCTURE (FRONTEND & BACKEND)
 
-### 29.1 Struktur Frontend (Next.js 14 + TypeScript)
+> **Catatan:** Struktur frontend telah diperbarui untuk mengadopsi arsitektur dari template TailAdmin. Struktur `features` telah usang dan digantikan oleh direktori `components` yang lebih terpusat.
+
+### 29.1 Struktur Frontend (Next.js 14 + TypeScript - arsitektur TailAdmin)
 
 ```
 frontend/
 ├── public/
+│   ├── images/
+│   └── ...
 ├── src/
 │   ├── app/
-│   │   ├── (public)/
-│   │   │   ├── page.tsx                 # Landing
-│   │   │   ├── menu/
-│   │   │   ├── promotion/
-│   │   │   ├── article/[slug]/
-│   │   │   ├── gallery/
-│   │   │   ├── reservation/
-│   │   │   │   └── status/
-│   │   │   ├── contact/
-│   │   │   ├── events/
-│   │   │   ├── careers/
-│   │   │   └── accessibility/
-│   │   │   # out-of-scope (abaikan/hapus): order/, qr/, account/
-│   │   ├── (auth)/
-│   │   │   ├── login/
-│   │   │   └── forgot-password/
-│   │   ├── dashboard/
+│   │   ├── (public)/                 # Halaman publik seperti landing, menu, dll (TETAP)
 │   │   │   ├── page.tsx
-│   │   │   ├── layout.tsx
-│   │   │   ├── pos/                     # Kasir POS
-│   │   │   ├── kds/                     # Kitchen Display (Dapur/Barista + Admin + Owner)
-│   │   │   ├── admin/
-│   │   │   │   ├── cms/
-│   │   │   │   ├── menu/
-│   │   │   │   ├── categories/
-│   │   │   │   ├── promotions/
-│   │   │   │   ├── inventory/
-│   │   │   │   ├── suppliers/
-│   │   │   │   ├── procurement/
-│   │   │   │   ├── unit-conversions/
-│   │   │   │   ├── reservations/
-│   │   │   │   ├── orders/              # riwayat transaksi POS (bukan order online)
-│   │   │   │   ├── employees/
-│   │   │   │   # out-of-scope: crm/, memberships/
-│   │   │   │   ├── reports/
-│   │   │   │   ├── analytics/
-│   │   │   │   ├── audit/
-│   │   │   │   └── settings/
-│   │   │   └── owner/
-│   │   │       ├── overview/
-│   │   │       ├── sales/
-│   │   │       ├── analytics/
-│   │   │       ├── inventory/
-│   │   │       ├── reports/
-│   │   │       ├── users/               # manajemen user — eksklusif Owner
-│   │   │       ├── backup/              # backup/restore — eksklusif Owner
-│   │   │       └── settings/
-│   │   ├── layout.tsx
+│   │   │   └── ...
+│   │   ├── (auth)/
+│   │   │   ├── signin/
+│   │   │   └── signup/
+│   │   ├── dashboard/                # Grup utama untuk semua halaman dasbor
+│   │   │   ├── page.tsx              # Halaman default (misal: E-commerce)
+│   │   │   ├── analytics/
+│   │   │   ├── calendar/
+│   │   │   ├── forms/
+│   │   │   ├── profile/
+│   │   │   ├── settings/
+│   │   │   ├── tables/
+│   │   │   └── ...                   # Halaman lain dari template
+│   │   ├── layout.tsx                # Layout utama yang berisi Header + Sidebar
 │   │   └── middleware.ts
-│   ├── features/                        # Domain modules
-│   │   ├── authentication/
-│   │   ├── landing/
-│   │   ├── menu/
-│   │   ├── reservation/
-│   │   ├── cashier/                     # POS hooks offline/realtime
-│   │   ├── inventory/
-│   │   ├── cms/
-│   │   ├── gallery/
-│   │   ├── article/
-│   │   ├── promotion/
-│   │   ├── report/
-│   │   ├── settings/
-│   │   ├── users/
-│   │   └── dashboard/
-│   ├── shared/                          # lib, services, providers, ui
-│   │   ├── lib/                         # offline-queue, auth, supabase, …
-│   │   ├── services/                    # pos.service, api client, …
-│   │   └── providers/
-│   ├── store/                           # Zustand
+│   ├── components/                   # Direktori komponen utama (PENGGANTI `features`)
+│   │   ├── Breadcrumbs/
+│   │   ├── Charts/                   # Grafik (ApexCharts)
+│   │   ├── DarkModeSwitcher.tsx
+│   │   ├── Header/
+│   │   ├── Sidebar/
+│   │   ├── Forms/                    # Komponen terkait form (Select, Datepicker)
+│   │   ├── Tables/
+│   │   └── ...
+│   ├── lib/                          # (Digabung dari `shared/lib` lama)
+│   │   ├── auth.ts
+│   │   ├── supabase.ts
+│   │   └── ...
+│   ├── services/                     # (Digabung dari `shared/services` lama)
+│   ├── providers/                    # (Digabung dari `shared/providers` lama)
+│   ├── store/                        # Struktur Zustand (TETAP)
 │   │   ├── auth.store.ts
-│   │   ├── cart.store.ts
-│   │   ├── branch.store.ts
-│   │   ├── reservation.store.ts
-│   │   ├── theme.store.ts
-│   │   ├── sidebar.store.ts
-│   │   └── user.store.ts
-│   ├── assets/
-│   └── styles/
-├── tests/                               # Vitest
-├── vitest.config.ts
+│   │   └── ...
+│   ├── styles/                       # Menggantikan `src/css` dari template. Berisi `globals.css`
+│   └── types/                        # Tipe data TypeScript
+├── tests/
 ├── package.json
-└── tsconfig.json                        # paths: @/*, @shared/*, @features/*, @store/*
+└── tsconfig.json                   # paths: @/components/*, @/lib/*, @/store/*
 ```
 
 ### 29.2 Struktur Backend (Laravel 10 + Sanctum)
