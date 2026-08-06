@@ -603,7 +603,7 @@ const getBaseUrl = ()=>{
     // BYPASS NEXT.JS PROXY to prevent 'socket hang up' (ECONNRESET)
     // PHP artisan serve crashes when Next.js proxy keeps connections open.
     // We hit the backend directly. CORS is already enabled in Laravel.
-    const base = ("TURBOPACK compile-time value", "https://hardcover-ability-mac-controlled.trycloudflare.com/api/v1") || 'http://localhost:8000';
+    const base = ("TURBOPACK compile-time value", "https://ampland-since-refugees-distance.trycloudflare.com/api/v1") || 'http://localhost:8000';
     return `${base.replace(/\/api(\/v1)?\/?$/, '')}/api/v1`;
 };
 const API_BASE_URL = getBaseUrl();
