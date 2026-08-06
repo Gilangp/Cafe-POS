@@ -68,6 +68,15 @@ const config: Config = {
         // Menggunakan standar TailAdmin dari 06_design_system.md
         default: "0px 1px 4px 0px rgba(0, 0, 0, 0.12)",
       },
+      keyframes: {
+        "slow-pan": {
+          "0%": { transform: "scale(1.05) translate(0, 0)" },
+          "100%": { transform: "scale(1.05) translate(-2%, 2%)" },
+        },
+      },
+      animation: {
+        "slow-pan": "slow-pan 20s ease-in-out infinite alternate",
+      },
     },
   },
   plugins: [],

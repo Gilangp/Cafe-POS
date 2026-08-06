@@ -63,16 +63,12 @@ export default function PublicFooter() {
           <div className="lg:col-span-2">
             <h4 className="font-bold mb-6 text-sm">Sosial Media</h4>
             <div className="flex gap-4">
-                {settings.instagram && (
-                  <a href={settings.instagram} target="_blank" rel="noreferrer" className="w-8 h-8 rounded-full border border-white/30 flex items-center justify-center hover:bg-white hover:text-primary transition-colors">
-                    <span className="text-xs font-bold">Ig</span>
-                  </a>
-                )}
-                {settings.facebook && (
-                  <a href={settings.facebook} target="_blank" rel="noreferrer" className="w-8 h-8 rounded-full border border-white/30 flex items-center justify-center hover:bg-white hover:text-primary transition-colors">
-                    <span className="text-xs font-bold">Fb</span>
-                  </a>
-                )}
+                <a href={settings.instagram || "#"} target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full border border-white/30 flex items-center justify-center hover:bg-accent hover:text-primary hover:border-accent transition-all duration-300 shadow-sm">
+                  <span className="text-sm font-bold">Ig</span>
+                </a>
+                <a href={settings.facebook || "#"} target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full border border-white/30 flex items-center justify-center hover:bg-accent hover:text-primary hover:border-accent transition-all duration-300 shadow-sm">
+                  <span className="text-sm font-bold">Fb</span>
+                </a>
             </div>
           </div>
         </div>
