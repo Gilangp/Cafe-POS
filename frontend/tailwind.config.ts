@@ -1,101 +1,84 @@
 import type { Config } from "tailwindcss";
-import { fontFamily } from "tailwindcss/defaultTheme";
 
 const config: Config = {
-  darkMode: ["class"],
+  darkMode: "class",
   content: [
-    "./src/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
     extend: {
       colors: {
-        border: "hsl(var(--border))",
+        // Menggunakan nama token dari 06_design_system.md
+        border: "hsl(var(--border))", // #E4D9C4
         input: "hsl(var(--input))",
-        ring: "hsl(var(--ring))",
-        background: {
-          DEFAULT: "#FAF3E7", // Ivory Cream (Table 30.2 Light Mode)
-          light: "#FAF3E7",
-          dark: "#14201A", // Deep Pine Black-Green (Table 30.2 Dark Mode)
-        },
-        foreground: "#1E3D31",
-        dark: {
-          DEFAULT: "#14201A",
-          card: "#1E2B24",
-          muted: "#26332C",
-        },
+        ring: "hsl(var(--ring))", // #C89B5C
+        background: "hsl(var(--background))", // #F8F6F2
+        foreground: "hsl(var(--foreground))", // #1A2620
+
         primary: {
-          DEFAULT: "#1E3D31", // Deep Forest Green (Table 30.2)
-          hover: "#163026", // Darker Forest Green
-          foreground: "#FFFFFF",
+          DEFAULT: "hsl(var(--primary))", // #1E3D31
+          foreground: "hsl(var(--primary-foreground))", // #F8F6F2
         },
         secondary: {
-          DEFAULT: "#6F4E37", // Roasted Brown (Table 30.2)
-          foreground: "#FFFFFF",
+          DEFAULT: "hsl(var(--secondary))", // Tetap #1E3D31
+          foreground: "hsl(var(--secondary-foreground))",
         },
         accent: {
-          DEFAULT: "#C89B5C", // Warm Gold (Table 30.2)
-          foreground: "#1E3D31",
+          DEFAULT: "hsl(var(--accent))", // #C89B5C
+          foreground: "hsl(var(--accent-foreground))", // #1E3D31
         },
-        cream: {
-          50: "#FFFDF9",
-          100: "#FAF3E7",
-          200: "#F1E9DA",
-          300: "#E4D9C4",
-          400: "#D6C7AE",
-        },
-        surface: {
-          DEFAULT: "#FFFFFF",
-          muted: "#F1E9DA", // Beige Kertas
-          dark: "#1E2B24",
+        destructive: {
+          DEFAULT: "hsl(var(--destructive))", // #ef4444
+          foreground: "hsl(var(--destructive-foreground))",
         },
         success: {
-          DEFAULT: "#4C7A4C",
-          dark: "#6FA96F",
+          DEFAULT: "hsl(var(--success))", // #22c55e
+          foreground: "hsl(var(--success-foreground))",
         },
-        warning: {
-          DEFAULT: "#C79A3C",
-          dark: "#E0B75C",
+        muted: {
+          DEFAULT: "hsl(var(--muted))",
+          foreground: "hsl(var(--muted-foreground))",
         },
-        danger: {
-          DEFAULT: "#B23A34",
-          dark: "#D96A63",
-        },
+        
+        // Warna spesifik TailAdmin yang mungkin masih berguna
+        stroke: "hsl(var(--border))",
+        boxdark: "#24303F",
+        "boxdark-2": "#1A222C",
+        "form-input": "#1d2a39",
       },
       fontFamily: {
-        sans: ["var(--font-inter)", ...fontFamily.sans],
-        heading: ["var(--font-poppins)", ...fontFamily.sans],
-        poppins: ["var(--font-poppins)", ...fontFamily.sans],
-        serif: ["var(--font-poppins)", "var(--font-playfair)", ...fontFamily.serif],
+        // Menggunakan font dari 06_design_system.md
+        body: ["var(--font-inter)", "sans-serif"],
+        heading: ["var(--font-outfit)", "sans-serif"],
       },
       borderRadius: {
-        lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
-      },
-      scale: {
-        "98": ".98",
+        // Menggunakan standar TailAdmin dari 06_design_system.md
+        sm: "0.125rem", // 2px
+        DEFAULT: "0.25rem",
+        md: "0.375rem",
+        lg: "0.5rem",   // 8px
+        xl: "0.75rem",
+        "2xl": "1rem",
+        "3xl": "1.5rem",
+        full: "9999px",
       },
       boxShadow: {
-        glow: "0 0 40px -10px rgba(200, 155, 92, 0.4)",
-        "glow-lg": "0 0 60px -15px rgba(200, 155, 92, 0.6)",
-        "card-hover": "0 20px 40px -15px rgba(30, 61, 49, 0.08)",
-        "card-shadow": "0 10px 30px -10px rgba(30, 61, 49, 0.05)",
-        "postcard": "0 15px 35px -5px rgba(30, 61, 49, 0.12), 0 5px 15px -5px rgba(30, 61, 49, 0.08)",
-      },
-      animation: {
-        "spin-slow": "spin 25s linear infinite",
-        "pulse-slow": "pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite",
-        "float": "float 6s ease-in-out infinite",
+        // Menggunakan standar TailAdmin dari 06_design_system.md
+        default: "0px 1px 4px 0px rgba(0, 0, 0, 0.12)",
       },
       keyframes: {
-        float: {
-          "0%, 100%": { transform: "translateY(0)" },
-          "50%": { transform: "translateY(-12px)" },
+        "slow-pan": {
+          "0%": { transform: "scale(1.05) translate(0, 0)" },
+          "100%": { transform: "scale(1.05) translate(-2%, 2%)" },
         },
+      },
+      animation: {
+        "slow-pan": "slow-pan 20s ease-in-out infinite alternate",
       },
     },
   },
   plugins: [],
 };
-
 export default config;

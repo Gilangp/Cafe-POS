@@ -54,61 +54,68 @@ Gunakan skala spacing berbasis kelipatan 4px untuk konsistensi. Ini sesuai denga
 - **Lebar Konten Maksimal**: Gunakan `max-w-7xl mx-auto` untuk membungkus konten utama halaman agar tidak terlalu lebar di layar besar.
 - **Padding Halaman**: Beri padding horizontal `px-4` atau `px-6` pada kontainer utama.
 
-## 33. BORDER & SHADOW
+## 33. BORDER & SHADOW (Standar TailAdmin)
+
+> Gaya border dan shadow telah disesuaikan untuk mengikuti standar default dari template TailAdmin, yang sekarang menjadi acuan utama.
 
 ### Border Radius
 
-| Elemen | Kelas Tailwind | Nilai | Contoh |
+| Elemen | Kelas Tailwind (Contoh) | Nilai (Default TailAdmin) | Contoh |
 |---|---|---|---|
-| Kartu Utama, Modal | `rounded-2xl` | 16px | Kartu menu, modal pembayaran |
-| Tombol, Input | `rounded-lg` | 8px | Tombol "Proses Bayar", input pencarian |
-| Badge, Tag | `rounded-full` | 9999px | Badge "Best Seller" |
+| Kartu, Kotak Utama | `rounded-sm` | 0.125rem (2px) | Kartu statistik, container chart |
+| Tombol, Input | `rounded-lg` | 0.5rem (8px) | Tombol utama, input form |
+| Badge, Avatar | `rounded-full`| 9999px | Badge status, gambar profil |
 
 ### Shadow
 
 | Elevasi | Kelas Tailwind | Penggunaan |
 |---|---|---|
-| Rendah | `shadow-sm` | Elemen UI di dalam kartu |
-| Default | `shadow-md` | Kartu utama dalam keadaan normal |
-| Tinggi (Hover) | `shadow-lg`, `shadow-xl` | Kartu saat di-hover untuk memberi efek "mengangkat" |
-| Glow (Aksen) | `shadow-glow` (custom) | Efek khusus saat hover pada item penting |
+| Default | `shadow-default` | Kartu utama, container, modal |
+| Hover (Opsional) | `hover:shadow-card-hover` (Custom) | Efek "mengangkat" pada kartu interaktif |
+| Glow (Aksen) | `shadow-glow` (Custom) | Efek khusus pada tombol atau item penting |
 
-## 34. PANDUAN KOMPONEN INTI
+## 34. PANDUAN KOMPONEN INTI (Arsitektur TailAdmin)
 
-Ini adalah aturan untuk komponen dasar yang paling sering digunakan, yang ada di `frontend/src/shared/components/ui/`.
+> Aturan ini berlaku untuk komponen dasar yang ada di `frontend/src/components/`. Komponen-komponen ini adalah fondasi dari semua halaman dasbor.
 
 ### Button
 
+Varian tombol primer dan sekunder **wajib** mengikuti identitas merek. Varian lain dapat menggunakan gaya default TailAdmin.
+
 | Varian | Kelas Kunci | Penggunaan |
 |---|---|---|
-| **Primer** | `bg-accent text-primary font-bold` | Aksi utama (Proses Bayar, Simpan) |
-| **Sekunder** | `bg-primary text-accent` | Aksi sekunder penting |
-| **Destruktif** | `bg-destructive text-destructive-foreground` | Aksi hapus, batal |
-| **Outline** | `border border-input bg-transparent` | Aksi tersier (Ekspor) |
-| **Ghost** | `hover:bg-accent/10` | Tombol ikon tanpa background |
+| **Primer (Wajib)** | `bg-accent text-primary font-bold` | Aksi utama (Login, Simpan Perubahan) |
+| **Sekunder (Wajib)**| `bg-primary text-accent` | Aksi sekunder penting (Lihat Detail) |
+| **Danger/Destructive**| `bg-destructive text-white` | Aksi hapus, batal |
+| **Default (TailAdmin)**| `bg-primary text-white` atau varian lain | Aksi umum, sesuai konteks |
 
 **Aturan Umum Button:**
-- **Padding**: `h-10 px-4 py-2` untuk ukuran standar.
+- **Padding & Ukuran**: Mengikuti standar TailAdmin, umumnya `inline-flex items-center justify-center rounded-md ... py-2 px-4 ...`.
 - **State**: Harus memiliki style yang jelas untuk `hover`, `focus`, dan `disabled` (`opacity-50 cursor-not-allowed`).
 
 ### Input & Form
 
-- **Input Teks**: Harus memiliki `height` yang konsisten (misal: `h-10`), `padding` horizontal (`px-3`), dan `border` (`border-input`). Saat `focus`, border harus berubah warna menjadi `border-accent` (atau `ring-accent`).
-- **Label**: Harus menggunakan `text-sm font-medium` dan ditempatkan di atas inputnya.
+- **Input Teks**: Harus memiliki `rounded-lg`, `border-border`, dan `bg-transparent`. Saat `focus`, border harus berubah warna menjadi `border-primary` (sesuai gaya TailAdmin).
+- **Label**: Menggunakan `font-medium` dan ditempatkan di atas inputnya.
+- **Komponen Form**: Gunakan komponen dari `src/components/Forms` (misal: `SelectGroup`, `DatePicker`) untuk konsistensi.
 
-### Kartu (`<Card />`)
+### Kartu & Kontainer Data
 
-- **Padding Internal**: `p-6` secara default.
-- **Border & Shadow**: `border border-border rounded-2xl shadow-md`.
-- **Struktur**: Komponen harus terdiri dari `<CardHeader>`, `<CardContent>`, dan `<CardFooter>` untuk konsistensi struktur.
+Arsitektur lama `<Card />` telah usang. Gunakan komponen berikut:
 
-## 35. CONTOH PENERAPAN (DOs and DON'Ts)
+| Komponen | Penggunaan | Aturan |
+|---|---|---|
+| **`CardDataStats`** | Menampilkan statistik tunggal (misal: Total Penjualan, Jumlah Pengguna). | Wajib berisi `title`, `total` (angka), dan `rate` (persentase). Ikon bersifat opsional. |
+| **`Chart` (misal: `ChartOne`)**| Menampilkan grafik (garis, batang). | Dibungkus dalam kontainer dengan `rounded-sm border border-border bg-white p-4 shadow-default`. |
+| **Kontainer Umum** | `div` dengan kelas `rounded-sm border border-border bg-white p-4 shadow-default` | Untuk membungkus tabel, form, atau konten custom lainnya agar terlihat seperti kartu. |
 
-- **DO**: Gunakan `gap-4` untuk membuat jarak antar kartu di grid.
-- **DON'T**: Jangan gunakan `margin-left: 15px` secara manual.
+## 35. CONTOH PENERAPAN (DOs and DON'Ts - Gaya TailAdmin)
 
-- **DO**: Gunakan `bg-primary` untuk latar belakang gelap dan `text-background` untuk teks di atasnya.
-- **DON'T**: Jangan hardcode `#1E3D31` di dalam komponen.
+- **DO**: Gunakan `grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4 2xl:gap-7.5` untuk layout statistik utama.
+- **DON'T**: Jangan membuat layout grid manual dengan `flex` atau `margin`.
 
-- **DO**: Buat komponen `SectionTitle` yang menggunakan `text-2xl font-bold font-heading`.
-- **DON'T**: Jangan styling judul section secara manual di setiap halaman.
+- **DO**: Gunakan `bg-accent text-primary` untuk tombol aksi utama.
+- **DON'T**: Jangan biarkan tombol aksi utama menggunakan warna default template (`bg-primary text-white`).
+
+- **DO**: Bungkus tabel atau form custom dengan `div` yang memiliki kelas `rounded-sm border border-stroke bg-white shadow-default`.
+- **DON'T**: Jangan biarkan tabel atau form "mengambang" tanpa container yang konsisten.

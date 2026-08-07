@@ -102,8 +102,8 @@ jobs:
         working-directory: frontend
         run: npm test
 
-  lint:
-    name: Code Linting
+  code-style-checks:
+    name: Code Style Checks
     runs-on: ubuntu-latest
 
     steps:

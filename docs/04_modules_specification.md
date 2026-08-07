@@ -3,6 +3,8 @@
 ## 14. LANDING PAGE SPECIFICATION
 
 > **Referensi Gaya Visual:** Struktur & gaya visual Landing Page wajib mengacu secara presisi pada layout mockup visual di file gambar [Nemu Space.jfif](./Nemu Space.jfif) — hero banner besar dengan foto suasana kopi & headline besar (contoh gaya: "HANDCRAFTED"), section kategori dengan ikon foto berbentuk organik di atas latar bertekstur biji kopi gelap ("Handcrafted Curations"), grid menu favorit dengan kartu produk bersih di atas latar terang ("Barista Recommends"), section artikel/cerita dengan latar foto gelap & overlay, serta footer solid berwarna gelap. Palet warna mengikuti Bab 30.2 (hijau tua + krem) — lihat Bab 30 untuk detail token warna.
+>
+> **Catatan Implementasi UI:** Implementasi visual dari spesifikasi ini menggunakan komponen dan struktur dari template **TailAdmin**, yang telah dikonfigurasi agar sesuai dengan palet warna dan tipografi yang didefinisikan dalam `06_design_system.md`. Mockup `Nemu Space.jfif` berfungsi sebagai panduan *gaya dan nuansa*, bukan sebagai desain piksel-per-piksel.
 
 Landing Page terdiri dari section-section berikut. Setiap section wajib memiliki toggle **Aktif/Nonaktif** yang dikontrol dari CMS, serta urutan tampilan (`display_order`) yang dapat diatur melalui drag-and-drop di CMS.
 

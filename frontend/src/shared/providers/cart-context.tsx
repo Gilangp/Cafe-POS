@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 
 export interface CartItem {
   id: string | number;
@@ -27,23 +27,24 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
-  const [isMounted, setIsMounted] = useState(false);
+  const isMountedRef = useRef(false);
 
   useEffect(() => {
-    setIsMounted(true);
+    isMountedRef.current = true;
     try {
       const stored = localStorage.getItem('nemu_cart');
       if (stored) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setItems(JSON.parse(stored));
       }
     } catch (e) {}
   }, []);
 
   useEffect(() => {
-    if (isMounted) {
+    if (isMountedRef.current) {
       localStorage.setItem('nemu_cart', JSON.stringify(items));
     }
-  }, [items, isMounted]);
+  }, [items]);
 
   const addItem = (newItem: CartItem) => {
     setItems((prev) => {

@@ -11,87 +11,6 @@ export const translations = {
       gallery: 'Gallery',
       orderOnline: 'Order Online',
     },
-    landing: {
-      hero: {
-        badge: 'NEMU Space Coffee & Eatery',
-        btnOrder: 'Order Now',
-        btnReserve: 'Reserve Table',
-        defaultBanners: [
-          {
-            title: 'HANDCRAFTED SPECIALTY CURATIONS',
-            subtitle: 'Bringing the harmony of specialty coffee brews, creamy beverages, and curated desserts right to your table.',
-            cta_text: 'Order Now',
-          },
-          {
-            title: 'ARTISANAL BREW & CREATIVE LOUNGE',
-            subtitle: 'An inspiring collaborative space for creators, culinary lovers, and seekers of aesthetic comfort in the heart of the city.',
-            cta_text: 'Reserve Table',
-          },
-          {
-            title: 'FLAVORFUL CULINARY EXPERIENCE',
-            subtitle: 'Enjoy the perfect pairing of appetizing main courses, refreshing artisan drinks, and freshly baked pastries.',
-            cta_text: 'Explore Catalog',
-          },
-        ]
-      },
-      about: {
-        badge: 'About NEMU Space',
-        points: [
-          'High-quality ingredients for our coffee, tea, and culinary menus',
-          'Beverages and dishes curated by experienced culinary experts',
-          'Warm and interactive service for every guest who visits us',
-          'Artistic, comfortable space design that supports productivity',
-        ],
-        certification: 'Premium Quality & Service',
-        certDesc: 'Professional Culinary Team',
-        defaultItem: {
-          title: 'The Story Behind Every Authentic Serving',
-          description: 'NEMU Space started from our love for rich flavors. We believe every dish and beverage—from coffee brews to desserts—has a story worth enjoying in an atmosphere that fosters togetherness.'
-        },
-        polaroid1: 'Fresh Artisan Pastry',
-        polaroid2: 'Universal Beverages',
-        badgeTitle: '100%',
-        badgeDesc: 'Premium Quality'
-      },
-      curations: {
-        badge: 'Handcrafted Curations',
-        title: 'Explore Flavor Categories',
-        desc: 'Each of our categories is designed to deliver a unique sensory experience, from the intensity of espresso to the tranquility of selected tea leaf brews.',
-        catalogBtn: 'View Full Catalog',
-        menuCount: 'Menus',
-        defaultCats: [
-          { name: 'Single Origin & Manual Brew', desc: 'V60, Japanese Iced, and Aeropress brews from selected grade-A coffee beans.' },
-          { name: 'Signature Espresso Brews', desc: 'Exclusive espresso blend mixes with fresh creamy milk and artisan syrup.' },
-          { name: 'Artisan Tea & Tisane', desc: 'Organic chamomile, earl grey, and ceremonial grade matcha tea collection.' },
-          { name: 'Fresh Pastry & Croissant', desc: 'Artisan toast, butter croissant, and freshly baked side dishes.' },
-        ]
-      },
-      barista: {
-        badge: 'Barista Recommends',
-        title: 'Crowd Favorites',
-        desc: 'A curation of signature menus most loved by our customers. From smooth lattes to decadent artisan desserts.',
-        bestSeller: 'Best Seller',
-        orderBtn: 'Order Now'
-      },
-      promotions: {
-        badge: 'Special Offers',
-        title: 'Exclusive Promos & Benefits',
-        desc: 'Enjoy special discounts, member packages, and attractive offers for every coffee moment at NEMU Space.',
-        validUntil: 'Valid until',
-        claimBtn: 'Claim Promo'
-      },
-      testimonials: {
-        badge: 'Customer Voices',
-        title: 'What They Say',
-        desc: 'Stories and impressions from regulars who have experienced the warmth of the space and the taste of our coffee.'
-      },
-      faq: {
-        badge: 'Help & Information',
-        title: 'Frequently Asked Questions',
-        desc: 'Find answers to common questions about our coffee, reservations, and facilities.',
-        moreBtn: 'Ask Us Directly'
-      }
-    },
     hero: {
       subtitle: 'Premium Culinary Experience',
       titleLine1: 'Served For',
@@ -106,6 +25,33 @@ export const translations = {
       stat2Desc: 'Prepared with precision by our experienced culinary team and baristas.',
       stat3Title: 'Fast & Fresh Service',
       stat3Desc: 'Seamless POS & KDS technology ensuring your order is fresh every single time.',
+      badge: 'NEMU Space Coffee & Eatery',
+      btnOrder: 'Order Now',
+      btnReserve: 'Reserve Table',
+      defaultBanners: [
+        {
+          title: 'HANDCRAFTED SPECIALTY CURATIONS',
+          subtitle: 'Bringing the harmony of specialty coffee brews, creamy beverages, and curated desserts right to your table.',
+          cta_text: 'Order Now',
+        },
+        {
+          title: 'ARTISANAL BREW & CREATIVE LOUNGE',
+          subtitle: 'An inspiring collaborative space for creators, culinary lovers, and seekers of aesthetic comfort in the heart of the city.',
+          cta_text: 'Reserve Table',
+        },
+        {
+          title: 'FLAVORFUL CULINARY EXPERIENCE',
+          subtitle: 'Enjoy the perfect pairing of appetizing main courses, refreshing artisan drinks, and freshly baked pastries.',
+          cta_text: 'Explore Catalog',
+        },
+      ],
+      prevBanner: 'Previous banner',
+      nextBanner: 'Next banner',
+      goToSlide: 'Go to slide',
+    },
+    gallery: {
+      title: 'Comfortable Corners at NEMU Space',
+      description: 'Explore every corner of our space designed to provide tranquility, inspiration, and comfort. Let\'s capture your best moments here.'
     },
     featured: {
       title: 'Featured Menus',
@@ -165,6 +111,90 @@ export const translations = {
       polaroid1: 'Fresh Pastry & Art',
       polaroid2: 'Universal Drinks',
       polaroid3: 'Cozy Lounge Ritual',
+      badge: 'About NEMU Space',
+      points: [
+        'High-quality ingredients for our coffee, tea, and culinary menus',
+        'Beverages and dishes curated by experienced culinary experts',
+        'Warm and interactive service for every guest who visits us',
+        'Artistic, comfortable space design that supports productivity',
+      ],
+      certification: 'Premium Quality & Service',
+      certDesc: 'Professional Culinary Team',
+      defaultItem: {
+        title: 'The Story Behind Every Authentic Serving',
+        description: 'NEMU Space started from our love for rich flavors. We believe every dish and beverage—from coffee brews to desserts—has a story worth enjoying in an atmosphere that fosters togetherness.'
+      },
+      badgeTitle: '100%',
+      badgeDesc: 'Premium Quality'
+    },
+    articles: {
+      badge: 'Journal',
+      title: 'Stories & Insights',
+      desc: 'Discover coffee stories, brewing tips, and behind-the-scenes from NEMU Space.',
+      readMore: 'Read More',
+    },
+    barista: {
+      badge: 'Barista Recommends',
+      title: 'Crowd Favorites',
+      desc: 'A curation of signature menus most loved by our customers. From smooth lattes to decadent artisan desserts.',
+      bestSeller: 'Best Seller',
+      orderBtn: 'Order Now',
+      price: 'Price',
+      defaultMenuDesc: 'A flavorful menu from NEMU Space with the highest serving standards.',
+    },
+    curations: {
+      badge: 'Handcrafted Curations',
+      title: 'Explore Flavor Categories',
+      desc: 'Each of our categories is designed to deliver a unique sensory experience, from the intensity of espresso to the tranquility of selected tea leaf brews.',
+      catalogBtn: 'View Full Catalog',
+      menuCount: 'Menus',
+      defaultCats: [
+        { name: 'Single Origin & Manual Brew', desc: 'V60, Japanese Iced, and Aeropress brews from selected grade-A coffee beans.' },
+        { name: 'Signature Espresso Brews', desc: 'Exclusive espresso blend mixes with fresh creamy milk and artisan syrup.' },
+        { name: 'Artisan Tea & Tisane', desc: 'Organic chamomile, earl grey, and ceremonial grade matcha tea collection.' },
+        { name: 'Fresh Pastry & Croissant', desc: 'Artisan toast, butter croissant, and freshly baked side dishes.' },
+      ]
+    },
+    faq: {
+      badge: 'Help & Information',
+      title: 'Frequently Asked Questions',
+      desc: 'Find answers to common questions about our coffee, reservations, and facilities.',
+      moreBtn: 'Ask Us Directly',
+      defaultFaqs: [
+        {
+          id: 1,
+          question: 'What makes the specialty coffee beans at NEMU Space different?',
+          answer: 'All our coffee beans are directly curated by certified Q-Graders from the best single-origin farms in the archipelago (Aceh Gayo, Kintamani, Toraja, to Ijen). We roast with precision profiles to highlight the natural aroma and character of each origin.',
+        },
+        {
+          id: 2,
+          question: 'Can I reserve a table for meetings or special events?',
+          answer: 'Of course! You can book a table through the "Reservations" menu on our website. For group reservations (>15 people), birthdays, or special area rentals (private area / workshop), our admin team will directly confirm and prepare the table layout according to your needs.',
+        },
+        {
+          id: 3,
+          question: 'How do I check the status of a submitted reservation?',
+          answer: 'You can check your reservation status directly without needing an account by opening the "Reservations" menu, selecting the "Check Reservation Status" tab, and entering the WhatsApp number and reservation date you registered.',
+        },
+        {
+          id: 4,
+          question: 'Does NEMU Space provide Wi-Fi and power outlets for working (WFC)?',
+          answer: 'Yes, we provide high-speed fiber optic internet connection (100+ Mbps) and power outlets distributed at every table, both in the air-conditioned indoor area and the semi-outdoor lounge.',
+        },
+        {
+          id: 5,
+          question: 'Are plant-based milk options and non-coffee menus available?',
+          answer: 'Absolutely! We offer Oat Milk and Almond Milk options for all espresso-based drink variants. We also have a collection of Artisan Tea, Ceremonial Grade Matcha, Pure Chocolate, and various fresh pastries daily.',
+        },
+      ]
+    },
+    promotions: {
+      badge: 'Special Offers',
+      title: 'Exclusive Promos & Benefits',
+      desc: 'Enjoy special discounts, member packages, and attractive offers for every coffee moment at NEMU Space.',
+      validUntil: 'Valid until',
+      claimBtn: 'Claim Promo',
+      limited: 'Limited',
     },
     journey: {
       title: 'Our Journey',
@@ -177,6 +207,26 @@ export const translations = {
       foamTitle: 'Velvet Micro-Foam',
     },
     testimonials: {
+      badge: 'Customer Voices',
+      title: 'What They Say',
+      desc: 'Stories and impressions from regulars who have experienced the warmth of the space and the taste of our coffee.',
+      writeReview: 'Write a Review',
+      shareExperience: 'Share Your Experience',
+      shareExperienceDesc: 'Your review means a lot to us and other visitors.',
+      submitReview: 'Submit Review',
+      reviewSubmitted: 'Review Submitted Successfully',
+      reviewSubmittedDesc: 'Your review is being processed by the admin.',
+      reviewFailed: 'Failed to Submit Review',
+      reviewFailedDesc: 'Please try again later.',
+      fullName: 'Full Name',
+      fullNamePlaceholder: 'e.g. Budi Santoso',
+      jobRole: 'Job/Role',
+      jobRolePlaceholder: 'e.g. Coffee Enthusiast',
+      rating: 'Rating (1-5)',
+      yourReview: 'Your Review',
+      yourReviewPlaceholder: 'Write your experience with us...',
+      defaultRole: 'Loyal Customer',
+      defaultQuote: 'An amazing coffee experience!',
       titleLine1: 'Post Cards From',
       titleLine2: 'Our',
       titleHighlight: 'Regulars',
@@ -316,6 +366,10 @@ export const translations = {
       emailVal: 'hello@velvetbrew.id',
       statusLabel: 'Status',
       statusVal: 'Open Now until 10:00 PM',
+      operationalHours: 'Operational Hours',
+      closed: 'Closed',
+      mapNotAvailable: 'Map not available',
+      whatsapp: 'WhatsApp',
     },
     footer: {
       brandDesc: 'We craft every single cup with passion, sourcing sustainable beans from ethical high-altitude farms across the globe to elevate your daily coffee ritual.',
@@ -328,6 +382,73 @@ export const translations = {
       terms: 'Terms of Service',
       cookies: 'Cookie Preferences',
     },
+    reservations: {
+      title: 'Plan Your Visit',
+      description: 'Don’t let your precious moments slip away. Secure your favorite table today and let us prepare an unforgettable dining experience for you.'
+    },
+    cta: {
+      viewMenu: 'Explore Menu',
+      reserve: 'Reserve Table',
+      order: 'Order Now',
+      readMore: 'Read More',
+      contact: 'Contact Us',
+      registerMember: 'Register as Member',
+      claimPromo: 'Claim Promo',
+      viewGallery: 'View Gallery',
+      searchMenu: 'Search Menu',
+      sendMessage: 'Send Message',
+      subscribe: 'Subscribe',
+      exploreCategory: 'Explore Category',
+      viewDetails: 'View Details',
+      saveArticle: 'Save Article',
+      buyNow: 'Buy Now',
+      backHome: 'Back to Home',
+      findLocation: 'Find Location',
+      askUs: 'Ask Us',
+      viewAllPromos: 'View All Promos',
+      tryNewMenu: 'Try New Menu'
+    },
+    dashboard: {
+      owner: {
+        title: 'Dashboard Overview',
+        desc: 'Business performance summary for NEMU Space.',
+        todayRevenue: "Today's Revenue",
+        monthRevenue: "This Month's Revenue",
+        totalTransactions: 'Total Transactions',
+        todayReservations: "Today's Reservations",
+        salesChart: 'Sales Chart',
+        daily: 'Daily',
+        weekly: 'Weekly',
+        monthly: 'Monthly',
+        revenue: 'Revenue',
+        noSales: 'No sales data for this period.',
+        topMenus: 'Top Menus',
+        sold: 'sold',
+        noTopMenus: 'No top menu data available.',
+        loading: 'Loading dashboard data...',
+        errorTitle: 'Failed to Load Data'
+      },
+      admin: {
+        title: 'Admin Dashboard',
+        desc: 'Operational summary for NEMU Space.',
+        todaySales: "Today's Sales",
+        lowStock: 'Low Stock Items',
+        topMenus: 'Top Menus (This Week)',
+        recentContent: 'Recent Content',
+        loading: 'Loading dashboard data...',
+        errorTitle: 'Failed to Load Data'
+      },
+      cashier: {
+        title: 'Cashier Dashboard',
+        desc: 'Shift summary & quick actions for today.',
+        openPOS: 'Open POS',
+        revenue: "Today's Revenue",
+        transactions: 'transactions',
+        reservations: "Today's Reservations",
+        loading: 'Loading dashboard data...',
+        errorTitle: 'Failed to Load Data'
+      }
+    }
   },
   id: {
     header: {
@@ -338,98 +459,6 @@ export const translations = {
       journal: 'Jurnal',
       gallery: 'Galeri',
       orderOnline: 'Pesan Online',
-    },
-    landing: {
-      hero: {
-        badge: 'NEMU Space Coffee & Eatery',
-        btnOrder: 'Lihat Menu Favorit',
-        btnReserve: 'Reservasi Tempat',
-        defaultBanners: [
-          {
-            title: 'Ruang Nyaman, Rasa Berkesan',
-            subtitle: 'NEMU Space menghadirkan suasana hangat untuk Anda berbagi cerita, bekerja, atau sekadar bersantai. Nikmati sajian spesial kami dari kopi pilihan hingga hidangan utama yang memanjakan selera.',
-            cta_text: 'Lihat Menu Favorit',
-          },
-          {
-            title: 'Lebih Dari Sekadar Tempat Berkumpul',
-            subtitle: 'Kami memadukan arsitektur minimalis dengan ragam hidangan premium. Mari rayakan momen kebersamaan di sini.',
-            cta_text: 'Reservasi Tempat',
-          },
-          {
-            title: 'Pengalaman Bersantap Terbaik',
-            subtitle: 'Manjakan lidah Anda dengan kombinasi hidangan penutup yang manis, minuman yang segar, dan hidangan utama yang memuaskan.',
-            cta_text: 'Pesan Sekarang',
-          },
-        ]
-      },
-      about: {
-        badge: 'Lebih dari Sekadar Tempat Berkumpul',
-        points: [
-          'Suasana yang tenang dan produktif untuk Work From Cafe.',
-          'Pilihan hidangan beragam dari kopi, teh, hingga makanan berat.',
-          'Bahan baku premium yang dikurasi langsung oleh tim ahli kami.',
-          'Sudut ruangan estetik yang cocok untuk mengabadikan momen.',
-          'Pelayanan yang ramah, hangat, dan siap membantu Anda.',
-          'Fasilitas lengkap mulai dari koneksi internet cepat hingga area parkir luas.',
-        ],
-        certification: 'Kualitas, Kenyamanan, Kebersamaan',
-        certDesc: 'Nilai Inti NEMU Space',
-        defaultItem: {
-          title: 'Lebih dari Sekadar Tempat Berkumpul',
-          description: 'NEMU Space lahir dari gagasan sederhana: setiap orang membutuhkan ruang di mana mereka bisa sejenak lepas dari rutinitas. Di sini, Anda bebas merayakan momen kecil bersama sahabat, keluarga, atau menikmati waktu luang sendirian ditemani sajian favorit.'
-        },
-        polaroid1: 'Suasana Nyaman',
-        polaroid2: 'Sajian Premium',
-        badgeTitle: '100%',
-        badgeDesc: 'Pengalaman Terbaik'
-      },
-      curations: {
-        badge: 'Kategori Menu Kami',
-        title: 'Jelajahi Pilihan Rasa',
-        desc: 'Setiap menu kami dirancang untuk menghadirkan pengalaman sensorik yang unik, menemani setiap momen kebersamaan Anda.',
-        catalogBtn: 'Jelajahi Kategori',
-        menuCount: 'Kategori',
-        defaultCats: [
-          { name: 'Coffee', desc: 'Pilihan kopi klasik hingga modern yang diseduh dengan sempurna.' },
-          { name: 'Non Coffee', desc: 'Kesegaran minuman artisan tanpa kafein untuk menenangkan hari.' },
-          { name: 'Tea', desc: 'Koleksi daun teh pilihan untuk momen bersantai Anda.' },
-          { name: 'Matcha', desc: 'Autentik dan creamy, membawa cita rasa khas yang memikat.' },
-          { name: 'Chocolate', desc: 'Cokelat pekat premium yang meleleh lembut di setiap tegukan.' },
-          { name: 'Mocktail', desc: 'Kreasi minuman segar yang memadukan buah dan sirup artisan.' },
-          { name: 'Dessert', desc: 'Penutup manis yang menyempurnakan pengalaman bersantap Anda.' },
-          { name: 'Snack', desc: 'Camilan ringan yang cocok menemani waktu mengobrol santai.' },
-          { name: 'Main Course', desc: 'Hidangan utama istimewa untuk mengisi kembali energi Anda.' },
-          { name: 'Rice Bowl', desc: 'Sajian praktis nan lezat dengan berbagai pilihan lauk.' },
-          { name: 'Pasta', desc: 'Klasik, kaya rasa, dan disajikan dengan bahan segar terbaik.' },
-          { name: 'Bakery', desc: 'Ragam roti dan pastry yang baru dipanggang setiap hari.' },
-          { name: 'Seasonal Menu', desc: 'Kreasi spesial yang hadir khusus menyapa Anda di musim ini.' },
-        ]
-      },
-      barista: {
-        badge: 'Menu Favorit',
-        title: 'Sajian Pilihan Kami',
-        desc: 'Deretan menu unggulan yang selalu menjadi favorit pengunjung. Sempurna untuk menemani waktu luang Anda.',
-        bestSeller: 'Menu Pilihan',
-        orderBtn: 'Pesan Sekarang'
-      },
-      promotions: {
-        badge: 'Penawaran Spesial',
-        title: 'Kejutan Spesial untuk Momen Anda',
-        desc: 'Dapatkan penawaran istimewa setiap harinya. Mulai dari paket makan siang hemat hingga potongan khusus untuk member setia NEMU Space.',
-        validUntil: 'Berlaku s/d',
-        claimBtn: 'Klaim Promo'
-      },
-      testimonials: {
-        badge: 'Suara Pelanggan',
-        title: 'Apa Kata Mereka',
-        desc: 'Cerita dan pengalaman berkesan dari para pengunjung yang telah menghabiskan waktu di NEMU Space.'
-      },
-      faq: {
-        badge: 'Bantuan & Informasi',
-        title: 'Pertanyaan Seputar NEMU',
-        desc: 'Temukan jawaban atas pertanyaan umum seputar fasilitas, menu, dan reservasi kami.',
-        moreBtn: 'Tanya Kami'
-      }
     },
     hero: {
       subtitle: 'Pengalaman Bersantap Terbaik',
@@ -445,6 +474,29 @@ export const translations = {
       stat2Desc: 'Ruang estetik dan tenang, cocok untuk segala aktivitas Anda.',
       stat3Title: 'Pelayanan Ramah',
       stat3Desc: 'Kami selalu menyambut Anda dengan senyuman dan kehangatan.',
+      badge: 'NEMU Space Coffee & Eatery',
+      btnOrder: 'Pesan Sekarang',
+      btnReserve: 'Reservasi Tempat',
+      defaultBanners: [
+        {
+          title: 'Ruang Nyaman, Rasa Berkesan',
+          subtitle: 'NEMU Space menghadirkan suasana hangat untuk Anda berbagi cerita, bekerja, atau sekadar bersantai. Nikmati sajian spesial kami dari kopi pilihan hingga hidangan utama yang memanjakan selera.',
+          cta_text: 'Pesan Sekarang',
+        },
+        {
+          title: 'Lebih Dari Sekadar Tempat Berkumpul',
+          subtitle: 'Kami memadukan arsitektur minimalis dengan ragam hidangan premium. Mari rayakan momen kebersamaan di sini.',
+          cta_text: 'Reservasi Tempat',
+        },
+        {
+          title: 'Pengalaman Bersantap Terbaik',
+          subtitle: 'Manjakan lidah Anda dengan kombinasi hidangan penutup yang manis, minuman yang segar, dan hidangan utama yang memuaskan.',
+          cta_text: 'Pesan Sekarang',
+        },
+      ],
+      prevBanner: 'Banner sebelumnya',
+      nextBanner: 'Banner selanjutnya',
+      goToSlide: 'Pindah ke slide',
     },
     featured: {
       title: 'Menu Spesial Kami',
@@ -488,7 +540,10 @@ export const translations = {
       description: 'Jangan biarkan momen berharga Anda terlewatkan. Amankan meja favorit Anda hari ini dan biarkan kami menyiapkan pengalaman bersantap yang tak terlupakan.'
     },
     articles: {
-      title: 'Jurnal NEMU Space',
+      badge: 'Jurnal',
+      title: 'Cerita & Wawasan',
+      desc: 'Temukan cerita kopi, tips menyeduh, dan di balik layar dari NEMU Space.',
+      readMore: 'Baca Selengkapnya',
       items: [
         '5 Sudut Ternyaman di NEMU Space untuk Menyelesaikan Pekerjaan Anda',
         'Mengenal Lebih Dekat Perjalanan Rasa: Dari Kebun hingga ke Cangkir',
@@ -508,6 +563,95 @@ export const translations = {
       polaroid1: 'Suasana Nyaman',
       polaroid2: 'Menu Pilihan',
       polaroid3: 'Momen Berharga',
+      badge: 'Tentang NEMU Space',
+      points: [
+        'Suasana yang tenang dan produktif untuk Work From Cafe.',
+        'Pilihan hidangan beragam dari kopi, teh, hingga makanan berat.',
+        'Bahan baku premium yang dikurasi langsung oleh tim ahli kami.',
+        'Sudut ruangan estetik yang cocok untuk mengabadikan momen.',
+        'Pelayanan yang ramah, hangat, dan siap membantu Anda.',
+        'Fasilitas lengkap mulai dari koneksi internet cepat hingga area parkir luas.',
+      ],
+      certification: 'Kualitas, Kenyamanan, Kebersamaan',
+      certDesc: 'Nilai Inti NEMU Space',
+      defaultItem: {
+        title: 'Lebih dari Sekadar Tempat Berkumpul',
+        description: 'NEMU Space lahir dari gagasan sederhana: setiap orang membutuhkan ruang di mana mereka bisa sejenak lepas dari rutinitas. Di sini, Anda bebas merayakan momen kecil bersama sahabat, keluarga, atau menikmati waktu luang sendirian ditemani sajian favorit.'
+      },
+      badgeTitle: '100%',
+      badgeDesc: 'Pengalaman Terbaik'
+    },
+    barista: {
+      badge: 'Menu Favorit',
+      title: 'Sajian Pilihan Kami',
+      desc: 'Deretan menu unggulan yang selalu menjadi favorit pengunjung. Sempurna untuk menemani waktu luang Anda.',
+      bestSeller: 'Menu Pilihan',
+      orderBtn: 'Pesan Sekarang',
+      price: 'Harga',
+      defaultMenuDesc: 'Menu pilihan bernuansa rasa khas NEMU Space dengan standar penyajian tertinggi.',
+    },
+    curations: {
+      badge: 'Kurasi Pilihan',
+      title: 'Jelajahi Pilihan Rasa',
+      desc: 'Setiap menu kami dirancang untuk menghadirkan pengalaman sensorik yang unik, menemani setiap momen kebersamaan Anda.',
+      catalogBtn: 'Jelajahi Kategori',
+      menuCount: 'Kategori',
+      defaultCats: [
+        { name: 'Coffee', desc: 'Pilihan kopi klasik hingga modern yang diseduh dengan sempurna.' },
+        { name: 'Non Coffee', desc: 'Kesegaran minuman artisan tanpa kafein untuk menenangkan hari.' },
+        { name: 'Tea', desc: 'Koleksi daun teh pilihan untuk momen bersantai Anda.' },
+        { name: 'Matcha', desc: 'Autentik dan creamy, membawa cita rasa khas yang memikat.' },
+        { name: 'Chocolate', desc: 'Cokelat pekat premium yang meleleh lembut di setiap tegukan.' },
+        { name: 'Mocktail', desc: 'Kreasi minuman segar yang memadukan buah dan sirup artisan.' },
+        { name: 'Dessert', desc: 'Penutup manis yang menyempurnakan pengalaman bersantap Anda.' },
+        { name: 'Snack', desc: 'Camilan ringan yang cocok menemani waktu mengobrol santai.' },
+        { name: 'Main Course', desc: 'Hidangan utama istimewa untuk mengisi kembali energi Anda.' },
+        { name: 'Rice Bowl', desc: 'Sajian praktis nan lezat dengan berbagai pilihan lauk.' },
+        { name: 'Pasta', desc: 'Klasik, kaya rasa, dan disajikan dengan bahan segar terbaik.' },
+        { name: 'Bakery', desc: 'Ragam roti dan pastry yang baru dipanggang setiap hari.' },
+        { name: 'Seasonal Menu', desc: 'Kreasi spesial yang hadir khusus menyapa Anda di musim ini.' },
+      ]
+    },
+    faq: {
+      badge: 'Bantuan & Informasi',
+      title: 'Pertanyaan Seputar NEMU',
+      desc: 'Temukan jawaban atas pertanyaan umum seputar fasilitas, menu, dan reservasi kami.',
+      moreBtn: 'Tanya Kami',
+      defaultFaqs: [
+        {
+          id: 1,
+          question: 'Apa yang membedakan biji kopi specialty di NEMU Space?',
+          answer: 'Seluruh biji kopi kami dikurasi langsung oleh Q-Grader bersertifikasi dari perkebunan single-origin terbaik nusantara (Aceh Gayo, Kintamani, Toraja, hingga Ijen). Kami melakukan sangrai dengan profil pemanggangan presisi untuk menonjolkan aroma dan karakter alami dari setiap origin.',
+        },
+        {
+          id: 2,
+          question: 'Apakah saya bisa melakukan reservasi meja untuk keperluan meeting atau acara khusus?',
+          answer: 'Tentu! Anda dapat memesan meja melalui menu "Reservasi" di website kami. Untuk reservasi rombongan (>15 orang), ulang tahun, atau penyewaan area khusus (private area / workshop), tim admin kami akan langsung mengonfirmasi dan menyiapkan tata letak meja sesuai kebutuhan Anda.',
+        },
+        {
+          id: 3,
+          question: 'Bagaimana cara memeriksa status reservasi yang sudah diajukan?',
+          answer: 'Anda dapat langsung memeriksa status reservasi tanpa perlu mendaftar akun, yaitu dengan membuka menu "Reservasi" lalu pilih tab "Cek Status Reservasi" dan memasukkan nomor WhatsApp serta tanggal reservasi yang Anda daftarkan.',
+        },
+        {
+          id: 4,
+          question: 'Apakah NEMU Space menyediakan fasilitas Wi-Fi dan stopkontak untuk bekerja (WFC)?',
+          answer: 'Ya, kami menyediakan koneksi internet serat optik berkecepatan tinggi (100+ Mbps) serta stopkontak yang terdistribusi di setiap meja, baik di area indoor ber-AC maupun semi-outdoor lounge.',
+        },
+        {
+          id: 5,
+          question: 'Apakah tersedia opsi susu nabati (plant-based milk) dan menu non-kopi?',
+          answer: 'Sangat lengkap! Kami menyediakan opsi Oat Milk dan Almond Milk untuk seluruh varian minuman berbasis espresso. Kami juga memiliki koleksi Artisan Tea, Matcha Ceremonial Grade, Pure Chocolate, dan berbagai hidangan pastry segar setiap hari.',
+        },
+      ]
+    },
+    promotions: {
+      badge: 'Penawaran Spesial',
+      title: 'Kejutan Spesial untuk Momen Anda',
+      desc: 'Dapatkan penawaran istimewa setiap harinya. Mulai dari paket makan siang hemat hingga potongan khusus untuk member setia NEMU Space.',
+      validUntil: 'Berlaku s/d',
+      claimBtn: 'Klaim Promo',
+      limited: 'Terbatas',
     },
     journey: {
       title: 'Nilai Brand Kami',
@@ -520,6 +664,26 @@ export const translations = {
       foamTitle: 'Inovasi Rasa',
     },
     testimonials: {
+      badge: 'Suara Pelanggan',
+      title: 'Apa Kata Mereka',
+      desc: 'Cerita dan pengalaman berkesan dari para pengunjung yang telah menghabiskan waktu di NEMU Space.',
+      writeReview: 'Tulis Ulasan Anda',
+      shareExperience: 'Bagikan Pengalaman Anda',
+      shareExperienceDesc: 'Ulasan Anda sangat berarti bagi kami dan pengunjung lainnya.',
+      submitReview: 'Kirim Ulasan',
+      reviewSubmitted: 'Berhasil Mengirim Ulasan',
+      reviewSubmittedDesc: 'Ulasan Anda sedang diproses oleh admin.',
+      reviewFailed: 'Gagal Mengirim Ulasan',
+      reviewFailedDesc: 'Silakan coba lagi.',
+      fullName: 'Nama Lengkap',
+      fullNamePlaceholder: 'Cth: Budi Santoso',
+      jobRole: 'Pekerjaan/Profesi',
+      jobRolePlaceholder: 'Cth: Coffee Enthusiast',
+      rating: 'Penilaian (1-5)',
+      yourReview: 'Ulasan Anda',
+      yourReviewPlaceholder: 'Tuliskan pengalaman Anda bersama kami...',
+      defaultRole: 'Pelanggan Setia',
+      defaultQuote: 'Pengalaman kopi yang luar biasa!',
       titleLine1: 'Cerita Dari',
       titleLine2: 'Pengunjung',
       titleHighlight: 'Kami',
@@ -625,6 +789,10 @@ export const translations = {
       emailVal: 'hello@nemuspace.id',
       statusLabel: 'Status Operasional',
       statusVal: 'Buka Sekarang hingga 22.00 WIB',
+      operationalHours: 'Jam Operasional',
+      closed: 'Tutup',
+      mapNotAvailable: 'Peta tidak tersedia',
+      whatsapp: 'WhatsApp',
     },
     footer: {
       brandDesc: 'NEMU Space adalah rumah kedua bagi Anda untuk berkumpul, bekerja, dan merayakan kebersamaan ditemani ragam hidangan premium.',
@@ -636,6 +804,47 @@ export const translations = {
       privacy: 'Kebijakan Privasi',
       terms: 'Syarat & Ketentuan',
       cookies: 'Preferensi Cookie',
+    },
+    dashboard: {
+      owner: {
+        title: 'Ringkasan Dashboard',
+        desc: 'Ringkasan performa bisnis NEMU Space.',
+        todayRevenue: 'Pendapatan Hari Ini',
+        monthRevenue: 'Pendapatan Bulan Ini',
+        totalTransactions: 'Total Transaksi',
+        todayReservations: 'Reservasi Hari Ini',
+        salesChart: 'Grafik Penjualan',
+        daily: 'Harian',
+        weekly: 'Mingguan',
+        monthly: 'Bulanan',
+        revenue: 'Pendapatan',
+        noSales: 'Belum ada data penjualan pada periode ini.',
+        topMenus: 'Menu Terlaris',
+        sold: 'terjual',
+        noTopMenus: 'Belum ada data menu terlaris.',
+        loading: 'Memuat data dashboard...',
+        errorTitle: 'Gagal Memuat Data'
+      },
+      admin: {
+        title: 'Dashboard Admin',
+        desc: 'Ringkasan operasional untuk NEMU Space.',
+        todaySales: 'Penjualan Hari Ini',
+        lowStock: 'Stok Menipis',
+        topMenus: 'Menu Terlaris (Minggu Ini)',
+        recentContent: 'Konten Terbaru',
+        loading: 'Memuat data dashboard...',
+        errorTitle: 'Gagal Memuat Data'
+      },
+      cashier: {
+        title: 'Dashboard Kasir',
+        desc: 'Ringkasan shift & aksi cepat untuk hari ini.',
+        openPOS: 'Buka POS',
+        revenue: 'Pendapatan Hari Ini',
+        transactions: 'transaksi',
+        reservations: 'Reservasi Hari Ini',
+        loading: 'Memuat data dashboard...',
+        errorTitle: 'Gagal Memuat Data'
+      }
     },
     emptyState: {
       noMenu: 'Belum ada menu yang ditambahkan.',

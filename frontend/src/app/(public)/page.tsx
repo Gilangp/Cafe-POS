@@ -1,101 +1,67 @@
-'use client';
+"use client";
 
-import * as React from 'react';
-import { PublicLayout } from '@/shared/components/layout/public-layout';
-import { HeroSlider, type HeroBannerData } from '@/features/landing/components/hero/hero-slider';
-import { AboutSection, type AboutUsItem } from '@/features/landing/components/about/about-section';
-import { CurationsSection, type CategoryData } from '@/features/landing/components/categories/curations-section';
-import { BaristaRecommendsSection, type MenuData } from '@/features/landing/components/featured-menu/barista-recommends';
-import { PromotionsSection, type PromotionData } from '@/features/landing/components/promotion/promotions-section';
-import { TestimonialsSection, type TestimonialData } from '@/features/landing/components/testimonial/testimonials-section';
-import { FaqSection, type FaqData } from '@/features/landing/components/faq/faq-section';
-import api from '@/shared/api/axios';
+import { useQuery } from "@tanstack/react-query";
+import { publicService, type LandingData } from "@/shared/services/public.service";
+import { Loader2 } from "lucide-react";
+
+import HeroSection from "@/components/landing/HeroSection";
+import CategorySection from "@/components/landing/CategorySection";
+import MenuSection from "@/components/landing/MenuSection";
+import PromoSection from "@/components/landing/PromoSection";
+import GallerySection from "@/components/landing/GallerySection";
+import ArticleSection from "@/components/landing/ArticleSection";
+import ReservationSection from "@/components/landing/ReservationSection";
 
 export default function LandingPage() {
-  const [landingData, setLandingData] = React.useState<{
-    hero_banners?: HeroBannerData[];
-    about_us?: AboutUsItem[];
-    best_seller_menus?: MenuData[];
-    faqs?: FaqData[];
-    testimonials?: TestimonialData[];
-    promotions?: PromotionData[];
-    categories?: CategoryData[];
-  }>({});
-  const [loading, setLoading] = React.useState(true);
+  const { data, isLoading } = useQuery<LandingData>({
+    queryKey: ["landingData"],
+    queryFn: publicService.getLandingData,
+  });
 
-  React.useEffect(() => {
-    async function fetchLandingData() {
-      try {
-        const [landingRes, promoRes, catRes] = await Promise.allSettled([
-          api.fetch<any>('/landing-page'),
-          api.fetch<any>('/promotions'),
-          api.fetch<any>('/categories'),
-        ]);
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-background">
+        <Loader2 className="w-10 h-10 text-accent animate-spin mb-4" />
+        <span className="text-primary font-bold font-heading text-xl">Memuat pengalaman premium...</span>
+      </div>
+    );
+  }
 
-        const data: typeof landingData = {};
+  const settings = data?.settings ?? {};
+  const heroBanners = data?.hero_banners ?? [];
+  const activeHero = heroBanners.length > 0 ? heroBanners[0] : null;
 
-        if (landingRes.status === 'fulfilled' && (landingRes.value as any)?.success) {
-          const resData = (landingRes.value as any).data || {};
-          if (resData.hero_banners && resData.hero_banners.length > 0) {
-            data.hero_banners = resData.hero_banners;
-          }
-          if (resData.about_us && resData.about_us.length > 0) {
-            data.about_us = resData.about_us;
-          }
-          if (resData.best_seller_menus && resData.best_seller_menus.length > 0) {
-            data.best_seller_menus = resData.best_seller_menus;
-          }
-          if (resData.faqs && resData.faqs.length > 0) {
-            data.faqs = resData.faqs;
-          }
-          if (resData.testimonials && resData.testimonials.length > 0) {
-            data.testimonials = resData.testimonials;
-          }
-        }
-
-        if (promoRes.status === 'fulfilled' && (promoRes.value as any)?.success && (promoRes.value as any).data?.length > 0) {
-          data.promotions = (promoRes.value as any).data;
-        }
-
-        if (catRes.status === 'fulfilled' && (catRes.value as any)?.success && (catRes.value as any).data?.length > 0) {
-          data.categories = (catRes.value as any).data;
-        }
-
-        setLandingData(data);
-      } catch (err) {
-        console.error('Failed to fetch dynamic landing page data, using default high-quality fallbacks:', err);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchLandingData();
-  }, []);
+  const menus = data?.menus ?? [];
+  const uniqueCategories = Array.from(new Set(menus.map((m) => m.category?.name).filter(Boolean) as string[]));
+  const categories = uniqueCategories.length > 0 ? uniqueCategories : ["Signature", "Coffee", "Non-Coffee", "Pastry", "Snack"];
+  
+  const bestSellers = data?.best_sellers ?? [];
+  const promotions = data?.promotions ?? [];
+  const galleries = data?.galleries ?? [];
+  const articles = data?.articles ?? [];
 
   return (
-    <PublicLayout>
-      <div className="flex flex-col min-h-screen">
-        {/* 1. Hero Banner Slider (Bab 14.2) */}
-        <HeroSlider banners={landingData.hero_banners} />
+    <div className="min-h-screen bg-background text-foreground font-body scroll-smooth selection:bg-accent/30 selection:text-primary">
+      {/* 1. Hero Banner */}
+      <HeroSection activeHero={activeHero} settings={settings} />
+      
+      {/* 2. Handcrafted Curations (Kategori) */}
+      <CategorySection categories={categories} />
 
-        {/* 2. Tentang Kami Section */}
-        <AboutSection aboutData={landingData.about_us} />
+      {/* 3. Barista Recommends (Best Sellers) */}
+      <MenuSection bestSellers={bestSellers} />
 
-        {/* 3. Handcrafted Curations (Kategori Menu Kopi dengan foto bulat/organik berlatar gelap) */}
-        <CurationsSection categories={landingData.categories} />
+      {/* 4. Promo Aktif */}
+      <PromoSection promotions={promotions} />
 
-        {/* 4. Barista Recommends (Menu Favorit dengan grid kartu berlatar terang + badge Best Seller) */}
-        <BaristaRecommendsSection menus={landingData.best_seller_menus} />
+      {/* 5. Galeri Foto */}
+      <GallerySection galleries={galleries} />
 
-        {/* 5. Promo & Penawaran Eksklusif */}
-        <PromotionsSection promotions={landingData.promotions} />
+      {/* 6. Cerita & Artikel */}
+      <ArticleSection articles={articles} />
 
-        {/* 6. Testimoni Pelanggan */}
-        <TestimonialsSection testimonials={landingData.testimonials} />
-
-        {/* 7. FAQ Accordion */}
-        <FaqSection faqs={landingData.faqs} />
-      </div>
-    </PublicLayout>
+      {/* 7. Reservasi & Kontak */}
+      <ReservationSection settings={settings} />
+    </div>
   );
 }
