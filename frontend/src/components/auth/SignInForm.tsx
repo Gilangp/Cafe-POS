@@ -13,6 +13,7 @@ import { authService } from "@/shared/services/auth.service";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
+import { useAuthStore } from "@/store/auth.store";
 
 export default function SignInForm() {
   const [showPassword, setShowPassword] = useState(false);
@@ -33,12 +34,34 @@ export default function SignInForm() {
     },
   });
 
+  const { setUser, setToken } = useAuthStore();
+
   const onSubmit = async (data: LoginInput) => {
     setIsLoading(true);
     try {
-      await authService.login(data.email, data.password);
-      toast.success("Berhasil login!");
-      router.push("/dashboard");
+      const response = await authService.login(data.email, data.password);
+      
+      if (response?.success && response?.data) {
+        const { user: backendUser, token } = response.data;
+        
+        // Map backend user to frontend Zustand User interface
+        const frontendUser = {
+          ...backendUser,
+          role: backendUser.roles?.[0]?.name || "Kasir",
+        };
+
+        setToken(token);
+        setUser(frontendUser);
+        
+        // Set cookie for Next.js middleware
+        // eslint-disable-next-line react-hooks/immutability
+        document.cookie = `auth_token=${token}; path=/; max-age=86400`;
+
+        toast.success("Berhasil login!");
+        router.push("/dashboard");
+      } else {
+        toast.error("Format response tidak sesuai.");
+      }
     } catch (error: any) {
       toast.error(error?.response?.data?.message || "Gagal login, periksa email & password Anda.");
     } finally {
